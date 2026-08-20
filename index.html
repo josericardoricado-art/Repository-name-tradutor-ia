@@ -1,1 +1,995 @@
-index.html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#07111f">
+  <meta name="description" content="Tradutor IA — tradução de texto, voz e vídeos em uma interface moderna.">
+  <title>Tradutor IA</title>
+
+  <style>
+    :root{
+      --bg:#06101d;
+      --bg2:#0a1626;
+      --card:rgba(15,29,47,.82);
+      --card2:#10233a;
+      --line:rgba(255,255,255,.09);
+      --text:#f5f8fc;
+      --muted:#93a4b8;
+      --primary:#1687ff;
+      --primary2:#55b4ff;
+      --success:#35d39a;
+      --danger:#ff647c;
+      --shadow:0 20px 60px rgba(0,0,0,.35);
+      --radius:22px;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 10% 0%,rgba(22,135,255,.20),transparent 32%),
+        radial-gradient(circle at 90% 20%,rgba(75,91,255,.13),transparent 28%),
+        linear-gradient(180deg,var(--bg),#030914 100%);
+      min-height:100vh;
+    }
+    button,input,textarea,select{font:inherit}
+    button{cursor:pointer}
+    a{color:inherit;text-decoration:none}
+
+    .app{
+      width:min(1180px,100%);
+      margin:auto;
+      padding:16px 16px 110px;
+    }
+
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:8px 0 20px;
+      position:sticky;
+      top:0;
+      z-index:20;
+      background:linear-gradient(180deg,rgba(6,16,29,.98),rgba(6,16,29,.88),transparent);
+      backdrop-filter:blur(12px);
+    }
+
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{
+      width:46px;height:46px;border-radius:15px;
+      display:grid;place-items:center;
+      background:linear-gradient(145deg,#1592ff,#1359ff);
+      box-shadow:0 10px 30px rgba(21,130,255,.28);
+      font-size:23px;
+    }
+    .brand strong{font-size:18px}
+    .brand small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+
+    .header-actions{display:flex;gap:8px}
+    .icon-btn,.profile-btn{
+      border:1px solid var(--line);
+      background:rgba(13,27,44,.85);
+      color:var(--text);
+      border-radius:14px;
+      min-width:44px;height:44px;
+      display:grid;place-items:center;
+    }
+    .profile-btn{padding:0 13px;display:flex;gap:8px}
+    .avatar{
+      width:27px;height:27px;border-radius:50%;
+      display:grid;place-items:center;
+      background:#d7ef70;color:#24340a;font-weight:800;
+    }
+
+    .hero{
+      padding:32px 0 22px;
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:24px;
+      align-items:center;
+    }
+    .eyebrow{
+      color:#63b9ff;
+      text-transform:uppercase;
+      letter-spacing:1.5px;
+      font-weight:800;
+      font-size:12px;
+      margin-bottom:12px;
+    }
+    h1{
+      font-size:clamp(34px,6vw,64px);
+      line-height:.98;
+      letter-spacing:-2.5px;
+      max-width:700px;
+    }
+    .gradient{
+      background:linear-gradient(90deg,#fff,#8dcfff,#4d94ff);
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+    }
+    .hero p{
+      color:var(--muted);
+      line-height:1.65;
+      max-width:650px;
+      margin-top:18px;
+      font-size:16px;
+    }
+
+    .hero-card{
+      border:1px solid var(--line);
+      background:linear-gradient(145deg,rgba(22,135,255,.16),rgba(15,29,47,.8));
+      border-radius:28px;
+      padding:22px;
+      box-shadow:var(--shadow);
+    }
+    .signal{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+    .dot{width:10px;height:10px;border-radius:50%;background:var(--success);box-shadow:0 0 15px var(--success)}
+    .signal span{color:#b8c8d9;font-size:13px}
+    .wave{height:110px;display:flex;align-items:center;justify-content:center;gap:5px}
+    .wave i{
+      display:block;width:5px;border-radius:10px;
+      background:linear-gradient(#52b8ff,#146bff);
+      animation:pulse 1s ease-in-out infinite alternate;
+    }
+    .wave i:nth-child(1){height:22px}.wave i:nth-child(2){height:42px;animation-delay:.1s}
+    .wave i:nth-child(3){height:72px;animation-delay:.2s}.wave i:nth-child(4){height:45px;animation-delay:.3s}
+    .wave i:nth-child(5){height:88px;animation-delay:.4s}.wave i:nth-child(6){height:52px;animation-delay:.5s}
+    .wave i:nth-child(7){height:76px;animation-delay:.6s}.wave i:nth-child(8){height:35px;animation-delay:.7s}
+    .wave i:nth-child(9){height:62px;animation-delay:.8s}.wave i:nth-child(10){height:27px;animation-delay:.9s}
+    @keyframes pulse{to{transform:scaleY(.45);opacity:.65}}
+
+    .tabs{
+      display:flex;gap:8px;overflow:auto;padding:6px 0 18px;
+      scrollbar-width:none;
+    }
+    .tabs::-webkit-scrollbar{display:none}
+    .tab{
+      white-space:nowrap;border:1px solid var(--line);
+      color:#aebdcd;background:rgba(10,23,38,.75);
+      border-radius:14px;padding:12px 16px;font-weight:700;
+    }
+    .tab.active{background:rgba(22,135,255,.17);border-color:rgba(69,166,255,.42);color:#fff}
+
+    .panel{
+      border:1px solid var(--line);
+      background:var(--card);
+      border-radius:var(--radius);
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+
+    .translator-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
+    .lang-row{
+      display:flex;align-items:center;gap:10px;
+      margin-bottom:14px;
+    }
+    .lang-select{
+      flex:1;border:1px solid var(--line);background:#0b1b2d;
+      color:#fff;border-radius:13px;padding:12px 13px;outline:none;
+    }
+    .swap{
+      width:43px;height:43px;border-radius:13px;
+      border:1px solid var(--line);background:#0b1b2d;color:#b8d9ff;
+    }
+
+    .editor{
+      min-height:220px;border:1px solid var(--line);
+      background:rgba(5,15,27,.78);border-radius:18px;padding:16px;
+      display:flex;flex-direction:column;
+    }
+    textarea{
+      width:100%;flex:1;resize:vertical;min-height:145px;
+      border:0;outline:0;background:transparent;color:#fff;
+      font-size:17px;line-height:1.55;
+    }
+    textarea::placeholder{color:#5e7187}
+    .editor-bottom{display:flex;justify-content:space-between;gap:8px;align-items:center;color:#70839a;font-size:12px}
+    .mini-actions{display:flex;gap:7px}
+    .mini{
+      width:38px;height:38px;border-radius:11px;
+      border:1px solid var(--line);background:#0d2033;color:#bcd0e4;
+    }
+
+    .result{
+      min-height:220px;border:1px solid rgba(53,211,154,.12);
+      background:linear-gradient(180deg,rgba(17,45,52,.48),rgba(5,15,27,.82));
+      border-radius:18px;padding:16px;
+      display:flex;flex-direction:column;
+    }
+    .result-text{
+      flex:1;color:#f3f8fc;font-size:18px;line-height:1.55;
+      white-space:pre-wrap;word-break:break-word;
+    }
+    .result-placeholder{color:#5e7187}
+    .result-bottom{display:flex;justify-content:space-between;align-items:center;color:#72869a;font-size:12px}
+
+    .primary{
+      width:100%;margin-top:14px;border:0;border-radius:14px;
+      padding:14px 18px;color:white;font-weight:800;
+      background:linear-gradient(100deg,#087fff,#2255ff);
+      box-shadow:0 12px 28px rgba(18,105,255,.24);
+    }
+    .primary:active{transform:translateY(1px)}
+    .secondary{
+      border:1px solid var(--line);background:#0c1c2e;color:#e7f1fb;
+      border-radius:13px;padding:12px 15px;font-weight:700;
+    }
+
+    .voice-area{display:none}
+    .voice-area.show{display:block}
+    .voice-card{text-align:center;padding:28px 14px}
+    .mic{
+      width:100px;height:100px;border-radius:50%;border:0;
+      background:linear-gradient(145deg,#1687ff,#204bff);
+      color:#fff;font-size:34px;
+      box-shadow:0 0 0 12px rgba(22,135,255,.08),0 20px 45px rgba(22,135,255,.25);
+      margin:10px auto 18px;display:grid;place-items:center;
+    }
+    .mic.recording{animation:recording 1.2s infinite}
+    @keyframes recording{
+      50%{box-shadow:0 0 0 24px rgba(255,70,100,.05),0 0 0 12px rgba(255,70,100,.12),0 20px 45px rgba(255,70,100,.22)}
+    }
+    .voice-status{color:var(--muted);margin-bottom:15px}
+
+    .video-area{display:none}
+    .video-area.show{display:block}
+    .drop{
+      border:1.5px dashed rgba(91,166,255,.38);
+      background:rgba(11,30,50,.6);border-radius:20px;
+      padding:34px 18px;text-align:center;
+    }
+    .drop .big{font-size:42px;margin-bottom:10px}
+    .drop h3{margin-bottom:7px}
+    .drop p{color:var(--muted);font-size:13px;line-height:1.5}
+    .file-btn{
+      display:inline-flex;margin-top:16px;padding:12px 17px;
+      border-radius:13px;background:#1687ff;font-weight:800;
+    }
+    #videoPreview{display:none;width:100%;max-height:420px;border-radius:17px;margin-top:16px;background:#000}
+
+    .features{
+      display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px;
+    }
+    .feature{
+      border:1px solid var(--line);background:rgba(12,25,41,.7);
+      border-radius:18px;padding:19px;
+    }
+    .feature-icon{font-size:25px;margin-bottom:12px}
+    .feature h3{font-size:15px;margin-bottom:7px}
+    .feature p{font-size:12px;color:var(--muted);line-height:1.5}
+
+    .plans{margin-top:18px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .plan{padding:20px;border:1px solid var(--line);background:rgba(12,25,41,.7);border-radius:20px}
+    .plan.featured{border-color:rgba(42,151,255,.5);background:linear-gradient(150deg,rgba(22,135,255,.15),rgba(12,25,41,.78))}
+    .plan-name{color:#a8b8c9;font-size:13px;font-weight:800}
+    .price{font-size:30px;font-weight:900;margin:8px 0}
+    .price span{font-size:12px;color:var(--muted);font-weight:500}
+    .plan ul{list-style:none;color:#b5c5d6;font-size:13px;line-height:2}
+    .plan li::before{content:"✓";color:var(--success);margin-right:8px}
+    .plan button{width:100%;margin-top:13px}
+
+    footer{text-align:center;color:#64778c;font-size:12px;margin-top:35px}
+
+    .toast{
+      position:fixed;left:50%;bottom:24px;transform:translate(-50%,120px);
+      background:#10243a;border:1px solid var(--line);color:#fff;
+      border-radius:14px;padding:13px 16px;z-index:100;
+      transition:.3s;box-shadow:var(--shadow);max-width:90%;
+    }
+    .toast.show{transform:translate(-50%,0)}
+
+    @media(max-width:820px){
+      .hero{grid-template-columns:1fr}
+      .hero-card{display:none}
+      .features,.plans{grid-template-columns:1fr}
+    }
+    @media(max-width:680px){
+      .app{padding-left:12px;padding-right:12px}
+      header{padding-top:5px}
+      .brand small{display:none}
+      .profile-btn span{display:none}
+      .translator-grid{grid-template-columns:1fr}
+      .panel{padding:12px}
+      h1{letter-spacing:-1.7px}
+      .hero{padding-top:25px}
+    }
+
+    /* ===== Importar vídeo por link ===== */
+    .social-dub {
+      margin: 26px 0;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: linear-gradient(145deg, rgba(16,35,58,.94), rgba(7,21,34,.96));
+      box-shadow: 0 18px 50px rgba(0,0,0,.18);
+    }
+    .social-dub-head {
+      display:flex;
+      gap:14px;
+      align-items:flex-start;
+      margin-bottom:18px;
+    }
+    .social-dub-icon {
+      width:48px;height:48px;border-radius:15px;
+      display:grid;place-items:center;
+      background:rgba(255,255,255,.07);
+      font-size:24px;flex:0 0 auto;
+    }
+    .social-dub h2 { margin:0 0 6px; font-size:22px; }
+    .social-dub p { margin:0; color:#91a4b8; line-height:1.55; }
+    .social-url-row {
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:10px;
+      margin-top:18px;
+    }
+    .social-url-input {
+      width:100%; box-sizing:border-box;
+      padding:15px 16px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:#071522;
+      color:#f3f8fc;
+      outline:none;
+      font-size:15px;
+    }
+    .social-url-input:focus { border-color:#278cff; box-shadow:0 0 0 3px rgba(39,140,255,.12); }
+    .social-hints {
+      display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;
+    }
+    .social-chip {
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:#b8c7d6;
+      border-radius:999px;
+      padding:7px 11px;
+      font-size:12px;
+    }
+    .dub-settings {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:14px;
+    }
+    .dub-settings label {
+      color:#91a4b8;font-size:12px;display:block;margin-bottom:6px;
+    }
+    .dub-select {
+      width:100%; box-sizing:border-box;
+      padding:13px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#071522;color:#f3f8fc;
+    }
+    .dub-status {
+      margin-top:14px;
+      padding:13px 14px;
+      border-radius:13px;
+      background:#071522;
+      border:1px solid var(--line);
+      color:#91a4b8;
+      display:none;
+      line-height:1.45;
+    }
+    .dub-status.show { display:block; }
+    .dub-result { margin-top:16px; display:none; }
+    .dub-result.show { display:block; }
+    .dub-result video {
+      width:100%; max-height:520px;
+      border-radius:18px;
+      background:#000;
+      display:block;
+    }
+    .dub-download {
+      display:inline-flex; margin-top:12px;
+      text-decoration:none;
+    }
+    @media(max-width:650px){
+      .social-url-row { grid-template-columns:1fr; }
+      .dub-settings { grid-template-columns:1fr; }
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <header>
+      <a class="brand" href="#">
+        <div class="logo">◈</div>
+        <div>
+          <strong>Tradutor IA</strong>
+          <small>Tradução inteligente</small>
+        </div>
+      </a>
+
+      <div class="header-actions">
+        <button class="icon-btn" title="Alternar tema" onclick="showToast('Tema escuro ativado')">☾</button>
+        <button class="profile-btn" onclick="showToast('Área do usuário em preparação')">
+          <div class="avatar">T</div><span>Minha conta</span>
+        </button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Tradução com inteligência artificial</div>
+        <h1>Entenda qualquer idioma.<br><span class="gradient">Fale sem limites.</span></h1>
+        <p>
+          Traduza textos, voz e vídeos em uma experiência simples e rápida.
+          Esta primeira versão já está preparada para receber as integrações
+          de IA, reconhecimento de voz e dublagem.
+        </p>
+      </div>
+
+      <div class="hero-card">
+        <div class="signal"><i class="dot"></i><span>IA pronta para traduzir</span></div>
+        <div class="wave" aria-hidden="true">
+          <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        </div>
+        <button class="secondary" style="width:100%" onclick="document.getElementById('translator').scrollIntoView({behavior:'smooth'})">
+          Começar agora →
+        </button>
+      </div>
+    </section>
+
+    <div class="tabs" role="tablist">
+      <button class="tab active" id="tabText" onclick="openMode('text')">⌨️ Texto</button>
+      <button class="tab" id="tabVoice" onclick="openMode('voice')">🎙️ Voz</button>
+      <button class="tab" id="tabVideo" onclick="openMode('video')">🎬 Vídeo / Dublagem</button>
+    </div>
+
+    <section class="panel" id="translator">
+
+      <div id="textArea">
+        <div class="translator-grid">
+
+          <div>
+            <div class="lang-row">
+              <select class="lang-select" id="sourceLang">
+                <option value="pt">🇧🇷 Português</option>
+                <option value="en">🇺🇸 Inglês</option>
+                <option value="es">🇪🇸 Espanhol</option>
+                <option value="fr">🇫🇷 Francês</option>
+                <option value="de">🇩🇪 Alemão</option>
+                <option value="it">🇮🇹 Italiano</option>
+                <option value="ja">🇯🇵 Japonês</option>
+              </select>
+              <button class="swap" onclick="swapLanguages()" title="Trocar idiomas">⇄</button>
+            </div>
+
+            <div class="editor">
+              <textarea id="inputText" maxlength="5000" placeholder="Digite ou cole o texto que deseja traduzir..."></textarea>
+              <div class="editor-bottom">
+                <span id="counter">0 / 5000</span>
+                <div class="mini-actions">
+                  <button class="mini" onclick="startSpeech()" title="Falar">🎙️</button>
+                  <button class="mini" onclick="clearText()" title="Limpar">⌫</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="lang-row">
+              <select class="lang-select" id="targetLang">
+                <option value="en">🇺🇸 Inglês</option>
+                <option value="pt">🇧🇷 Português</option>
+                <option value="es">🇪🇸 Espanhol</option>
+                <option value="fr">🇫🇷 Francês</option>
+                <option value="de">🇩🇪 Alemão</option>
+                <option value="it">🇮🇹 Italiano</option>
+                <option value="ja">🇯🇵 Japonês</option>
+              </select>
+            </div>
+
+            <div class="result">
+              <div class="result-text result-placeholder" id="resultText">
+                A tradução aparecerá aqui...
+              </div>
+              <div class="result-bottom">
+                <span id="resultInfo">Pronto para traduzir</span>
+                <div class="mini-actions">
+                  <button class="mini" onclick="speakResult()" title="Ouvir tradução">🔊</button>
+                  <button class="mini" onclick="copyResult()" title="Copiar">⧉</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <button class="primary" onclick="translateText()">✨ Traduzir com IA</button>
+      </div>
+
+      <div class="voice-area" id="voiceArea">
+        <div class="voice-card">
+          <div class="eyebrow">Tradução por voz</div>
+          <h2>Fale no seu idioma</h2>
+          <p class="voice-status" id="voiceStatus">Toque no microfone para começar.</p>
+          <button class="mic" id="micButton" onclick="toggleRecording()">🎙️</button>
+          <div class="lang-row" style="max-width:520px;margin:0 auto">
+            <select class="lang-select" id="voiceTarget">
+              <option value="en-US">🇺🇸 Inglês</option>
+              <option value="pt-BR">🇧🇷 Português</option>
+              <option value="es-ES">🇪🇸 Espanhol</option>
+              <option value="fr-FR">🇫🇷 Francês</option>
+              <option value="de-DE">🇩🇪 Alemão</option>
+            </select>
+          </div>
+          <div id="voiceTranscript" class="result-text" style="margin:22px auto 0;max-width:700px;text-align:left;padding:16px;border:1px solid var(--line);border-radius:16px;background:#071522;color:#91a4b8">
+            O texto reconhecido aparecerá aqui.
+          </div>
+        </div>
+      </div>
+
+      <div class="video-area" id="videoArea">
+        <div class="drop" id="dropZone">
+          <div class="big">🎬</div>
+          <h3>Traduza e prepare seu vídeo para dublagem</h3>
+          <p>Selecione um vídeo do celular. Nesta primeira versão ele será carregado e exibido na tela. A etapa de transcrição, tradução e geração da nova voz será conectada ao backend na próxima fase.</p>
+          <label class="file-btn">
+            Escolher vídeo
+            <input type="file" id="videoInput" accept="video/*" hidden>
+          </label>
+        </div>
+        <video id="videoPreview" controls playsinline></video>
+      </div>
+    </section>
+
+
+    <section class="social-dub" id="socialDub">
+      <div class="social-dub-head">
+        <div class="social-dub-icon">🔗</div>
+        <div>
+          <h2>Dublar vídeo por link</h2>
+          <p>Cole o link de um vídeo público e o sistema enviará o endereço para o backend baixar/processar o vídeo, traduzir o áudio e gerar a nova dublagem.</p>
+        </div>
+      </div>
+
+      <div class="social-url-row">
+        <input
+          id="socialVideoUrl"
+          class="social-url-input"
+          type="url"
+          inputmode="url"
+          autocomplete="off"
+          placeholder="Cole aqui o link do YouTube, TikTok, Instagram ou outro vídeo..."
+        >
+        <button class="primary" id="dubLinkButton" onclick="dubVideoFromLink()">🎙️ Dublar vídeo</button>
+      </div>
+
+      <div class="social-hints">
+        <span class="social-chip">▶️ YouTube</span>
+        <span class="social-chip">♪ TikTok</span>
+        <span class="social-chip">◎ Instagram</span>
+        <span class="social-chip">🌐 Link direto MP4</span>
+      </div>
+
+      <div class="dub-settings">
+        <div>
+          <label for="dubTargetLang">Idioma da dublagem</label>
+          <select id="dubTargetLang" class="dub-select">
+            <option value="pt-BR">🇧🇷 Português (Brasil)</option>
+            <option value="en-US">🇺🇸 Inglês</option>
+            <option value="es-ES">🇪🇸 Espanhol</option>
+            <option value="fr-FR">🇫🇷 Francês</option>
+            <option value="de-DE">🇩🇪 Alemão</option>
+          </select>
+        </div>
+        <div>
+          <label for="dubVoice">Voz</label>
+          <select id="dubVoice" class="dub-select">
+            <option value="natural">Voz natural IA</option>
+            <option value="male">Voz masculina</option>
+            <option value="female">Voz feminina</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="dubStatus" class="dub-status"></div>
+
+      <div id="dubResult" class="dub-result">
+        <video id="dubbedVideo" controls playsinline></video>
+        <a id="dubDownload" class="secondary dub-download" href="#" target="_blank" rel="noopener">
+          ⬇️ Abrir vídeo dublado
+        </a>
+      </div>
+    </section>
+
+    <section class="features">
+      <article class="feature">
+        <div class="feature-icon">⚡</div>
+        <h3>Rápido e simples</h3>
+        <p>Interface otimizada para celular, com acesso rápido às principais funções.</p>
+      </article>
+      <article class="feature">
+        <div class="feature-icon">🎙️</div>
+        <h3>Voz inteligente</h3>
+        <p>Reconhecimento de voz do navegador já preparado para a futura integração de IA.</p>
+      </article>
+      <article class="feature">
+        <div class="feature-icon">🎬</div>
+        <h3>Vídeo e dublagem</h3>
+        <p>Área dedicada para enviar vídeos e depois conectar transcrição, tradução e voz IA.</p>
+      </article>
+    </section>
+
+    <section class="plans">
+      <article class="plan">
+        <div class="plan-name">GRÁTIS</div>
+        <div class="price">R$ 0 <span>/mês</span></div>
+        <ul><li>Tradução de texto</li><li>Interface completa</li><li>Teste de voz</li></ul>
+        <button class="secondary" onclick="showToast('Plano gratuito selecionado')">Começar grátis</button>
+      </article>
+
+      <article class="plan featured">
+        <div class="plan-name">PRO</div>
+        <div class="price">R$ 100 <span>/mês</span></div>
+        <ul><li>Tradução avançada</li><li>Voz IA</li><li>Tradução de vídeos</li></ul>
+        <button class="primary" style="margin-top:13px" onclick="showToast('Pagamento será conectado na próxima etapa')">Assinar PRO</button>
+      </article>
+
+      <article class="plan">
+        <div class="plan-name">PREMIUM</div>
+        <div class="price">R$ 200 <span>/mês</span></div>
+        <ul><li>Recursos avançados</li><li>Dublagem IA</li><li>Maior limite de uso</li></ul>
+        <button class="secondary" onclick="showToast('Plano Premium será conectado ao pagamento')">Conhecer plano</button>
+      </article>
+    </section>
+
+    <footer>Tradutor IA • Versão inicial • © 2026</footer>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const input = document.getElementById('inputText');
+    const counter = document.getElementById('counter');
+    const result = document.getElementById('resultText');
+
+    input.addEventListener('input', () => {
+      counter.textContent = input.value.length + ' / 5000';
+    });
+
+    const demo = {
+      "pt-en": {
+        "olá mundo": "Hello world",
+        "olá, mundo!": "Hello, world!",
+        "como você está?": "How are you?",
+        "bom dia": "Good morning",
+        "boa noite": "Good evening",
+        "eu gosto de tecnologia": "I like technology",
+        "bem-vindo ao tradutor ia": "Welcome to AI Translator"
+      },
+      "en-pt": {
+        "hello world": "Olá mundo",
+        "hello, world!": "Olá, mundo!",
+        "how are you?": "Como você está?",
+        "good morning": "Bom dia",
+        "good evening": "Boa noite",
+        "i like technology": "Eu gosto de tecnologia"
+      },
+      "pt-es": {
+        "olá mundo": "Hola mundo",
+        "bom dia": "Buenos días",
+        "como você está?": "¿Cómo estás?"
+      },
+      "es-pt": {
+        "hola mundo": "Olá mundo",
+        "buenos días": "Bom dia",
+        "¿cómo estás?": "Como você está?"
+      }
+    };
+
+    function translateText(){
+      const text = input.value.trim();
+      if(!text){ showToast('Digite um texto para traduzir.'); input.focus(); return; }
+
+      const s = document.getElementById('sourceLang').value;
+      const t = document.getElementById('targetLang').value;
+
+      if(s === t){
+        result.textContent = text;
+        result.classList.remove('result-placeholder');
+        document.getElementById('resultInfo').textContent = 'Mesmo idioma';
+        return;
+      }
+
+      const key = s + '-' + t;
+      const exact = demo[key]?.[text.toLowerCase()];
+      const translated = exact || fallbackTranslation(text, s, t);
+
+      result.textContent = translated;
+      result.classList.remove('result-placeholder');
+      document.getElementById('resultInfo').textContent =
+        exact ? 'Tradução de demonstração' : 'Modo de demonstração • IA será conectada ao backend';
+    }
+
+    function fallbackTranslation(text, s, t){
+      if(s === 'pt' && t === 'en'){
+        return text
+          .replace(/\bolá\b/gi,'hello')
+          .replace(/\bmundo\b/gi,'world')
+          .replace(/\bbom dia\b/gi,'good morning')
+          .replace(/\bobrigado\b/gi,'thank you')
+          .replace(/\bobrigada\b/gi,'thank you');
+      }
+      if(s === 'en' && t === 'pt'){
+        return text
+          .replace(/\bhello\b/gi,'olá')
+          .replace(/\bworld\b/gi,'mundo')
+          .replace(/\bgood morning\b/gi,'bom dia')
+          .replace(/\bthank you\b/gi,'obrigado');
+      }
+      return 'Tradução de demonstração: ' + text;
+    }
+
+    function swapLanguages(){
+      const a = document.getElementById('sourceLang');
+      const b = document.getElementById('targetLang');
+      const temp = a.value; a.value = b.value; b.value = temp;
+      if(input.value.trim()) translateText();
+    }
+
+    function clearText(){
+      input.value = '';
+      counter.textContent = '0 / 5000';
+      result.textContent = 'A tradução aparecerá aqui...';
+      result.classList.add('result-placeholder');
+      document.getElementById('resultInfo').textContent = 'Pronto para traduzir';
+    }
+
+    function copyResult(){
+      const text = result.textContent;
+      if(!text || result.classList.contains('result-placeholder')){
+        showToast('Não há tradução para copiar.'); return;
+      }
+      navigator.clipboard?.writeText(text).then(
+        () => showToast('Tradução copiada!'),
+        () => showToast('Selecione e copie o texto manualmente.')
+      );
+    }
+
+    function speakResult(){
+      const text = result.textContent;
+      if(!text || result.classList.contains('result-placeholder')){
+        showToast('Faça uma tradução primeiro.'); return;
+      }
+      if(!('speechSynthesis' in window)){
+        showToast('Seu navegador não oferece leitura de voz.'); return;
+      }
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      const lang = document.getElementById('targetLang').value;
+      u.lang = lang === 'pt' ? 'pt-BR' : lang === 'en' ? 'en-US' : lang === 'es' ? 'es-ES' : lang === 'fr' ? 'fr-FR' : 'de-DE';
+      speechSynthesis.speak(u);
+    }
+
+    function startSpeech(){
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if(!SpeechRecognition){
+        showToast('Reconhecimento de voz não disponível neste navegador.');
+        return;
+      }
+      const r = new SpeechRecognition();
+      r.lang = 'pt-BR';
+      r.interimResults = false;
+      r.onstart = () => showToast('🎙️ Fale agora...');
+      r.onresult = e => {
+        input.value = e.results[0][0].transcript;
+        counter.textContent = input.value.length + ' / 5000';
+      };
+      r.onerror = () => showToast('Não foi possível reconhecer a voz.');
+      r.start();
+    }
+
+    let recognition = null;
+    let recording = false;
+
+    function toggleRecording(){
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if(!SpeechRecognition){
+        showToast('Seu navegador não suporta reconhecimento de voz.');
+        return;
+      }
+
+      const button = document.getElementById('micButton');
+      const status = document.getElementById('voiceStatus');
+      const transcript = document.getElementById('voiceTranscript');
+
+      if(recording && recognition){
+        recognition.stop();
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.lang = 'pt-BR';
+      recognition.continuous = false;
+      recognition.interimResults = true;
+
+      recognition.onstart = () => {
+        recording = true;
+        button.classList.add('recording');
+        status.textContent = 'Ouvindo... fale normalmente.';
+      };
+
+      recognition.onresult = e => {
+        let text = '';
+        for(let i=0;i<e.results.length;i++) text += e.results[i][0].transcript;
+        transcript.textContent = text || 'Ouvindo...';
+        transcript.style.color = '#f3f8fc';
+      };
+
+      recognition.onerror = () => {
+        recording = false;
+        button.classList.remove('recording');
+        status.textContent = 'Não foi possível reconhecer a voz.';
+      };
+
+      recognition.onend = () => {
+        recording = false;
+        button.classList.remove('recording');
+        status.textContent = 'Voz capturada. A tradução IA será conectada ao backend.';
+      };
+
+      recognition.start();
+    }
+
+    function openMode(mode){
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('textArea').style.display = mode === 'text' ? 'block' : 'none';
+      document.getElementById('voiceArea').classList.toggle('show', mode === 'voice');
+      document.getElementById('videoArea').classList.toggle('show', mode === 'video');
+
+      document.getElementById(mode === 'text' ? 'tabText' : mode === 'voice' ? 'tabVoice' : 'tabVideo').classList.add('active');
+    }
+
+    document.getElementById('videoInput').addEventListener('change', function(){
+      const file = this.files[0];
+      if(!file) return;
+      const video = document.getElementById('videoPreview');
+      video.src = URL.createObjectURL(file);
+      video.style.display = 'block';
+      document.getElementById('dropZone').querySelector('h3').textContent = file.name;
+      document.getElementById('dropZone').querySelector('p').textContent = 'Vídeo carregado. A próxima etapa será conectar transcrição, tradução e dublagem IA.';
+      showToast('Vídeo carregado com sucesso!');
+    });
+
+
+    // ===== Dublagem por link de rede social =====
+    function setDubStatus(message, type = 'info'){
+      const box = document.getElementById('dubStatus');
+      box.textContent = message;
+      box.classList.add('show');
+      box.style.borderColor =
+        type === 'error' ? 'rgba(255,95,95,.45)' :
+        type === 'success' ? 'rgba(45,220,145,.45)' :
+        'var(--line)';
+    }
+
+    function isHttpUrl(value){
+      try{
+        const u = new URL(value);
+        return u.protocol === 'http:' || u.protocol === 'https:';
+      }catch(e){
+        return false;
+      }
+    }
+
+    function isDirectVideoUrl(value){
+      return /\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(value);
+    }
+
+    async function dubVideoFromLink(){
+      const input = document.getElementById('socialVideoUrl');
+      const button = document.getElementById('dubLinkButton');
+      const url = input.value.trim();
+      const targetLanguage = document.getElementById('dubTargetLang').value;
+      const voice = document.getElementById('dubVoice').value;
+
+      if(!url){
+        setDubStatus('Cole primeiro o link do vídeo.', 'error');
+        input.focus();
+        return;
+      }
+
+      if(!isHttpUrl(url)){
+        setDubStatus('O link precisa começar com http:// ou https://.', 'error');
+        return;
+      }
+
+      button.disabled = true;
+      button.style.opacity = '.65';
+      setDubStatus('⏳ Enviando o vídeo para o processamento...');
+
+      // Link direto de vídeo: permite pré-visualização imediatamente.
+      if(isDirectVideoUrl(url)){
+        const result = document.getElementById('dubResult');
+        const video = document.getElementById('dubbedVideo');
+        const download = document.getElementById('dubDownload');
+        video.src = url;
+        download.href = url;
+        result.classList.add('show');
+        setDubStatus('✅ Vídeo direto encontrado. Para realmente trocar o áudio, conecte o endpoint /api/dub-video ao backend de dublagem.', 'success');
+        button.disabled = false;
+        button.style.opacity = '1';
+        return;
+      }
+
+      /*
+       * BACKEND:
+       * O frontend envia o link para POST /api/dub-video.
+       * O backend deve:
+       * 1. validar a URL e as permissões de uso;
+       * 2. obter o vídeo por API oficial ou fonte autorizada;
+       * 3. extrair o áudio;
+       * 4. transcrever;
+       * 5. traduzir;
+       * 6. gerar a voz IA;
+       * 7. sincronizar/substituir o áudio;
+       * 8. devolver { videoUrl: "https://..." }.
+       */
+      try{
+        const response = await fetch('/api/dub-video', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({
+            url,
+            targetLanguage,
+            voice
+          })
+        });
+
+        if(!response.ok){
+          throw new Error('Backend ainda não conectado.');
+        }
+
+        const data = await response.json();
+
+        if(!data.videoUrl){
+          throw new Error('O backend não retornou videoUrl.');
+        }
+
+        const result = document.getElementById('dubResult');
+        const video = document.getElementById('dubbedVideo');
+        const download = document.getElementById('dubDownload');
+
+        video.src = data.videoUrl;
+        download.href = data.videoUrl;
+        result.classList.add('show');
+
+        setDubStatus('✅ Dublagem concluída! O vídeo traduzido está abaixo.', 'success');
+      }catch(error){
+        setDubStatus(
+          '⚠️ A interface está pronta, mas a dublagem por links de redes sociais ainda precisa do backend /api/dub-video. O index.html sozinho não consegue baixar, transcrever e trocar o áudio de vídeos das redes sociais.',
+          'error'
+        );
+      }finally{
+        button.disabled = false;
+        button.style.opacity = '1';
+      }
+    }
+
+    document.getElementById('socialVideoUrl').addEventListener('keydown', function(e){
+      if(e.key === 'Enter') dubVideoFromLink();
+    });
+
+    function showToast(message){
+      const t = document.getElementById('toast');
+      t.textContent = message;
+      t.classList.add('show');
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+    }
+  </script>
+</body>
+  </html>
