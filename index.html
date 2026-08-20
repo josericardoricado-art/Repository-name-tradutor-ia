@@ -1,40 +1,2034 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#0b1020"
+    >
+
+    <meta
+        name="description"
+        content="Tradutor IA - traduza e duble seus vídeos com inteligência artificial."
+    >
+
+    <title>Tradutor IA — Tradução e Dublagem</title>
+
+    <style>
+
+        /* =====================================
+           RESET
+        ===================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+
+            font-family:
+                Inter,
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+                #f5f7fb;
+
+            color:
+                #111827;
+
+            min-height:
+                100vh;
+        }
+
+        button,
+        input,
+        select {
+            font-family: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+
+        /* =====================================
+           HEADER
+        ===================================== */
+
+        header {
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 1000;
+
+            background:
+                rgba(11, 16, 32, 0.92);
+
+            backdrop-filter:
+                blur(18px);
+
+            border-bottom:
+                1px solid
+                rgba(255,255,255,.08);
+        }
+
+        .header-container {
+
+            width:
+                min(1200px, calc(100% - 30px));
+
+            min-height:
+                74px;
+
+            margin:
+                auto;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            gap:
+                20px;
+        }
+
+
+        /* =====================================
+           LOGO
+        ===================================== */
+
+        .logo {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                12px;
+
+            color:
+                white;
+
+            text-decoration:
+                none;
+        }
+
+        .logo-icon {
+
+            width:
+                46px;
+
+            height:
+                46px;
+
+            border-radius:
+                14px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            font-size:
+                23px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #4f46e5,
+                    #9333ea
+                );
+
+            box-shadow:
+                0 10px 30px
+                rgba(79,70,229,.35);
+        }
+
+        .logo-name {
+
+            font-size:
+                18px;
+
+            font-weight:
+                900;
+        }
+
+        .logo-subtitle {
+
+            color:
+                #94a3b8;
+
+            font-size:
+                11px;
+
+            margin-top:
+                2px;
+        }
+
+
+        /* =====================================
+           HEADER BUTTON
+        ===================================== */
+
+        .header-btn {
+
+            border:
+                1px solid
+                rgba(255,255,255,.12);
+
+            background:
+                rgba(255,255,255,.08);
+
+            color:
+                white;
+
+            padding:
+                11px 17px;
+
+            border-radius:
+                11px;
+
+            font-weight:
+                800;
+
+            transition:
+                .2s;
+        }
+
+        .header-btn:hover {
+
+            background:
+                rgba(255,255,255,.14);
+
+        }
+
+
+        /* =====================================
+           HERO
+        ===================================== */
+
+        .hero {
+
+            position:
+                relative;
+
+            overflow:
+                hidden;
+
+            background:
+                #0b1020;
+
+            color:
+                white;
+
+            padding:
+                85px 20px 120px;
+
+            text-align:
+                center;
+        }
+
+        .hero::before {
+
+            content:
+                "";
+
+            position:
+                absolute;
+
+            width:
+                420px;
+
+            height:
+                420px;
+
+            background:
+                #4f46e5;
+
+            opacity:
+                .20;
+
+            filter:
+                blur(100px);
+
+            top:
+                -180px;
+
+            left:
+                50%;
+
+            transform:
+                translateX(-50%);
+
+            border-radius:
+                50%;
+        }
+
+        .hero-content {
+
+            position:
+                relative;
+
+            z-index:
+                2;
+
+            max-width:
+                850px;
+
+            margin:
+                auto;
+        }
+
+        .badge {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            gap:
+                8px;
+
+            padding:
+                8px 14px;
+
+            border-radius:
+                999px;
+
+            background:
+                rgba(99,102,241,.14);
+
+            border:
+                1px solid
+                rgba(129,140,248,.25);
+
+            color:
+                #c7d2fe;
+
+            font-size:
+                13px;
+
+            font-weight:
+                800;
+
+            margin-bottom:
+                22px;
+        }
+
+        .hero h1 {
+
+            font-size:
+                clamp(38px, 7vw, 68px);
+
+            line-height:
+                1.02;
+
+            letter-spacing:
+                -3px;
+        }
+
+        .hero h1 span {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #818cf8,
+                    #c084fc
+                );
+
+            -webkit-background-clip:
+                text;
+
+            background-clip:
+                text;
+
+            color:
+                transparent;
+        }
+
+        .hero p {
+
+            max-width:
+                700px;
+
+            margin:
+                22px auto 0;
+
+            color:
+                #aab4c8;
+
+            font-size:
+                17px;
+
+            line-height:
+                1.7;
+        }
+
+
+        /* =====================================
+           MAIN
+        ===================================== */
+
+        main {
+
+            width:
+                min(1120px, calc(100% - 24px));
+
+            margin:
+                -55px auto 80px;
+
+            position:
+                relative;
+
+            z-index:
+                5;
+        }
+
+
+        /* =====================================
+           MAIN CARD
+        ===================================== */
+
+        .app-card {
+
+            background:
+                white;
+
+            border:
+                1px solid #e5e7eb;
+
+            border-radius:
+                26px;
+
+            box-shadow:
+                0 25px 70px
+                rgba(15,23,42,.12);
+
+            overflow:
+                hidden;
+        }
+
+
+        /* =====================================
+           CARD HEADER
+        ===================================== */
+
+        .card-top {
+
+            padding:
+                28px 30px;
+
+            border-bottom:
+                1px solid #eef0f4;
+        }
+
+        .card-top h2 {
+
+            font-size:
+                24px;
+
+            color:
+                #111827;
+        }
+
+        .card-top p {
+
+            margin-top:
+                7px;
+
+            color:
+                #6b7280;
+
+            line-height:
+                1.6;
+        }
+
+
+        /* =====================================
+           FORM
+        ===================================== */
+
+        .form-area {
+
+            padding:
+                30px;
+        }
+
+        .label {
+
+            display:
+                block;
+
+            margin-bottom:
+                9px;
+
+            font-size:
+                14px;
+
+            font-weight:
+                900;
+
+            color:
+                #1f2937;
+        }
+
+
+        /* =====================================
+           URL
+        ===================================== */
+
+        .url-box {
+
+            display:
+                flex;
+
+            align-items:
+                stretch;
+
+            gap:
+                9px;
+
+            padding:
+                7px;
+
+            background:
+                #f8fafc;
+
+            border:
+                1px solid #dce2eb;
+
+            border-radius:
+                15px;
+
+            transition:
+                .2s;
+        }
+
+        .url-box:focus-within {
+
+            border-color:
+                #6366f1;
+
+            box-shadow:
+                0 0 0 4px
+                rgba(99,102,241,.10);
+        }
+
+        .url-box input {
+
+            flex:
+                1;
+
+            min-width:
+                0;
+
+            border:
+                none;
+
+            outline:
+                none;
+
+            background:
+                transparent;
+
+            padding:
+                12px;
+
+            font-size:
+                15px;
+
+            color:
+                #111827;
+        }
+
+        .preview-btn {
+
+            border:
+                none;
+
+            background:
+                white;
+
+            border:
+                1px solid #e5e7eb;
+
+            border-radius:
+                10px;
+
+            padding:
+                0 18px;
+
+            font-weight:
+                800;
+
+            color:
+                #374151;
+        }
+
+
+        /* =====================================
+           UPLOAD
+        ===================================== */
+
+        .upload {
+
+            margin-top:
+                18px;
+
+            padding:
+                25px;
+
+            border:
+                2px dashed #d7ddeb;
+
+            border-radius:
+                17px;
+
+            background:
+                #fafbff;
+
+            text-align:
+                center;
+
+            transition:
+                .2s;
+        }
+
+        .upload:hover {
+
+            border-color:
+                #6366f1;
+
+            background:
+                #f8f8ff;
+        }
+
+        .upload-icon {
+
+            font-size:
+                36px;
+
+            margin-bottom:
+                8px;
+        }
+
+        .upload p {
+
+            color:
+                #6b7280;
+
+            font-size:
+                14px;
+
+            margin-bottom:
+                15px;
+        }
+
+        #videoFile {
+
+            display:
+                none;
+        }
+
+        .choose-btn {
+
+            display:
+                inline-block;
+
+            padding:
+                11px 19px;
+
+            border-radius:
+                10px;
+
+            background:
+                #eef2ff;
+
+            color:
+                #4f46e5;
+
+            font-weight:
+                900;
+
+            cursor:
+                pointer;
+        }
+
+
+        /* =====================================
+           VIDEO ORIGINAL
+        ===================================== */
+
+        .video-section {
+
+            display:
+                none;
+
+            margin-top:
+                25px;
+        }
+
+        .section-title {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                9px;
+
+            font-size:
+                18px;
+
+            margin-bottom:
+                12px;
+        }
+
+        .video-box {
+
+            overflow:
+                hidden;
+
+            border-radius:
+                18px;
+
+            background:
+                #020617;
+
+            border:
+                1px solid #1e293b;
+        }
+
+        .video-box video {
+
+            display:
+                block;
+
+            width:
+                100%;
+
+            max-height:
+                520px;
+
+            background:
+                #020617;
+        }
+
+        .embed-frame {
+
+            display:
+                block;
+
+            width:
+                100%;
+
+            height:
+                520px;
+
+            border:
+                none;
+
+            background:
+                #020617;
+        }
+
+
+        /* =====================================
+           LANGUAGES
+        ===================================== */
+
+        .language-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap:
+                18px;
+
+            margin-top:
+                26px;
+        }
+
+        .field label {
+
+            display:
+                block;
+
+            margin-bottom:
+                8px;
+
+            font-size:
+                14px;
+
+            font-weight:
+                900;
+        }
+
+        .field select {
+
+            width:
+                100%;
+
+            padding:
+                14px;
+
+            border:
+                1px solid #dce2eb;
+
+            border-radius:
+                12px;
+
+            background:
+                white;
+
+            outline:
+                none;
+
+            font-size:
+                14px;
+
+            color:
+                #111827;
+        }
+
+
+        /* =====================================
+           DUB BUTTON
+        ===================================== */
+
+        .dub-btn {
+
+            width:
+                100%;
+
+            margin-top:
+                25px;
+
+            padding:
+                17px;
+
+            border:
+                none;
+
+            border-radius:
+                14px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #4f46e5,
+                    #7c3aed
+                );
+
+            color:
+                white;
+
+            font-size:
+                16px;
+
+            font-weight:
+                900;
+
+            box-shadow:
+                0 13px 30px
+                rgba(79,70,229,.25);
+
+            transition:
+                .2s;
+        }
+
+        .dub-btn:hover {
+
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 18px 35px
+                rgba(79,70,229,.32);
+        }
+
+        .dub-btn:disabled {
+
+            opacity:
+                .55;
+
+            cursor:
+                not-allowed;
+
+            transform:
+                none;
+        }
+
+
+        /* =====================================
+           STATUS
+        ===================================== */
+
+        .status {
+
+            display:
+                none;
+
+            margin-top:
+                22px;
+
+            padding:
+                18px;
+
+            border:
+                1px solid #e5e7eb;
+
+            border-radius:
+                15px;
+
+            background:
+                #f8fafc;
+        }
+
+        .status-head {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            margin-bottom:
+                12px;
+        }
+
+        .status-title {
+
+            font-weight:
+                900;
+        }
+
+        .status-text {
+
+            color:
+                #64748b;
+
+            font-size:
+                13px;
+
+            margin-top:
+                4px;
+        }
+
+        .progress {
+
+            height:
+                9px;
+
+            width:
+                100%;
+
+            background:
+                #e2e8f0;
+
+            border-radius:
+                999px;
+
+            overflow:
+                hidden;
+        }
+
+        .progress-bar {
+
+            width:
+                0%;
+
+            height:
+                100%;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #4f46e5,
+                    #9333ea
+                );
+
+            transition:
+                width .4s;
+        }
+
+
+        /* =====================================
+           RESULTADO
+        ===================================== */
+
+        .result {
+
+            display:
+                none;
+
+            margin-top:
+                30px;
+
+            padding-top:
+                30px;
+
+            border-top:
+                1px solid #eef0f4;
+        }
+
+        .result-card {
+
+            overflow:
+                hidden;
+
+            background:
+                #020617;
+
+            border-radius:
+                20px;
+
+            box-shadow:
+                0 20px 50px
+                rgba(2,6,23,.18);
+        }
+
+        .result-video {
+
+            width:
+                100%;
+
+            display:
+                block;
+
+            max-height:
+                620px;
+
+            background:
+                #020617;
+        }
+
+        .result-info {
+
+            padding:
+                20px;
+
+            color:
+                white;
+        }
+
+        .result-info strong {
+
+            font-size:
+                17px;
+        }
+
+        .result-info p {
+
+            color:
+                #94a3b8;
+
+            font-size:
+                13px;
+
+            margin-top:
+                6px;
+        }
+
+        .actions {
+
+            display:
+                flex;
+
+            gap:
+                10px;
+
+            margin-top:
+                17px;
+        }
+
+        .actions a {
+
+            flex:
+                1;
+
+            padding:
+                13px;
+
+            border-radius:
+                11px;
+
+            text-align:
+                center;
+
+            text-decoration:
+                none;
+
+            font-weight:
+                900;
+        }
+
+        .watch {
+
+            background:
+                white;
+
+            color:
+                #111827;
+        }
+
+        .download {
+
+            background:
+                #4f46e5;
+
+            color:
+                white;
+        }
+
+
+        /* =====================================
+           FEATURES
+        ===================================== */
+
+        .features {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap:
+                18px;
+
+            margin-top:
+                22px;
+        }
+
+        .feature {
+
+            background:
+                white;
+
+            border:
+                1px solid #e5e7eb;
+
+            border-radius:
+                17px;
+
+            padding:
+                22px;
+
+            box-shadow:
+                0 8px 30px
+                rgba(15,23,42,.04);
+        }
+
+        .feature-icon {
+
+            font-size:
+                28px;
+
+            margin-bottom:
+                11px;
+        }
+
+        .feature h3 {
+
+            font-size:
+                16px;
+        }
+
+        .feature p {
+
+            margin-top:
+                7px;
+
+            color:
+                #6b7280;
+
+            font-size:
+                13px;
+
+            line-height:
+                1.6;
+        }
+
+
+        /* =====================================
+           FOOTER
+        ===================================== */
+
+        footer {
+
+            text-align:
+                center;
+
+            color:
+                #64748b;
+
+            font-size:
+                13px;
+
+            padding:
+                30px 20px 45px;
+        }
+
+
+        /* =====================================
+           RESPONSIVO
+        ===================================== */
+
+        @media (max-width: 700px) {
+
+            .header-container {
+
+                min-height:
+                    66px;
+            }
+
+            .logo-subtitle {
+
+                display:
+                    none;
+            }
+
+            .logo-name {
+
+                font-size:
+                    16px;
+            }
+
+            .hero {
+
+                padding:
+                    60px 18px 100px;
+            }
+
+            .hero h1 {
+
+                font-size:
+                    39px;
+
+                letter-spacing:
+                    -1.5px;
+            }
+
+            .hero p {
+
+                font-size:
+                    15px;
+            }
+
+            main {
+
+                width:
+                    calc(100% - 14px);
+
+                margin-top:
+                    -50px;
+            }
+
+            .card-top,
+            .form-area {
+
+                padding:
+                    20px;
+            }
+
+            .url-box {
+
+                flex-direction:
+                    column;
+            }
+
+            .preview-btn {
+
+                min-height:
+                    45px;
+            }
+
+            .language-grid {
+
+                grid-template-columns:
+                    1fr;
+            }
+
+            .features {
+
+                grid-template-columns:
+                    1fr;
+            }
+
+            .actions {
+
+                flex-direction:
+                    column;
+            }
+
+            .embed-frame {
+
+                height:
+                    300px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================
+     HEADER
+===================================== -->
+
+<header>
+
+    <div class="header-container">
+
+        <a
+            href="#"
+            class="logo"
+        >
+
+            <div class="logo-icon">
+                🌎
+            </div>
+
+            <div>
+
+                <div class="logo-name">
+                    Tradutor IA
+                </div>
+
+                <div class="logo-subtitle">
+                    Tradução e dublagem inteligente
+                </div>
+
+            </div>
+
+        </a>
+
+
+        <button
+            class="header-btn"
+            onclick="scrollToApp()"
+        >
+            Começar
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- =====================================
+     HERO
+===================================== -->
+
+<section class="hero">
+
+    <div class="hero-content">
+
+        <div class="badge">
+            ✨ Inteligência Artificial
+        </div>
+
+        <h1>
+            Seu vídeo em
+            <span>qualquer idioma.</span>
+        </h1>
+
+        <p>
+            Envie um vídeo ou cole um link
+            compatível. O Tradutor IA foi
+            preparado para transformar a fala,
+            traduzir o conteúdo e gerar uma
+            nova dublagem.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================
+     MAIN
+===================================== -->
+
+<main id="app">
+
+
+    <section class="app-card">
+
+
+        <div class="card-top">
+
+            <h2>
+                🎬 Traduzir e dublar vídeo
+            </h2>
+
+            <p>
+                Escolha um vídeo ou coloque o
+                endereço de uma fonte compatível.
+            </p>
+
+        </div>
+
+
+        <div class="form-area">
+
+
+            <!-- LINK -->
+
+            <label
+                class="label"
+                for="videoUrl"
+            >
+                🔗 Link do vídeo
+            </label>
+
+
+            <div class="url-box">
+
+                <input
+                    type="url"
+                    id="videoUrl"
+                    placeholder="Cole aqui o link do vídeo..."
+                    autocomplete="off"
+                >
+
+                <button
+                    class="preview-btn"
+                    id="previewUrlButton"
+                    type="button"
+                >
+                    👁️ Ver vídeo
+                </button>
+
+            </div>
+
+
+            <!-- UPLOAD -->
+
+            <div class="upload">
+
+                <div class="upload-icon">
+                    📁
+                </div>
+
+                <p>
+                    Ou envie um vídeo
+                    diretamente do celular
+                </p>
+
+                <label
+                    class="choose-btn"
+                    for="videoFile"
+                >
+                    Escolher vídeo
+                </label>
+
+                <input
+                    id="videoFile"
+                    type="file"
+                    accept="video/*"
+                >
+
+            </div>
+
+
+            <!-- ORIGINAL VIDEO -->
+
+            <section
+                class="video-section"
+                id="originalSection"
+            >
+
+                <h3 class="section-title">
+                    🎥 Vídeo original
+                </h3>
+
+                <div
+                    class="video-box"
+                    id="originalVideoBox"
+                >
+
+                </div>
+
+            </section>
+
+
+            <!-- LANGUAGES -->
+
+            <div class="language-grid">
+
+
+                <div class="field">
+
+                    <label
+                        for="sourceLanguage"
+                    >
+                        🌐 Idioma original
+                    </label>
+
+                    <select
+                        id="sourceLanguage"
+                    >
+
+                        <option value="auto">
+                            Detectar automaticamente
+                        </option>
+
+                        <option value="pt-BR">
+                            🇧🇷 Português
+                        </option>
+
+                        <option value="en">
+                            🇺🇸 Inglês
+                        </option>
+
+                        <option value="es">
+                            🇪🇸 Espanhol
+                        </option>
+
+                        <option value="fr">
+                            🇫🇷 Francês
+                        </option>
+
+                        <option value="de">
+                            🇩🇪 Alemão
+                        </option>
+
+                        <option value="it">
+                            🇮🇹 Italiano
+                        </option>
+
+                        <option value="ja">
+                            🇯🇵 Japonês
+                        </option>
+
+                        <option value="ko">
+                            🇰🇷 Coreano
+                        </option>
+
+                        <option value="zh">
+                            🇨🇳 Chinês
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label
+                        for="targetLanguage"
+                    >
+                        🗣️ Dublar para
+                    </label>
+
+                    <select
+                        id="targetLanguage"
+                    >
+
+                        <option value="pt-BR">
+                            🇧🇷 Português
+                        </option>
+
+                        <option value="en">
+                            🇺🇸 Inglês
+                        </option>
+
+                        <option value="es">
+                            🇪🇸 Espanhol
+                        </option>
+
+                        <option value="fr">
+                            🇫🇷 Francês
+                        </option>
+
+                        <option value="de">
+                            🇩🇪 Alemão
+                        </option>
+
+                        <option value="it">
+                            🇮🇹 Italiano
+                        </option>
+
+                        <option value="ja">
+                            🇯🇵 Japonês
+                        </option>
+
+                        <option value="ko">
+                            🇰🇷 Coreano
+                        </option>
+
+                        <option value="zh">
+                            🇨🇳 Chinês
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- BUTTON -->
+
+            <button
+                class="dub-btn"
+                id="dubVideoButton"
+                type="button"
+            >
+                🎙️ Traduzir e Dublar Vídeo
+            </button>
+
+
+            <!-- STATUS -->
+
+            <div
+                class="status"
+                id="statusBox"
+            >
+
+                <div class="status-head">
+
+                    <div>
+
+                        <div
+                            class="status-title"
+                            id="statusTitle"
+                        >
+                            Preparando...
+                        </div>
+
+                        <div
+                            class="status-text"
+                            id="statusText"
+                        >
+                            Aguarde.
+                        </div>
+
+                    </div>
+
+                    <strong
+                        id="progressText"
+                    >
+                        0%
+                    </strong>
+
+                </div>
+
+
+                <div class="progress">
+
+                    <div
+                        class="progress-bar"
+                        id="progressBar"
+                    ></div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RESULT -->
+
+            <section
+                class="result"
+                id="resultSection"
+            >
+
+                <h3 class="section-title">
+                    🎉 Seu vídeo dublado
+                </h3>
+
+
+                <div class="result-card">
+
+
+                    <video
+                        class="result-video"
+                        id="resultVideo"
+                        controls
+                        playsinline
+                    ></video>
+
+
+                    <div class="result-info">
+
+                        <strong>
+                            Vídeo traduzido
+                            e dublado
+                        </strong>
+
+                        <p
+                            id="resultLanguage"
+                        >
+                            Idioma original →
+                            Português
+                        </p>
+
+
+                        <div class="actions">
+
+                            <a
+                                href="#"
+                                id="watchButton"
+                                class="watch"
+                                target="_blank"
+                            >
+                                ▶️ Assistir
+                            </a>
+
+
+                            <a
+                                href="#"
+                                id="downloadButton"
+                                class="download"
+                                download="video-dublado.mp4"
+                            >
+                                ⬇️ Baixar vídeo
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================
+         FEATURES
+    ===================================== -->
+
+    <section class="features">
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                🎙️
+            </div>
+
+            <h3>
+                Voz com IA
+            </h3>
+
+            <p>
+                Prepare seu vídeo para receber
+                uma nova voz no idioma escolhido.
+            </p>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                🌎
+            </div>
+
+            <h3>
+                Vários idiomas
+            </h3>
+
+            <p>
+                Escolha diferentes idiomas
+                para tradução e dublagem.
+            </p>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                🎬
+            </div>
+
+            <h3>
+                Vídeo final
+            </h3>
+
+            <p>
+                O resultado pode ser exibido
+                diretamente no player do site.
+            </p>
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
+
+<footer>
+
+    © 2026 Tradutor IA.
+    Tradução e dublagem inteligente.
+
+</footer>
+
+
+<script>
+
+
+/* =====================================
+   CONFIGURAÇÃO
+===================================== */
+
+
+/*
+ * IMPORTANTE:
+ *
+ * Quando o backend estiver publicado,
+ * troque este endereço pelo endereço
+ * real do seu servidor.
+ */
+
+const BACKEND_URL =
+    "https://SEU-BACKEND.onrender.com";
+
+
+/* =====================================
+   ELEMENTOS
+===================================== */
+
+const videoUrl =
+    document.getElementById(
+        "videoUrl"
+    );
+
+const videoFile =
+    document.getElementById(
+        "videoFile"
+    );
+
+const previewUrlButton =
+    document.getElementById(
+        "previewUrlButton"
+    );
+
+const originalSection =
+    document.getElementById(
+        "originalSection"
+    );
+
+const originalVideoBox =
+    document.getElementById(
+        "originalVideoBox"
+    );
+
+const dubVideoButton =
+    document.getElementById(
+        "dubVideoButton"
+    );
+
+const sourceLanguage =
+    document.getElementById(
+        "sourceLanguage"
+    );
+
+const targetLanguage =
+    document.getElementById(
+        "targetLanguage"
+    );
+
+const statusBox =
+    document.getElementById(
+        "statusBox"
+    );
+
+const statusTitle =
+    document.getElementById(
+        "statusTitle"
+    );
+
+const statusText =
+    document.getElementById(
+        "statusText"
+    );
+
+const progressBar =
+    document.getElementById(
+        "progressBar"
+    );
+
+const progressText =
+    document.getElementById(
+        "progressText"
+    );
+
+const resultSection =
+    document.getElementById(
+        "resultSection"
+    );
+
+const resultVideo =
+    document.getElementById(
+        "resultVideo"
+    );
+
+const watchButton =
+    document.getElementById(
+        "watchButton"
+    );
+
+const downloadButton =
+    document.getElementById(
+        "downloadButton"
+    );
+
+const resultLanguage =
+    document.getElementById(
+        "resultLanguage"
+    );
+
+
+/* =====================================
+   SCROLL
+===================================== */
+
+function scrollToApp() {
+
+    document
+        .getElementById("app")
+        .scrollIntoView({
+            behavior:
+                "smooth"
+        });
+
+}
+
+
+/* =====================================
+   ARQUIVO DO CELULAR
+===================================== */
+
+videoFile.addEventListener(
+    "change",
+    function () {
+
+        const file =
+            this.files[0];
+
+        if (!file) {
+            return;
+        }
+
+
+        videoUrl.value = "";
+
+
+        const localURL =
+            URL.createObjectURL(
+                file
+            );
+
+
+        originalSection.style.display =
+            "block";
+
+
+        originalVideoBox.innerHTML = `
+
+            <video
+                src="${localURL}"
+                controls
+                playsinline
+            ></video>
+
+        `;
+
+    }
+);
+
+
+/* =====================================
+   PREVIEW DO LINK
+===================================== */
 
 previewUrlButton.addEventListener(
     "click",
     function () {
 
-        const url = videoUrl.value.trim();
+        const url =
+            videoUrl.value.trim();
+
 
         if (!url) {
 
-            videoPreview.style.display = "block";
-
-            videoPreview.innerHTML = `
-                <div class="video-placeholder">
-
-                    <div class="video-placeholder-icon">
-                        ⚠️
-                    </div>
-
-                    <strong>
-                        Cole um link primeiro
-                    </strong>
-
-                </div>
-            `;
+            showStatus(
+                "Atenção",
+                "Cole um link primeiro.",
+                0
+            );
 
             return;
+
         }
 
 
-        videoPreview.style.display = "block";
+        videoFile.value = "";
+
+
+        originalSection.style.display =
+            "block";
 
 
         /*
-        ==========================================
-        LINK DIRETO PARA VÍDEO
-        ==========================================
-        */
+         * VÍDEO MP4 DIRETO
+         */
 
         if (
             url.includes(".mp4") ||
@@ -42,12 +2036,14 @@ previewUrlButton.addEventListener(
             url.includes(".mov")
         ) {
 
-            videoPreview.innerHTML = `
+            originalVideoBox.innerHTML = `
+
                 <video
                     src="${escapeHTML(url)}"
                     controls
                     playsinline
                 ></video>
+
             `;
 
             return;
@@ -55,74 +2051,86 @@ previewUrlButton.addEventListener(
 
 
         /*
-        ==========================================
-        YOUTUBE
-        ==========================================
-        */
+         * YOUTUBE
+         */
 
         const youtubeId =
             getYouTubeId(url);
 
+
         if (youtubeId) {
 
-            videoPreview.innerHTML = `
+            originalVideoBox.innerHTML = `
+
                 <iframe
-                    width="100%"
-                    height="500"
+                    class="embed-frame"
                     src="https://www.youtube.com/embed/${youtubeId}"
-                    title="Vídeo"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    title="Vídeo original"
+                    allow="
+                        accelerometer;
+                        autoplay;
+                        clipboard-write;
+                        encrypted-media;
+                        gyroscope;
+                        picture-in-picture;
+                        web-share
+                    "
                     allowfullscreen>
                 </iframe>
+
             `;
 
             return;
+
         }
 
 
         /*
-        ==========================================
-        OUTROS LINKS
-        ==========================================
-        */
+         * OUTRAS PLATAFORMAS
+         */
 
-        videoPreview.innerHTML = `
-            <div class="video-placeholder">
+        originalVideoBox.innerHTML = `
 
-                <div class="video-placeholder-icon">
+            <div
+                style="
+                    min-height:220px;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    flex-direction:column;
+                    gap:8px;
+                    color:#94a3b8;
+                    text-align:center;
+                    padding:30px;
+                "
+            >
+
+                <div style="font-size:42px;">
                     🔗
                 </div>
 
-                <strong>
+                <strong
+                    style="color:white;"
+                >
                     Link recebido
                 </strong>
 
                 <span>
                     Essa plataforma não permite
-                    prévia direta neste navegador.
+                    uma prévia direta neste navegador.
                 </span>
 
-                <small style="
-                    margin-top:10px;
-                    color:#94a3b8;
-                ">
-                    O backend poderá processar a fonte
-                    quando houver acesso permitido.
-                </small>
-
             </div>
+
         `;
 
     }
 );
 
 
-/*
-==========================================
-IDENTIFICAR YOUTUBE
-==========================================
-*/
+/* =====================================
+   YOUTUBE
+===================================== */
 
 function getYouTubeId(url) {
 
@@ -131,15 +2139,16 @@ function getYouTubeId(url) {
         const parsed =
             new URL(url);
 
+
         if (
             parsed.hostname.includes(
                 "youtube.com"
             )
         ) {
 
-            return parsed.searchParams.get(
-                "v"
-            );
+            return parsed
+                .searchParams
+                .get("v");
 
         }
 
@@ -160,23 +2169,344 @@ function getYouTubeId(url) {
 
     }
 
+
     return null;
+
 }
 
 
-/*
-==========================================
-SEGURANÇA
-==========================================
-*/
+/* =====================================
+   STATUS
+===================================== */
+
+function showStatus(
+    title,
+    text,
+    progress
+) {
+
+    statusBox.style.display =
+        "block";
+
+
+    statusTitle.textContent =
+        title;
+
+
+    statusText.textContent =
+        text;
+
+
+    progressBar.style.width =
+        progress + "%";
+
+
+    progressText.textContent =
+        progress + "%";
+
+}
+
+
+/* =====================================
+   DUBLAGEM
+===================================== */
+
+dubVideoButton.addEventListener(
+    "click",
+    async function () {
+
+
+        const url =
+            videoUrl.value.trim();
+
+
+        const file =
+            videoFile.files[0];
+
+
+        const origem =
+            sourceLanguage.value;
+
+
+        const destino =
+            targetLanguage.value;
+
+
+        if (!url && !file) {
+
+            showStatus(
+                "Atenção",
+                "Cole um link ou escolha um vídeo.",
+                0
+            );
+
+            return;
+
+        }
+
+
+        dubVideoButton.disabled =
+            true;
+
+
+        resultSection.style.display =
+            "none";
+
+
+        showStatus(
+            "Preparando vídeo...",
+            "Enviando para o servidor.",
+            10
+        );
+
+
+        try {
+
+
+            let response;
+
+
+            /*
+             * LINK
+             */
+
+            if (url) {
+
+                response =
+                    await fetch(
+                        BACKEND_URL +
+                        "/api/dub-from-url",
+                        {
+
+                            method:
+                                "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify({
+
+                                    url:
+                                        url,
+
+                                    idiomaOrigem:
+                                        origem,
+
+                                    idiomaDestino:
+                                        destino
+
+                                })
+
+                        }
+                    );
+
+            }
+
+
+            /*
+             * ARQUIVO
+             */
+
+            else {
+
+                const formData =
+                    new FormData();
+
+
+                formData.append(
+                    "video",
+                    file
+                );
+
+
+                formData.append(
+                    "idiomaOrigem",
+                    origem
+                );
+
+
+                formData.append(
+                    "idiomaDestino",
+                    destino
+                );
+
+
+                response =
+                    await fetch(
+                        BACKEND_URL +
+                        "/api/upload",
+                        {
+
+                            method:
+                                "POST",
+
+                            body:
+                                formData
+
+                        }
+                    );
+
+            }
+
+
+            showStatus(
+                "Processando...",
+                "O servidor está analisando o vídeo.",
+                35
+            );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.error ||
+                    "Erro no servidor."
+                );
+
+            }
+
+
+            showStatus(
+                "Processamento iniciado",
+                "Preparando tradução e dublagem.",
+                60
+            );
+
+
+            /*
+             * RESULTADO FINAL
+             *
+             * Quando o backend devolver:
+             *
+             * outputUrl
+             *
+             * o player será preenchido.
+             */
+
+            if (data.outputUrl) {
+
+                showResult(
+                    data.outputUrl,
+                    origem,
+                    destino
+                );
+
+
+                showStatus(
+                    "Concluído!",
+                    "Seu vídeo dublado está pronto.",
+                    100
+                );
+
+            }
+
+
+        } catch (error) {
+
+
+            console.error(
+                error
+            );
+
+
+            showStatus(
+                "Erro",
+                error.message ||
+                "Não foi possível processar o vídeo.",
+                0
+            );
+
+
+        } finally {
+
+            dubVideoButton.disabled =
+                false;
+
+        }
+
+    }
+);
+
+
+/* =====================================
+   RESULTADO
+===================================== */
+
+function showResult(
+    outputUrl,
+    origem,
+    destino
+) {
+
+
+    resultSection.style.display =
+        "block";
+
+
+    resultVideo.src =
+        outputUrl;
+
+
+    watchButton.href =
+        outputUrl;
+
+
+    downloadButton.href =
+        outputUrl;
+
+
+    resultLanguage.textContent =
+        `${origem} → ${destino}`;
+
+
+    resultSection.scrollIntoView({
+        behavior:
+            "smooth"
+    });
+
+}
+
+
+/* =====================================
+   SEGURANÇA
+===================================== */
 
 function escapeHTML(value) {
 
     return value
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 
 }
+
+</script>
+
+
+</body>
+
+    </html>
