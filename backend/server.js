@@ -4,6 +4,7 @@ const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
 const ffmpeg = require("fluent-ffmpeg");
+const OpenAI = require("openai");
 
 const fs = require("fs");
 const path = require("path");
@@ -11,6 +12,14 @@ const path = require("path");
 const app = express();
 
 const PORT = process.env.PORT || 3000;
+
+/* =====================================
+   OPENAI
+===================================== */
+
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY
+});
 
 /* =====================================
    CONFIGURAÇÃO
@@ -31,16 +40,16 @@ app.use(express.json({
 const uploadsDir =
     path.join(__dirname, "uploads");
 
-const outputDir =
-    path.join(__dirname, "output");
-
 const audioDir =
     path.join(__dirname, "audio");
 
+const outputDir =
+    path.join(__dirname, "output");
+
 [
     uploadsDir,
-    outputDir,
-    audioDir
+    audioDir,
+    outputDir
 ].forEach((dir) => {
 
     if (!fs.existsSync(dir)) {
@@ -52,17 +61,12 @@ const audioDir =
 });
 
 /* =====================================
-   SERVIR ARQUIVOS
+   ARQUIVOS PÚBLICOS
 ===================================== */
 
 app.use(
     "/videos",
     express.static(outputDir)
-);
-
-app.use(
-    "/uploads",
-    express.static(uploadsDir)
 );
 
 /* =====================================
@@ -72,33 +76,39 @@ app.use(
 const storage =
     multer.diskStorage({
 
-        destination:
-            function (req, file, cb) {
+        destination: function (
+            req,
+            file,
+            cb
+        ) {
 
-                cb(
-                    null,
-                    uploadsDir
+            cb(
+                null,
+                uploadsDir
+            );
+
+        },
+
+        filename: function (
+            req,
+            file,
+            cb
+        ) {
+
+            const extension =
+                path.extname(
+                    file.originalname
                 );
 
-            },
+            const filename =
+                `video-${Date.now()}${extension}`;
 
-        filename:
-            function (req, file, cb) {
+            cb(
+                null,
+                filename
+            );
 
-                const extension =
-                    path.extname(
-                        file.originalname
-                    );
-
-                const filename =
-                    `video-${Date.now()}${extension}`;
-
-                cb(
-                    null,
-                    filename
-                );
-
-            }
+        }
 
     });
 
@@ -117,7 +127,7 @@ const upload =
     });
 
 /* =====================================
-   STATUS
+   TESTE
 ===================================== */
 
 app.get("/", (req, res) => {
@@ -142,45 +152,54 @@ app.get("/api/status", (req, res) => {
 
         success: true,
 
-        online: true
+        online: true,
+
+        openai:
+            !!process.env.OPENAI_API_KEY
 
     });
 
 });
 
 /* =====================================
-   COPIAR VÍDEO PARA OUTPUT
+   EXTRAIR ÁUDIO
 ===================================== */
 
-function prepareVideo(videoPath) {
+function extractAudio(videoPath) {
 
     return new Promise(
         (resolve, reject) => {
 
-            const outputName =
-                `video-processado-${Date.now()}.mp4`;
+            const audioName =
+                `audio-${Date.now()}.wav`;
 
-            const outputPath =
+            const audioPath =
                 path.join(
-                    outputDir,
-                    outputName
+                    audioDir,
+                    audioName
                 );
 
             ffmpeg(videoPath)
 
-                .videoCodec("libx264")
+                .noVideo()
 
-                .audioCodec("aac")
+                .audioCodec(
+                    "pcm_s16le"
+                )
 
-                .outputOptions([
-                    "-movflags",
-                    "+faststart"
-                ])
+                .audioChannels(1)
+
+                .audioFrequency(16000)
+
+                .format("wav")
 
                 .on("start", (command) => {
 
                     console.log(
-                        "FFmpeg:",
+                        "FFmpeg iniciou:"
+                    );
+
+                    console.log(
                         command
                     );
 
@@ -188,36 +207,48 @@ function prepareVideo(videoPath) {
 
                 .on("progress", (progress) => {
 
-                    console.log(
-                        "Processando:",
+                    if (
                         progress.percent
-                    );
+                    ) {
+
+                        console.log(
+                            `Áudio: ${progress.percent.toFixed(1)}%`
+                        );
+
+                    }
 
                 })
 
                 .on("end", () => {
 
                     console.log(
-                        "Vídeo processado:",
-                        outputName
+                        "Áudio extraído:"
                     );
 
-                    resolve(outputName);
+                    console.log(
+                        audioPath
+                    );
+
+                    resolve(
+                        audioPath
+                    );
 
                 })
 
                 .on("error", (error) => {
 
                     console.error(
-                        "Erro FFmpeg:",
+                        "Erro ao extrair áudio:",
                         error
                     );
 
-                    reject(error);
+                    reject(
+                        error
+                    );
 
                 })
 
-                .save(outputPath);
+                .save(audioPath);
 
         }
     );
@@ -225,7 +256,122 @@ function prepareVideo(videoPath) {
 }
 
 /* =====================================
-   UPLOAD DO VÍDEO
+   TRANSCRIÇÃO
+===================================== */
+
+async function transcribeAudio(
+    audioPath
+) {
+
+    console.log(
+        "Iniciando transcrição..."
+    );
+
+    const transcription =
+        await openai
+            .audio
+            .transcriptions
+            .create({
+
+                file:
+                    fs.createReadStream(
+                        audioPath
+                    ),
+
+                model:
+                    "gpt-4o-mini-transcribe",
+
+                response_format:
+                    "text"
+
+            });
+
+    console.log(
+        "Transcrição concluída."
+    );
+
+    return transcription;
+}
+
+/* =====================================
+   TRADUÇÃO
+===================================== */
+
+async function translateText(
+    text,
+    targetLanguage
+) {
+
+    console.log(
+        "Iniciando tradução..."
+    );
+
+    const languageNames = {
+
+        "pt-BR":
+            "português do Brasil",
+
+        "en":
+            "inglês",
+
+        "es":
+            "espanhol",
+
+        "fr":
+            "francês",
+
+        "de":
+            "alemão",
+
+        "it":
+            "italiano",
+
+        "ja":
+            "japonês",
+
+        "ko":
+            "coreano",
+
+        "zh":
+            "chinês"
+
+    };
+
+    const target =
+        languageNames[
+            targetLanguage
+        ] ||
+        targetLanguage;
+
+
+    const response =
+        await openai.responses.create({
+
+            model:
+                "gpt-5-mini",
+
+            instructions:
+                `Você é um tradutor profissional.
+Traduza o texto para ${target}.
+Preserve o significado, o tom e o contexto.
+Não explique a tradução.
+Retorne somente o texto traduzido.`,
+
+            input:
+                text
+
+        });
+
+
+    console.log(
+        "Tradução concluída."
+    );
+
+    return response.output_text;
+}
+
+/* =====================================
+   UPLOAD + TRANSCRIÇÃO + TRADUÇÃO
 ===================================== */
 
 app.post(
@@ -248,55 +394,150 @@ app.post(
 
             }
 
+
+            if (
+                !process.env.OPENAI_API_KEY
+            ) {
+
+                return res.status(500).json({
+
+                    success: false,
+
+                    error:
+                        "OPENAI_API_KEY não configurada no servidor."
+
+                });
+
+            }
+
+
+            const idiomaOrigem =
+                req.body.idiomaOrigem ||
+                "auto";
+
+            const idiomaDestino =
+                req.body.idiomaDestino ||
+                "pt-BR";
+
+
+            console.log("");
             console.log(
-                "Vídeo recebido:",
+                "================================"
+            );
+
+            console.log(
+                "NOVO PROCESSAMENTO"
+            );
+
+            console.log(
+                "Vídeo:",
                 req.file.filename
             );
 
-            const outputName =
-                await prepareVideo(
+            console.log(
+                "Origem:",
+                idiomaOrigem
+            );
+
+            console.log(
+                "Destino:",
+                idiomaDestino
+            );
+
+
+            /* =========================
+               1. EXTRAIR ÁUDIO
+            ========================= */
+
+            const audioPath =
+                await extractAudio(
                     req.file.path
                 );
 
-            const outputUrl =
-                `${req.protocol}://${req.get("host")}/videos/${outputName}`;
+
+            /* =========================
+               2. TRANSCRIÇÃO
+            ========================= */
+
+            const transcription =
+                await transcribeAudio(
+                    audioPath
+                );
+
+
+            if (
+                !transcription ||
+                !transcription.trim()
+            ) {
+
+                throw new Error(
+                    "Não foi possível encontrar fala no vídeo."
+                );
+
+            }
+
+
+            /* =========================
+               3. TRADUÇÃO
+            ========================= */
+
+            const translation =
+                await translateText(
+                    transcription,
+                    idiomaDestino
+                );
+
+
+            /* =========================
+               4. RESPOSTA
+            ========================= */
 
             res.json({
 
                 success: true,
 
                 status:
-                    "video-processado",
+                    "traducao-concluida",
 
                 message:
-                    "Vídeo processado com sucesso.",
+                    "Vídeo transcrito e traduzido com sucesso.",
 
-                original:
+                video:
                     req.file.filename,
 
-                outputUrl:
-                    outputUrl,
+                audio:
+                    path.basename(
+                        audioPath
+                    ),
 
                 idiomaOrigem:
-                    req.body.idiomaOrigem ||
-                    "auto",
+                    idiomaOrigem,
 
                 idiomaDestino:
-                    req.body.idiomaDestino ||
-                    "pt-BR"
+                    idiomaDestino,
+
+                transcription:
+                    transcription,
+
+                translation:
+                    translation
 
             });
 
+
         } catch (error) {
 
-            console.error(error);
+            console.error(
+                "ERRO:",
+                error
+            );
 
             res.status(500).json({
 
                 success: false,
 
                 error:
-                    "Não foi possível processar o vídeo.",
+                    "Erro ao processar o vídeo.",
 
                 details:
                     error.message
@@ -316,43 +557,57 @@ app.post(
     "/api/dub-from-url",
     async (req, res) => {
 
-        const {
-            url,
-            idiomaOrigem,
-            idiomaDestino
-        } = req.body;
-
-        if (!url) {
-
-            return res.status(400).json({
-
-                success: false,
-
-                error:
-                    "Informe o link do vídeo."
-
-            });
-
-        }
-
         try {
 
-            const parsed =
-                new URL(url);
+            const {
+                url,
+                idiomaOrigem,
+                idiomaDestino
+            } = req.body;
 
-            console.log(
-                "URL recebida:",
-                parsed.href
-            );
+
+            if (!url) {
+
+                return res.status(400).json({
+
+                    success: false,
+
+                    error:
+                        "Informe o link do vídeo."
+
+                });
+
+            }
+
+
+            let parsed;
+
+            try {
+
+                parsed =
+                    new URL(url);
+
+            } catch {
+
+                return res.status(400).json({
+
+                    success: false,
+
+                    error:
+                        "Link inválido."
+
+                });
+
+            }
+
 
             /*
-             * Por enquanto o backend
-             * valida e recebe a URL.
+             * Nesta etapa o endpoint
+             * recebe e valida a URL.
              *
-             * O download automático de
-             * redes sociais será conectado
-             * somente às fontes que permitirem
-             * esse acesso.
+             * O processamento automático
+             * depende de a fonte permitir
+             * acesso ao vídeo.
              */
 
             res.json({
@@ -378,14 +633,19 @@ app.post(
 
             });
 
+
         } catch (error) {
 
-            res.status(400).json({
+            console.error(
+                error
+            );
+
+            res.status(500).json({
 
                 success: false,
 
                 error:
-                    "URL inválida."
+                    "Erro ao processar o link."
 
             });
 
@@ -399,9 +659,16 @@ app.post(
 ===================================== */
 
 app.use(
-    (error, req, res, next) => {
+    (
+        error,
+        req,
+        res,
+        next
+    ) => {
 
-        console.error(error);
+        console.error(
+            error
+        );
 
         res.status(500).json({
 
@@ -417,15 +684,35 @@ app.use(
 );
 
 /* =====================================
-   INICIAR
+   SERVIDOR
 ===================================== */
 
 app.listen(
     PORT,
     () => {
 
+        console.log("");
         console.log(
-            `Tradutor IA rodando na porta ${PORT}`
+            "================================"
+        );
+
+        console.log(
+            "       TRADUTOR IA"
+        );
+
+        console.log(
+            "================================"
+        );
+
+        console.log(
+            `Servidor na porta ${PORT}`
+        );
+
+        console.log(
+            "OpenAI:",
+            process.env.OPENAI_API_KEY
+                ? "CONFIGURADA"
+                : "NÃO CONFIGURADA"
         );
 
     }
