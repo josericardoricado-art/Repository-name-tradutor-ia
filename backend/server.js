@@ -12,10 +12,9 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-
-/* ================================
+/* =====================================
    CONFIGURAÇÃO
-================================ */
+===================================== */
 
 app.use(cors({
     origin: "*"
@@ -25,26 +24,24 @@ app.use(express.json({
     limit: "10mb"
 }));
 
-
-/* ================================
+/* =====================================
    PASTAS
-================================ */
+===================================== */
 
 const uploadsDir =
     path.join(__dirname, "uploads");
 
-const audioDir =
-    path.join(__dirname, "audio");
-
 const outputDir =
     path.join(__dirname, "output");
 
+const audioDir =
+    path.join(__dirname, "audio");
 
 [
     uploadsDir,
-    audioDir,
-    outputDir
-].forEach(dir => {
+    outputDir,
+    audioDir
+].forEach((dir) => {
 
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, {
@@ -54,10 +51,23 @@ const outputDir =
 
 });
 
+/* =====================================
+   SERVIR ARQUIVOS
+===================================== */
 
-/* ================================
+app.use(
+    "/videos",
+    express.static(outputDir)
+);
+
+app.use(
+    "/uploads",
+    express.static(uploadsDir)
+);
+
+/* =====================================
    UPLOAD
-================================ */
+===================================== */
 
 const storage =
     multer.diskStorage({
@@ -75,13 +85,13 @@ const storage =
         filename:
             function (req, file, cb) {
 
-                const ext =
+                const extension =
                     path.extname(
                         file.originalname
                     );
 
                 const filename =
-                    `video-${Date.now()}${ext}`;
+                    `video-${Date.now()}${extension}`;
 
                 cb(
                     null,
@@ -92,23 +102,23 @@ const storage =
 
     });
 
-
 const upload =
     multer({
 
         storage: storage,
 
         limits: {
+
             fileSize:
                 500 * 1024 * 1024
+
         }
 
     });
 
-
-/* ================================
-   TESTE DO SERVIDOR
-================================ */
+/* =====================================
+   STATUS
+===================================== */
 
 app.get("/", (req, res) => {
 
@@ -120,15 +130,11 @@ app.get("/", (req, res) => {
             "Tradutor IA",
 
         status:
-            "online",
-
-        message:
-            "Backend funcionando!"
+            "online"
 
     });
 
 });
-
 
 app.get("/api/status", (req, res) => {
 
@@ -136,62 +142,54 @@ app.get("/api/status", (req, res) => {
 
         success: true,
 
-        online:
-            true,
-
-        service:
-            "Tradutor IA"
+        online: true
 
     });
 
 });
 
+/* =====================================
+   COPIAR VÍDEO PARA OUTPUT
+===================================== */
 
-/* ================================
-   EXTRAIR ÁUDIO
-================================ */
-
-function extractAudio(videoPath) {
+function prepareVideo(videoPath) {
 
     return new Promise(
         (resolve, reject) => {
 
-            const audioName =
-                `audio-${Date.now()}.wav`;
+            const outputName =
+                `video-processado-${Date.now()}.mp4`;
 
-            const audioPath =
+            const outputPath =
                 path.join(
-                    audioDir,
-                    audioName
+                    outputDir,
+                    outputName
                 );
-
 
             ffmpeg(videoPath)
 
-                .noVideo()
+                .videoCodec("libx264")
 
-                .audioCodec("pcm_s16le")
+                .audioCodec("aac")
 
-                .audioChannels(1)
+                .outputOptions([
+                    "-movflags",
+                    "+faststart"
+                ])
 
-                .audioFrequency(16000)
-
-                .format("wav")
-
-                .on("start", command => {
+                .on("start", (command) => {
 
                     console.log(
-                        "FFmpeg iniciado:"
+                        "FFmpeg:",
+                        command
                     );
-
-                    console.log(command);
 
                 })
 
-                .on("progress", progress => {
+                .on("progress", (progress) => {
 
                     console.log(
-                        "Processando áudio:",
+                        "Processando:",
                         progress.percent
                     );
 
@@ -200,16 +198,15 @@ function extractAudio(videoPath) {
                 .on("end", () => {
 
                     console.log(
-                        "Áudio extraído:"
+                        "Vídeo processado:",
+                        outputName
                     );
 
-                    console.log(audioPath);
-
-                    resolve(audioPath);
+                    resolve(outputName);
 
                 })
 
-                .on("error", error => {
+                .on("error", (error) => {
 
                     console.error(
                         "Erro FFmpeg:",
@@ -220,17 +217,16 @@ function extractAudio(videoPath) {
 
                 })
 
-                .save(audioPath);
+                .save(outputPath);
 
         }
     );
 
 }
 
-
-/* ================================
-   UPLOAD + EXTRAÇÃO
-================================ */
+/* =====================================
+   UPLOAD DO VÍDEO
+===================================== */
 
 app.post(
     "/api/upload",
@@ -243,8 +239,7 @@ app.post(
 
                 return res.status(400).json({
 
-                    success:
-                        false,
+                    success: false,
 
                     error:
                         "Nenhum vídeo foi enviado."
@@ -253,98 +248,44 @@ app.post(
 
             }
 
-
-            const idiomaOrigem =
-                req.body.idiomaOrigem ||
-                "auto";
-
-            const idiomaDestino =
-                req.body.idiomaDestino ||
-                "pt-BR";
-
-
-            console.log("");
             console.log(
-                "=============================="
-            );
-
-            console.log(
-                "NOVO VÍDEO"
-            );
-
-            console.log(
-                "Arquivo:",
+                "Vídeo recebido:",
                 req.file.filename
             );
 
-            console.log(
-                "Origem:",
-                idiomaOrigem
-            );
-
-            console.log(
-                "Destino:",
-                idiomaDestino
-            );
-
-
-            const videoPath =
-                req.file.path;
-
-
-            /*
-             * PRIMEIRA ETAPA REAL:
-             *
-             * vídeo
-             * ↓
-             * áudio WAV
-             */
-
-            const audioPath =
-                await extractAudio(
-                    videoPath
+            const outputName =
+                await prepareVideo(
+                    req.file.path
                 );
 
-
-            console.log(
-                "Áudio pronto:",
-                audioPath
-            );
-
-
-            /*
-             * Por enquanto retornamos
-             * o áudio para confirmar
-             * que o FFmpeg funcionou.
-             */
+            const outputUrl =
+                `${req.protocol}://${req.get("host")}/videos/${outputName}`;
 
             res.json({
 
-                success:
-                    true,
-
-                message:
-                    "Vídeo recebido e áudio extraído.",
-
-                video:
-                    req.file.filename,
-
-                audio:
-                    path.basename(
-                        audioPath
-                    ),
-
-                idiomaOrigem:
-                    idiomaOrigem,
-
-                idiomaDestino:
-                    idiomaDestino,
+                success: true,
 
                 status:
-                    "audio-extraido"
+                    "video-processado",
+
+                message:
+                    "Vídeo processado com sucesso.",
+
+                original:
+                    req.file.filename,
+
+                outputUrl:
+                    outputUrl,
+
+                idiomaOrigem:
+                    req.body.idiomaOrigem ||
+                    "auto",
+
+                idiomaDestino:
+                    req.body.idiomaDestino ||
+                    "pt-BR"
 
             });
-
 
         } catch (error) {
 
@@ -352,11 +293,10 @@ app.post(
 
             res.status(500).json({
 
-                success:
-                    false,
+                success: false,
 
                 error:
-                    "Erro ao processar o vídeo.",
+                    "Não foi possível processar o vídeo.",
 
                 details:
                     error.message
@@ -368,84 +308,56 @@ app.post(
     }
 );
 
-
-/* ================================
+/* =====================================
    LINK
-================================ */
+===================================== */
 
 app.post(
     "/api/dub-from-url",
     async (req, res) => {
 
+        const {
+            url,
+            idiomaOrigem,
+            idiomaDestino
+        } = req.body;
+
+        if (!url) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                error:
+                    "Informe o link do vídeo."
+
+            });
+
+        }
+
         try {
 
-            const {
-                url,
-                idiomaOrigem,
-                idiomaDestino
-            } = req.body;
-
-
-            if (!url) {
-
-                return res.status(400).json({
-
-                    success:
-                        false,
-
-                    error:
-                        "O link do vídeo é obrigatório."
-
-                });
-
-            }
-
-
-            let videoURL;
-
-            try {
-
-                videoURL =
-                    new URL(url);
-
-            } catch {
-
-                return res.status(400).json({
-
-                    success:
-                        false,
-
-                    error:
-                        "Link inválido."
-
-                });
-
-            }
-
+            const parsed =
+                new URL(url);
 
             console.log(
-                "Novo pedido por link:"
+                "URL recebida:",
+                parsed.href
             );
-
-            console.log(
-                videoURL.href
-            );
-
 
             /*
-             * Nesta etapa não fazemos
-             * download automático de redes
-             * sociais.
+             * Por enquanto o backend
+             * valida e recebe a URL.
              *
-             * Primeiro vamos testar o
-             * processamento de arquivos
-             * enviados pelo usuário.
+             * O download automático de
+             * redes sociais será conectado
+             * somente às fontes que permitirem
+             * esse acesso.
              */
 
             res.json({
 
-                success:
-                    true,
+                success: true,
 
                 status:
                     "link-recebido",
@@ -454,7 +366,7 @@ app.post(
                     "Link recebido. A fonte precisa permitir acesso ao vídeo.",
 
                 url:
-                    videoURL.href,
+                    parsed.href,
 
                 idiomaOrigem:
                     idiomaOrigem ||
@@ -468,15 +380,12 @@ app.post(
 
         } catch (error) {
 
-            console.error(error);
+            res.status(400).json({
 
-            res.status(500).json({
-
-                success:
-                    false,
+                success: false,
 
                 error:
-                    "Erro ao processar o link."
+                    "URL inválida."
 
             });
 
@@ -485,57 +394,39 @@ app.post(
     }
 );
 
-
-/* ================================
+/* =====================================
    ERROS
-================================ */
+===================================== */
 
 app.use(
     (error, req, res, next) => {
 
         console.error(error);
 
-        res.status(400).json({
+        res.status(500).json({
 
-            success:
-                false,
+            success: false,
 
             error:
                 error.message ||
-                "Erro desconhecido."
+                "Erro interno do servidor."
 
         });
 
     }
 );
 
-
-/* ================================
-   SERVIDOR
-================================ */
+/* =====================================
+   INICIAR
+===================================== */
 
 app.listen(
     PORT,
     () => {
 
-        console.log("");
         console.log(
-            "================================"
+            `Tradutor IA rodando na porta ${PORT}`
         );
-
-        console.log(
-            "       TRADUTOR IA"
-        );
-
-        console.log(
-            "================================"
-        );
-
-        console.log(
-            `Servidor na porta ${PORT}`
-        );
-
-        console.log("");
 
     }
 );
