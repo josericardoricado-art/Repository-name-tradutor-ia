@@ -686,7 +686,234 @@ app.use(
 /* =====================================
    SERVIDOR
 ===================================== */
+/* =====================================
+   LIVE - ÁUDIO EM TEMPO REAL
+===================================== */
 
+app.post(
+    "/api/live/audio",
+    upload.single("audio"),
+    async (req, res) => {
+
+        let audioPath = null;
+
+        try {
+
+            if (!req.file) {
+
+                return res.status(400).json({
+                    success: false,
+                    error: "Nenhum áudio recebido."
+                });
+
+            }
+
+            if (!process.env.OPENAI_API_KEY) {
+
+                return res.status(500).json({
+                    success: false,
+                    error: "OPENAI_API_KEY não configurada."
+                });
+
+            }
+
+            audioPath = req.file.path;
+
+            const idiomaOrigem =
+                req.body.idiomaOrigem || "auto";
+
+            const idiomaDestino =
+                req.body.idiomaDestino || "pt-BR";
+
+
+            /* =========================
+               TRANSCRIÇÃO
+            ========================= */
+
+            const transcription =
+                await openai.audio.transcriptions.create({
+
+                    file:
+                        fs.createReadStream(
+                            audioPath
+                        ),
+
+                    model:
+                        "gpt-4o-mini-transcribe",
+
+                    response_format:
+                        "text"
+
+                });
+
+
+            const text =
+                typeof transcription === "string"
+                    ? transcription
+                    : transcription.text;
+
+
+            if (!text || !text.trim()) {
+
+                return res.json({
+                    success: true,
+                    translation: "",
+                    audioUrl: null
+                });
+
+            }
+
+
+            /* =========================
+               TRADUÇÃO
+            ========================= */
+
+            const languageNames = {
+
+                "pt-BR":
+                    "português do Brasil",
+
+                "en":
+                    "inglês",
+
+                "es":
+                    "espanhol",
+
+                "fr":
+                    "francês",
+
+                "de":
+                    "alemão",
+
+                "it":
+                    "italiano",
+
+                "ja":
+                    "japonês",
+
+                "ko":
+                    "coreano",
+
+                "zh":
+                    "chinês"
+
+            };
+
+
+            const target =
+                languageNames[
+                    idiomaDestino
+                ] ||
+                idiomaDestino;
+
+
+            const translated =
+                await openai.responses.create({
+
+                    model:
+                        "gpt-5-mini",
+
+                    instructions:
+                        `Traduza para ${target}.
+Preserve o significado e o contexto.
+Se o trecho estiver incompleto, traduza da melhor forma possível.
+Retorne somente a tradução.`,
+
+                    input:
+                        text
+
+                });
+
+
+            const translation =
+                translated.output_text ||
+                "";
+
+
+            console.log(
+                "LIVE:",
+                text,
+                "→",
+                translation
+            );
+
+
+            /*
+             * Nesta etapa devolvemos
+             * a tradução em texto.
+             *
+             * A geração da voz será
+             * adicionada na próxima etapa.
+             */
+
+            res.json({
+
+                success: true,
+
+                originalText:
+                    text,
+
+                translation:
+                    translation,
+
+                audioUrl:
+                    null
+
+            });
+
+
+        } catch (error) {
+
+            console.error(
+                "Erro LIVE:",
+                error
+            );
+
+            res.status(500).json({
+
+                success: false,
+
+                error:
+                    "Erro ao traduzir o áudio.",
+
+                details:
+                    error.message
+
+            });
+
+        } finally {
+
+            /*
+             * Remove o pequeno arquivo
+             * temporário depois do processamento.
+             */
+
+            if (
+                audioPath &&
+                fs.existsSync(audioPath)
+            ) {
+
+                try {
+
+                    fs.unlinkSync(
+                        audioPath
+                    );
+
+                } catch (cleanupError) {
+
+                    console.error(
+                        "Erro ao limpar áudio:",
+                        cleanupError
+                    );
+
+                }
+
+            }
+
+        }
+
+    }
+);
 app.listen(
     PORT,
     () => {
