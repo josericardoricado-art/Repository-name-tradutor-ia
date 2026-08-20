@@ -689,6 +689,9 @@ app.use(
 /* =====================================
    LIVE - ÁUDIO EM TEMPO REAL
 ===================================== */
+/* =====================================
+   LIVE - TRANSCRIÇÃO + TRADUÇÃO + VOZ
+===================================== */
 
 app.post(
     "/api/live/audio",
@@ -727,7 +730,7 @@ app.post(
 
 
             /* =========================
-               TRANSCRIÇÃO
+               1. TRANSCRIÇÃO
             ========================= */
 
             const transcription =
@@ -741,34 +744,40 @@ app.post(
                     model:
                         "gpt-4o-mini-transcribe",
 
-                    response_format:
-                        "text"
+                    language:
+                        idiomaOrigem !== "auto"
+                            ? idiomaOrigem.split("-")[0]
+                            : undefined
 
                 });
 
 
-            const text =
-                typeof transcription === "string"
-                    ? transcription
-                    : transcription.text;
+            const originalText =
+                transcription.text || "";
 
 
-            if (!text || !text.trim()) {
+            if (!originalText.trim()) {
 
                 return res.json({
+
                     success: true,
+
+                    originalText: "",
+
                     translation: "",
+
                     audioUrl: null
+
                 });
 
             }
 
 
             /* =========================
-               TRADUÇÃO
+               2. TRADUÇÃO
             ========================= */
 
-            const languageNames = {
+            const languages = {
 
                 "pt-BR":
                     "português do Brasil",
@@ -800,8 +809,8 @@ app.post(
             };
 
 
-            const target =
-                languageNames[
+            const targetLanguage =
+                languages[
                     idiomaDestino
                 ] ||
                 idiomaDestino;
@@ -814,13 +823,13 @@ app.post(
                         "gpt-5-mini",
 
                     instructions:
-                        `Traduza para ${target}.
-Preserve o significado e o contexto.
-Se o trecho estiver incompleto, traduza da melhor forma possível.
+                        `Traduza para ${targetLanguage}.
+Mantenha o significado e o tom da fala.
+Não explique nada.
 Retorne somente a tradução.`,
 
                     input:
-                        text
+                        originalText
 
                 });
 
@@ -830,34 +839,120 @@ Retorne somente a tradução.`,
                 "";
 
 
-            console.log(
-                "LIVE:",
-                text,
-                "→",
-                translation
+            if (!translation.trim()) {
+
+                return res.json({
+
+                    success: true,
+
+                    originalText:
+                        originalText,
+
+                    translation:
+                        "",
+
+                    audioUrl:
+                        null
+
+                });
+
+            }
+
+
+            /* =========================
+               3. GERAR VOZ
+            ========================= */
+
+            const speechName =
+                `live-${Date.now()}.mp3`;
+
+            const speechPath =
+                path.join(
+                    outputDir,
+                    speechName
+                );
+
+
+            const speech =
+                await openai.audio.speech.create({
+
+                    model:
+                        "gpt-4o-mini-tts",
+
+                    voice:
+                        "alloy",
+
+                    input:
+                        translation,
+
+                    instructions:
+                        "Fale de maneira natural, clara e fluida, como uma tradução profissional em uma transmissão ao vivo.",
+
+                    response_format:
+                        "mp3"
+
+                });
+
+
+            const speechBuffer =
+                Buffer.from(
+                    await speech.arrayBuffer()
+                );
+
+
+            await fs.promises.writeFile(
+                speechPath,
+                speechBuffer
             );
 
 
-            /*
-             * Nesta etapa devolvemos
-             * a tradução em texto.
-             *
-             * A geração da voz será
-             * adicionada na próxima etapa.
-             */
+            /* =========================
+               4. URL DO ÁUDIO
+            ========================= */
+
+            const audioUrl =
+                `${req.protocol}://${req.get("host")}/videos/${speechName}`;
+
+
+            console.log(
+                "LIVE ORIGINAL:",
+                originalText
+            );
+
+            console.log(
+                "LIVE TRADUZIDO:",
+                translation
+            );
+
+            console.log(
+                "LIVE VOZ:",
+                audioUrl
+            );
+
+
+            /* =========================
+               5. RESPOSTA
+            ========================= */
 
             res.json({
 
-                success: true,
+                success:
+                    true,
 
                 originalText:
-                    text,
+                    originalText,
 
                 translation:
                     translation,
 
                 audioUrl:
-                    null
+                    audioUrl,
+
+                idiomaOrigem:
+                    idiomaOrigem,
+
+                idiomaDestino:
+                    idiomaDestino
 
             });
 
@@ -865,16 +960,17 @@ Retorne somente a tradução.`,
         } catch (error) {
 
             console.error(
-                "Erro LIVE:",
+                "ERRO LIVE:",
                 error
             );
 
             res.status(500).json({
 
-                success: false,
+                success:
+                    false,
 
                 error:
-                    "Erro ao traduzir o áudio.",
+                    "Erro ao processar a tradução da LIVE.",
 
                 details:
                     error.message
@@ -882,11 +978,6 @@ Retorne somente a tradução.`,
             });
 
         } finally {
-
-            /*
-             * Remove o pequeno arquivo
-             * temporário depois do processamento.
-             */
 
             if (
                 audioPath &&
@@ -899,11 +990,11 @@ Retorne somente a tradução.`,
                         audioPath
                     );
 
-                } catch (cleanupError) {
+                } catch (error) {
 
                     console.error(
-                        "Erro ao limpar áudio:",
-                        cleanupError
+                        "Erro ao apagar áudio:",
+                        error
                     );
 
                 }
@@ -914,33 +1005,4 @@ Retorne somente a tradução.`,
 
     }
 );
-app.listen(
-    PORT,
-    () => {
 
-        console.log("");
-        console.log(
-            "================================"
-        );
-
-        console.log(
-            "       TRADUTOR IA"
-        );
-
-        console.log(
-            "================================"
-        );
-
-        console.log(
-            `Servidor na porta ${PORT}`
-        );
-
-        console.log(
-            "OpenAI:",
-            process.env.OPENAI_API_KEY
-                ? "CONFIGURADA"
-                : "NÃO CONFIGURADA"
-        );
-
-    }
-);
