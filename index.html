@@ -1,2298 +1,2764 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
+  <title>Keep - Tradutor Universal</title>
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<meta
+  <meta
     name="description"
-    content="Tradutor IA para vídeos, YouTube e tradução em tempo real."
->
+    content="Tradutor universal de vídeos com tradução e dublagem por inteligência artificial."
+  >
 
-<title>
-Tradutor IA
-</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-<style>
+    :root {
+      --bg: #070b14;
+      --card: #101827;
+      --card2: #151f31;
+      --border: rgba(255,255,255,.08);
+      --text: #ffffff;
+      --muted: #9aa7bb;
+      --primary: #6c63ff;
+      --primary2: #8b5cf6;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --blue: #3b82f6;
+    }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-:root {
-
-    --bg: #050816;
-    --card: #0d1426;
-    --card2: #111a30;
-    --border: #24304a;
-
-    --text: #f8fafc;
-    --muted: #94a3b8;
-
-    --primary: #6366f1;
-    --secondary: #8b5cf6;
-
-    --green: #22c55e;
-    --red: #ef4444;
-
-}
-
-body {
-
-    min-height: 100vh;
-
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
-    color: var(--text);
-
-    background:
-
-        radial-gradient(
-            circle at 10% 0%,
-            #172554,
-            transparent 32%
-        ),
-
-        radial-gradient(
-            circle at 90% 20%,
-            #312e81,
-            transparent 28%
-        ),
-
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(108,99,255,.18), transparent 35%),
+        radial-gradient(circle at top right, rgba(59,130,246,.12), transparent 30%),
         var(--bg);
-
-}
-
-/* ================================
-   HEADER
-================================ */
-
-header {
-
-    padding: 20px 0;
-
-    border-bottom:
-        1px solid
-        rgba(255,255,255,.06);
-
-}
-
-.container {
-
-    width:
-        min(1150px, 92%);
-
-    margin: auto;
-
-}
-
-.nav {
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    justify-content:
-        space-between;
-
-}
-
-.logo {
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    gap: 12px;
-
-}
-
-.logo-icon {
-
-    width: 45px;
-    height: 45px;
-
-    display: grid;
-
-    place-items: center;
-
-    border-radius: 14px;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--primary),
-            var(--secondary)
-        );
-
-    font-size: 22px;
-
-}
-
-.logo strong {
-
-    font-size: 19px;
-
-}
-
-.logo small {
-
-    display: block;
-
-    margin-top: 4px;
-
-    color: var(--muted);
-
-}
-
-.server-status {
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    gap: 8px;
-
-    padding:
-        8px 12px;
-
-    border:
-        1px solid
-        var(--border);
-
-    border-radius:
-        999px;
-
-    color:
-        var(--muted);
-
-    font-size:
-        12px;
-
-}
-
-.status-dot {
-
-    width: 8px;
-    height: 8px;
-
-    border-radius: 50%;
-
-    background:
-        var(--red);
-
-}
-
-.server-status.online
-.status-dot {
-
-    background:
-        var(--green);
-
-}
-
-/* ================================
-   HERO
-================================ */
-
-.hero {
-
-    text-align: center;
-
-    padding:
-        55px 0 30px;
-
-}
-
-.badge {
-
-    display:
-        inline-block;
-
-    padding:
-        7px 13px;
-
-    border-radius:
-        999px;
-
-    background:
-        rgba(99,102,241,.12);
-
-    border:
-        1px solid
-        rgba(99,102,241,.25);
-
-    color:
-        #c7d2fe;
-
-    font-size:
-        12px;
-
-    font-weight:
-        900;
-
-}
-
-.hero h1 {
-
-    max-width:
-        800px;
-
-    margin:
-        18px auto 0;
-
-    font-size:
-        clamp(35px, 6vw, 62px);
-
-    line-height:
-        1.04;
-
-    letter-spacing:
-        -2px;
-
-}
-
-.gradient {
-
-    background:
-        linear-gradient(
-            90deg,
-            #818cf8,
-            #c084fc,
-            #f0abfc
-        );
-
-    -webkit-background-clip:
-        text;
-
-    background-clip:
-        text;
-
-    color:
-        transparent;
-
-}
-
-.hero p {
-
-    max-width:
-        680px;
-
-    margin:
-        18px auto;
-
-    color:
-        var(--muted);
-
-    line-height:
-        1.7;
-
-}
-
-/* ================================
-   MAIN
-================================ */
-
-main {
-
-    padding:
-        15px 0 70px;
-
-}
-
-.card {
-
-    padding:
-        22px;
-
-    background:
-        rgba(13,20,38,.92);
-
-    border:
-        1px solid
-        var(--border);
-
-    border-radius:
-        24px;
-
-    box-shadow:
-        0 25px 80px
-        rgba(0,0,0,.3);
-
-}
-
-/* ================================
-   URL
-================================ */
-
-.url-area {
-
-    display:
-        flex;
-
-    gap:
-        10px;
-
-}
-
-.url-area input {
-
-    flex: 1;
-
-    min-width: 0;
-
-    padding:
-        16px;
-
-    background:
-        #080d1b;
-
-    color:
-        white;
-
-    border:
-        1px solid
-        var(--border);
-
-    border-radius:
-        13px;
-
-    outline:
-        none;
-
-}
-
-.url-area input:focus {
-
-    border-color:
-        var(--primary);
-
-}
-
-.open-button {
-
-    padding:
-        0 23px;
-
-    border:
-        0;
-
-    border-radius:
-        13px;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--primary),
-            var(--secondary)
-        );
-
-    color:
-        white;
-
-    font-weight:
-        900;
-
-}
-
-/* ================================
-   SOURCE BUTTONS
-================================ */
-
-.sources {
-
-    display:
-        grid;
-
-    grid-template-columns:
-        repeat(3, 1fr);
-
-    gap:
-        10px;
-
-    margin-top:
-        15px;
-
-}
-
-.source-button {
-
-    padding:
-        13px;
-
-    border:
-        1px solid
-        var(--border);
-
-    border-radius:
-        12px;
-
-    background:
-        #0a1020;
-
-    color:
-        #cbd5e1;
-
-    font-weight:
-        800;
-
-}
-
-.source-button.active {
-
-    border-color:
-        var(--primary);
-
-    background:
-        rgba(99,102,241,.12);
-
-    color:
-        white;
-
-}
-
-/* ================================
-   VIDEO AREA
-================================ */
-
-.video-wrapper {
-
-    margin-top:
-        20px;
-
-    overflow:
-        hidden;
-
-    background:
-        #000;
-
-    border:
-        1px solid
-        var(--border);
-
-    border-radius:
-        18px;
-
-    min-height:
-        350px;
-
-}
-
-.video-container {
-
-    width: 100%;
-
-    aspect-ratio:
-        16 / 9;
-
-    background:
-        #000;
-
-}
-
-video {
-
-    display:
-        block;
-
-    width:
-        100%;
-
-    height:
-        100%;
-
-    background:
-        #000;
-
-}
-
-.youtube-container {
-
-    display:
-        none;
-
-    width: 100%;
-
-    aspect-ratio:
-        16 / 9;
-
-}
-
-.youtube-container iframe {
-
-    width:
-        100%;
-
-    height:
-        100%;
-
-    border:
-        0;
-
-}
-
-.empty-player {
-
-    min-height:
-        350px;
-
-    display:
-        flex;
-
-    flex-direction:
-        column;
-
-    align-items:
-        center;
-
-    justify-content:
-        center;
-
-    gap:
-        10px;
-
-    color:
-        var(--muted);
-
-}
-
-.empty-player .big {
-
-    font-size:
-        55px;
-
-}
-
-.empty-player strong {
-
-    color:
-        white;
-
-}
-
-/* ================================
-   LIVE
-================================ */
-
-.live {
-
-    margin-top:
-        20px;
-
-    padding:
-        22px;
-
-    border:
-        1px solid
-        var(--border);
-
-    border-radius:
-        20px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #111a30,
-            #080e1c
-        );
-
-}
-
-.live-header {
-
-    display:
-        flex;
-
-    align-items:
-        flex-start;
-
-    justify-content:
-        space-between;
-
-    gap:
-        20px;
-
-}
-
-.live-title {
-
-    display:
-        flex;
-
-    gap:
-        12px;
-
-}
-
-.live-icon {
-
-    width:
-        45px;
-
-    height:
-        45px;
-
-    display:
-        grid;
-
-    place-items:
-        center;
-
-    border-radius:
-        13px;
-
-    background:
-        rgba(239,68,68,.12);
-
-}
-
-.live-title h2 {
-
-    font-size:
-        21px;
-
-}
-
-.live-title p {
-
-    margin-top:
-        5px;
-
-    color:
-        var(--muted);
-
-    font-size:
-        13px;
-
-}
-
-.live-badge {
-
-    padding:
-        7px 11px;
-
-    border-radius:
-        999px;
-
-    background:
-        rgba(34,197,94,.1);
-
-    color:
-        #86efac;
-
-    font-size:
-        11px;
-
-    font-weight:
-        900;
-
-}
-
-.live-buttons {
-
-    display:
-        grid;
-
-    grid-template-columns:
-        1fr 160px;
-
-    gap:
-        10px;
-
-    margin-top:
-        18px;
-
-}
-
-.live-buttons button {
-
-    padding:
-        14px;
-
-    border:
-        0;
-
-    border-radius:
-        12px;
-
-    font-weight:
-        900;
-
-}
-
-.share {
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--primary),
-            var(--secondary)
-        );
-
-    color:
-        white;
-
-}
-
-.stop {
-
-    background:
-        #1e293b;
-
-    color:
-        white;
-
-}
-
-.stop:disabled {
-
-    opacity:
-        .4;
-
-}
-
-/* ================================
-   LANGUAGES
-================================ */
-
-.languages {
-
-    display:
-        grid;
-
-    grid-template-columns:
-        1fr 1fr;
-
-    gap:
-        12px;
-
-    margin-top:
-        15px;
-
-}
-
-.field label {
-
-    display:
-        block;
-
-    margin-bottom:
-        7px;
-
-    color:
-        #cbd5e1;
-
-    font-size:
-        12px;
-
-    font-weight:
-        800;
-
-}
-
-.field select {
-
-    width:
-        100%;
-
-    padding:
-        13px;
-
-    background:
-        #080d1b;
-
-    color:
-        white;
-
-    border:
-        1px solid
-        var(--border);
-
-    border-radius:
-        11px;
-
-}
-
-/* ================================
-   TRANSLATION
-================================ */
-
-.translation {
-
-    margin-top:
-        15px;
-
-    padding:
-        18px;
-
-    border-radius:
-        15px;
-
-    background:
-        #080d1b;
-
-    border:
-        1px solid
-        var(--border);
-
-}
-
-.translation-head {
-
-    display:
-        flex;
-
-    justify-content:
-        space-between;
-
-    color:
-        #cbd5e1;
-
-    font-size:
-        12px;
-
-    font-weight:
-        900;
-
-}
-
-#translation {
-
-    min-height:
-        70px;
-
-    margin-top:
-        12px;
-
-    padding:
-        14px;
-
-    background:
-        #020617;
-
-    border-radius:
-        10px;
-
-    line-height:
-        1.6;
-
-}
-
-/* ================================
-   AUDIO STATUS
-================================ */
-
-.audio-status {
-
-    display:
-        flex;
-
-    justify-content:
-        space-between;
-
-    margin-top:
-        12px;
-
-    padding:
-        14px;
-
-    background:
-        rgba(99,102,241,.08);
-
-    border-radius:
-        12px;
-
-    color:
-        #c7d2fe;
-
-    font-size:
-        13px;
-
-}
-
-.notice {
-
-    margin-top:
-        13px;
-
-    padding:
-        13px;
-
-    border-radius:
-        10px;
-
-    background:
-        rgba(245,158,11,.08);
-
-    color:
-        #fcd34d;
-
-    font-size:
-        12px;
-
-    line-height:
-        1.6;
-
-}
-
-/* ================================
-   RESPONSIVE
-================================ */
-
-@media(max-width:700px) {
-
-    .server-status {
-
-        display:
-            none;
-
+      color: var(--text);
+      min-height: 100vh;
     }
 
-    .url-area {
-
-        flex-direction:
-            column;
-
+    button,
+    input,
+    select {
+      font: inherit;
     }
 
-    .open-button {
-
-        padding:
-            14px;
-
+    button {
+      cursor: pointer;
     }
 
-    .sources {
-
-        grid-template-columns:
-            1fr;
-
+    .app {
+      width: 100%;
+      min-height: 100vh;
     }
 
-    .live-header {
+    /* HEADER */
 
-        flex-direction:
-            column;
-
+    header {
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(7,11,20,.85);
+      backdrop-filter: blur(18px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
-    .live-buttons {
-
-        grid-template-columns:
-            1fr;
-
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 21px;
     }
 
-    .languages {
-
-        grid-template-columns:
-            1fr;
-
+    .logo-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      box-shadow: 0 8px 25px rgba(108,99,255,.35);
+      font-size: 21px;
     }
 
-}
+    .logo small {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 500;
+      margin-top: 2px;
+    }
 
-</style>
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(34,197,94,.09);
+      color: #86efac;
+      border: 1px solid rgba(34,197,94,.15);
+      padding: 8px 12px;
+      border-radius: 30px;
+      font-size: 12px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 10px var(--success);
+    }
+
+    /* LAYOUT */
+
+    .container {
+      width: min(1200px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 35px 0 60px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 5vw, 50px);
+      line-height: 1.1;
+      margin-bottom: 13px;
+      background: linear-gradient(90deg, #fff, #a5b4fc, #c4b5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      color: var(--muted);
+      max-width: 650px;
+      margin: auto;
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    /* GRID */
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .card {
+      background: rgba(16,24,39,.88);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.22);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-title {
+      font-weight: 700;
+      font-size: 17px;
+    }
+
+    .card-subtitle {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 5px;
+      line-height: 1.5;
+    }
+
+    .card-body {
+      padding: 20px;
+    }
+
+    /* TABS */
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+      background: #090e18;
+      padding: 6px;
+      border-radius: 14px;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      border: 0;
+      color: var(--muted);
+      background: transparent;
+      border-radius: 10px;
+      padding: 11px 6px;
+      font-size: 12px;
+      transition: .2s;
+    }
+
+    .tab.active {
+      color: white;
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      box-shadow: 0 5px 20px rgba(108,99,255,.25);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* FORM */
+
+    .form-group {
+      margin-bottom: 17px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #d7deea;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    input,
+    select {
+      width: 100%;
+      height: 48px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      outline: none;
+      background: #0a111e;
+      color: white;
+      padding: 0 14px;
+      transition: .2s;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: rgba(108,99,255,.7);
+      box-shadow: 0 0 0 3px rgba(108,99,255,.1);
+    }
+
+    input::placeholder {
+      color: #657187;
+    }
+
+    select option {
+      background: #101827;
+    }
+
+    /* BUTTONS */
+
+    .btn {
+      width: 100%;
+      min-height: 48px;
+      border: 0;
+      border-radius: 13px;
+      padding: 12px 16px;
+      color: white;
+      font-weight: 700;
+      transition: .2s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: scale(.98);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      box-shadow: 0 10px 25px rgba(108,99,255,.25);
+    }
+
+    .btn-blue {
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+    }
+
+    .btn-green {
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+    }
+
+    .btn-secondary {
+      background: #1b2638;
+      border: 1px solid var(--border);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #dc2626, #ef4444);
+    }
+
+    .btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* UPLOAD */
+
+    .upload-area {
+      border: 1px dashed rgba(255,255,255,.16);
+      border-radius: 16px;
+      padding: 25px 15px;
+      text-align: center;
+      background: rgba(255,255,255,.025);
+      margin-bottom: 15px;
+    }
+
+    .upload-icon {
+      font-size: 35px;
+      margin-bottom: 10px;
+    }
+
+    .upload-area p {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+      margin-bottom: 15px;
+    }
+
+    .file-name {
+      color: #a5b4fc;
+      font-size: 12px;
+      margin-top: 10px;
+      word-break: break-all;
+    }
+
+    #videoFile {
+      display: none;
+    }
+
+    /* VIDEO */
+
+    .video-card {
+      min-height: 500px;
+    }
+
+    .video-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #03050a;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .video-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+      background:
+        radial-gradient(circle at center, rgba(108,99,255,.13), transparent 45%),
+        #03050a;
+    }
+
+    .placeholder-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 22px;
+      background: rgba(108,99,255,.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      margin-bottom: 15px;
+    }
+
+    .video-placeholder h3 {
+      font-size: 17px;
+      margin-bottom: 8px;
+    }
+
+    .video-placeholder p {
+      color: var(--muted);
+      font-size: 12px;
+      max-width: 360px;
+      line-height: 1.5;
+    }
+
+    /* VIDEO CONTROLS */
+
+    .video-info {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .info-box {
+      background: #0b121f;
+      border: 1px solid var(--border);
+      padding: 13px;
+      border-radius: 12px;
+    }
+
+    .info-label {
+      color: var(--muted);
+      font-size: 10px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .info-value {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* LANGUAGE */
+
+    .language-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    /* SWITCH */
+
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #0b121f;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 13px;
+      margin-bottom: 15px;
+    }
+
+    .switch-text strong {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 3px;
+    }
+
+    .switch-text span {
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      display: none;
+    }
+
+    .slider {
+      position: absolute;
+      inset: 0;
+      background: #273449;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .slider:before {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      left: 3px;
+      top: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: .2s;
+    }
+
+    .switch input:checked + .slider {
+      background: var(--primary);
+    }
+
+    .switch input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    /* PROGRESS */
+
+    .progress-section {
+      margin-top: 18px;
+      display: none;
+    }
+
+    .progress-section.show {
+      display: block;
+    }
+
+    .progress-top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 11px;
+    }
+
+    .progress-top span:first-child {
+      color: #dbe4f3;
+    }
+
+    .progress-top span:last-child {
+      color: #a5b4fc;
+    }
+
+    .progress {
+      width: 100%;
+      height: 7px;
+      background: #202b3d;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--primary), #a78bfa);
+      transition: width .4s;
+    }
+
+    /* LOG */
+
+    .log {
+      margin-top: 15px;
+      background: #050911;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      max-height: 130px;
+      overflow-y: auto;
+      font-family: monospace;
+      font-size: 10px;
+      color: #93a4bd;
+      line-height: 1.7;
+    }
+
+    .log-line {
+      margin-bottom: 2px;
+    }
+
+    .log-success {
+      color: #86efac;
+    }
+
+    .log-error {
+      color: #fca5a5;
+    }
+
+    .log-info {
+      color: #93c5fd;
+    }
+
+    /* YOUTUBE NOTE */
+
+    .notice {
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(59,130,246,.07);
+      border: 1px solid rgba(59,130,246,.15);
+      color: #a8c7fa;
+      font-size: 11px;
+      line-height: 1.5;
+      margin-bottom: 15px;
+    }
+
+    /* SCREEN SHARE */
+
+    .screen-info {
+      display: none;
+      padding: 12px;
+      background: rgba(34,197,94,.07);
+      border: 1px solid rgba(34,197,94,.15);
+      border-radius: 12px;
+      color: #86efac;
+      font-size: 11px;
+      margin-top: 12px;
+      line-height: 1.5;
+    }
+
+    .screen-info.show {
+      display: block;
+    }
+
+    /* FOOTER */
+
+    footer {
+      text-align: center;
+      color: #64748b;
+      font-size: 11px;
+      padding: 25px 15px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 900px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .video-card {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 600px) {
+      header {
+        padding: 0 14px;
+      }
+
+      .logo span {
+        font-size: 16px;
+      }
+
+      .status {
+        padding: 7px 9px;
+      }
+
+      .status-text {
+        display: none;
+      }
+
+      .container {
+        width: min(100% - 20px, 1200px);
+        padding-top: 25px;
+      }
+
+      .hero {
+        margin-bottom: 25px;
+      }
+
+      .hero h1 {
+        font-size: 31px;
+      }
+
+      .card {
+        border-radius: 17px;
+      }
+
+      .card-header,
+      .card-body {
+        padding: 15px;
+      }
+
+      .video-info {
+        grid-template-columns: 1fr;
+      }
+
+      .language-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .tabs {
+        gap: 4px;
+      }
+
+      .tab {
+        font-size: 10px;
+      }
+    }
+  </style>
 </head>
-
 
 <body>
 
+<div class="app">
 
-<header>
-
-<div class="container nav">
-
+  <!-- HEADER -->
+  <header>
     <div class="logo">
-
-        <div class="logo-icon">
-            🌎
-        </div>
-
-        <div>
-
-            <strong>
-                Tradutor IA
-            </strong>
-
-            <small>
-                Tradução inteligente em tempo real
-            </small>
-
-        </div>
-
+      <div class="logo-icon">🌎</div>
+      <div>
+        <span>Keep</span>
+        <small>Tradutor Universal</small>
+      </div>
     </div>
 
-
-    <div
-        id="serverStatus"
-        class="server-status"
-    >
-
+    <div class="header-right">
+      <div class="status">
         <span class="status-dot"></span>
-
-        Verificando servidor...
-
+        <span class="status-text">Sistema pronto</span>
+      </div>
     </div>
-
-</div>
-
-</header>
+  </header>
 
 
-<section class="hero">
+  <!-- CONTEÚDO -->
+  <main class="container">
 
-<div class="container">
-
-    <span class="badge">
-        ⚡ TRADUÇÃO EM TEMPO REAL
-    </span>
-
-    <h1>
-
-        Assista.
-        <span class="gradient">
-            Traduza.
-        </span>
-        Entenda.
-
-    </h1>
-
-    <p>
-
-        Abra vídeos compatíveis, assista ao conteúdo
-        e use o compartilhamento de áudio para receber
-        a tradução enquanto o vídeo continua tocando.
-
-    </p>
-
-</div>
-
-</section>
+    <section class="hero">
+      <h1>Traduza e duble seus vídeos</h1>
+      <p>
+        Envie um vídeo, use um link ou compartilhe sua tela.
+        O sistema está preparado para receber o áudio, transcrever,
+        traduzir e gerar a dublagem por IA.
+      </p>
+    </section>
 
 
-<main>
+    <div class="main-grid">
 
-<div class="container">
+      <!-- PAINEL ESQUERDO -->
+      <section class="card">
 
-<div class="card">
-
-
-<!-- =================================
-     URL
-================================= -->
-
-<div class="url-area">
-
-    <input
-        id="videoUrl"
-        type="url"
-        placeholder="Cole um link do YouTube ou um link .mp4..."
-    >
-
-    <button
-        id="openButton"
-        class="open-button"
-    >
-        ▶️ Abrir vídeo
-    </button>
-
-</div>
-
-
-<!-- =================================
-     SOURCES
-================================= -->
-
-<div class="sources">
-
-    <button
-        id="youtubeButton"
-        class="source-button"
-    >
-        ▶️ YouTube
-    </button>
-
-    <button
-        id="mp4Button"
-        class="source-button"
-    >
-        🎬 MP4 / WebM
-    </button>
-
-    <button
-        id="shareSourceButton"
-        class="source-button"
-    >
-        🖥️ Tela + áudio
-    </button>
-
-</div>
-
-
-<!-- =================================
-     PLAYER
-================================= -->
-
-<div class="video-wrapper">
-
-
-    <div
-        id="emptyPlayer"
-        class="empty-player"
-    >
-
-        <div class="big">
-            📺
+        <div class="card-header">
+          <div class="card-title">Adicionar conteúdo</div>
+          <div class="card-subtitle">
+            Escolha como você deseja enviar o conteúdo para tradução.
+          </div>
         </div>
 
-        <strong>
-            Seu vídeo aparecerá aqui
-        </strong>
+        <div class="card-body">
 
-        <span>
-            Cole um link acima para começar.
-        </span>
+          <!-- ABAS -->
+          <div class="tabs">
 
-    </div>
+            <button
+              class="tab active"
+              data-tab="youtube"
+              type="button"
+            >
+              ▶️ YouTube
+            </button>
+
+            <button
+              class="tab"
+              data-tab="mp4"
+              type="button"
+            >
+              📁 MP4
+            </button>
+
+            <button
+              class="tab"
+              data-tab="screen"
+              type="button"
+            >
+              🖥️ Tela
+            </button>
+
+          </div>
 
 
-    <div
-        id="videoContainer"
-        class="video-container"
-        style="display:none;"
-    >
+          <!-- YOUTUBE -->
+          <div
+            id="youtube"
+            class="tab-panel active"
+          >
 
-        <video
+            <div class="form-group">
+
+              <label for="youtubeUrl">
+                Link do YouTube
+              </label>
+
+              <input
+                id="youtubeUrl"
+                type="url"
+                placeholder="https://www.youtube.com/watch?v=..."
+                autocomplete="off"
+              >
+
+            </div>
+
+            <div class="notice">
+              💡 O vídeo poderá ser exibido no painel. Para processamento
+              real do áudio do YouTube, o backend deverá fazer a captura
+              permitida do conteúdo e enviar o áudio para transcrição.
+            </div>
+
+            <button
+              id="loadYoutubeBtn"
+              class="btn btn-primary"
+              type="button"
+            >
+              ▶️ Carregar vídeo
+            </button>
+
+          </div>
+
+
+          <!-- MP4 -->
+          <div
+            id="mp4"
+            class="tab-panel"
+          >
+
+            <div class="upload-area">
+
+              <div class="upload-icon">
+                🎬
+              </div>
+
+              <p>
+                Selecione um vídeo MP4 armazenado no seu celular ou computador.
+              </p>
+
+              <label
+                for="videoFile"
+                class="btn btn-secondary"
+                style="display:flex; cursor:pointer;"
+              >
+                📁 Escolher vídeo
+              </label>
+
+              <input
+                id="videoFile"
+                type="file"
+                accept="video/mp4,video/webm,video/quicktime,video/*"
+              >
+
+              <div
+                id="fileName"
+                class="file-name"
+              >
+                Nenhum arquivo selecionado
+              </div>
+
+            </div>
+
+            <button
+              id="loadMp4Btn"
+              class="btn btn-primary"
+              type="button"
+              disabled
+            >
+              🎬 Abrir vídeo
+            </button>
+
+          </div>
+
+
+          <!-- COMPARTILHAMENTO DE TELA -->
+          <div
+            id="screen"
+            class="tab-panel"
+          >
+
+            <div class="notice">
+              🖥️ Compartilhe uma janela, aba ou a tela inteira.
+              Se o navegador permitir, marque a opção para compartilhar
+              também o áudio.
+            </div>
+
+            <button
+              id="startScreenBtn"
+              class="btn btn-blue"
+              type="button"
+            >
+              🖥️ Compartilhar tela + áudio
+            </button>
+
+            <button
+              id="stopScreenBtn"
+              class="btn btn-danger"
+              type="button"
+              style="display:none; margin-top:10px;"
+            >
+              ⏹️ Parar compartilhamento
+            </button>
+
+            <div
+              id="screenInfo"
+              class="screen-info"
+            >
+              🟢 Captura de tela ativa.
+              O áudio compartilhado será preparado para processamento.
+            </div>
+
+          </div>
+
+
+          <!-- CONFIGURAÇÕES -->
+          <div style="height:1px; background:var(--border); margin:22px 0;"></div>
+
+          <div class="form-group">
+
+            <label>
+              Idioma original
+            </label>
+
+            <select id="sourceLanguage">
+
+              <option value="auto">
+                🔍 Detectar automaticamente
+              </option>
+
+              <option value="pt-BR">
+                🇧🇷 Português
+              </option>
+
+              <option value="en">
+                🇺🇸 Inglês
+              </option>
+
+              <option value="es">
+                🇪🇸 Espanhol
+              </option>
+
+              <option value="fr">
+                🇫🇷 Francês
+              </option>
+
+              <option value="de">
+                🇩🇪 Alemão
+              </option>
+
+              <option value="it">
+                🇮🇹 Italiano
+              </option>
+
+              <option value="ja">
+                🇯🇵 Japonês
+              </option>
+
+              <option value="ko">
+                🇰🇷 Coreano
+              </option>
+
+              <option value="zh">
+                🇨🇳 Chinês
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label>
+              Traduzir para
+            </label>
+
+            <select id="targetLanguage">
+
+              <option value="pt-BR">
+                🇧🇷 Português
+              </option>
+
+              <option value="en">
+                🇺🇸 Inglês
+              </option>
+
+              <option value="es">
+                🇪🇸 Espanhol
+              </option>
+
+              <option value="fr">
+                🇫🇷 Francês
+              </option>
+
+              <option value="de">
+                🇩🇪 Alemão
+              </option>
+
+              <option value="it">
+                🇮🇹 Italiano
+              </option>
+
+              <option value="ja">
+                🇯🇵 Japonês
+              </option>
+
+              <option value="ko">
+                🇰🇷 Coreano
+              </option>
+
+              <option value="zh">
+                🇨🇳 Chinês
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="switch-row">
+
+            <div class="switch-text">
+              <strong>🔊 Dublagem por IA</strong>
+              <span>Gerar voz traduzida</span>
+            </div>
+
+            <label class="switch">
+              <input
+                id="dubbingEnabled"
+                type="checkbox"
+                checked
+              >
+              <span class="slider"></span>
+            </label>
+
+          </div>
+
+
+          <div class="switch-row">
+
+            <div class="switch-text">
+              <strong>📝 Transcrição automática</strong>
+              <span>Converter fala em texto</span>
+            </div>
+
+            <label class="switch">
+              <input
+                id="transcriptionEnabled"
+                type="checkbox"
+                checked
+              >
+              <span class="slider"></span>
+            </label>
+
+          </div>
+
+
+          <button
+            id="translateBtn"
+            class="btn btn-green"
+            type="button"
+          >
+            🌎 Iniciar tradução e dublagem
+          </button>
+
+
+          <!-- PROGRESSO -->
+          <div
+            id="progressSection"
+            class="progress-section"
+          >
+
+            <div class="progress-top">
+
+              <span id="progressText">
+                Preparando...
+              </span>
+
+              <span id="progressPercent">
+                0%
+              </span>
+
+            </div>
+
+            <div class="progress">
+              <div
+                id="progressBar"
+                class="progress-bar"
+              ></div>
+            </div>
+
+          </div>
+
+
+          <!-- LOG -->
+          <div
+            id="log"
+            class="log"
+          >
+            <div class="log-line log-info">
+              Sistema inicializado.
+            </div>
+
+            <div class="log-line">
+              Aguardando conteúdo...
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+
+      <!-- PAINEL DIREITO -->
+      <section class="card video-card">
+
+        <div class="card-header">
+          <div class="card-title">
+            🎬 Reprodução
+          </div>
+
+          <div class="card-subtitle">
+            O vídeo selecionado aparecerá aqui.
+          </div>
+        </div>
+
+
+        <div class="video-container">
+
+          <video
             id="videoPlayer"
             controls
             playsinline
-        ></video>
+            crossorigin="anonymous"
+          ></video>
 
-    </div>
+          <div
+            id="videoPlaceholder"
+            class="video-placeholder"
+          >
 
+            <div class="placeholder-icon">
+              ▶️
+            </div>
 
-    <div
-        id="youtubeContainer"
-        class="youtube-container"
-    >
-
-        <iframe
-            id="youtubeFrame"
-            src=""
-            title="YouTube"
-            allow="
-                autoplay;
-                encrypted-media;
-                picture-in-picture;
-                web-share
-            "
-            allowfullscreen
-        ></iframe>
-
-    </div>
-
-</div>
-
-
-<!-- =================================
-     LIVE
-================================= -->
-
-<section class="live">
-
-
-<div class="live-header">
-
-    <div class="live-title">
-
-        <div class="live-icon">
-            🔴
-        </div>
-
-        <div>
-
-            <h2>
-                Tradução LIVE
-            </h2>
+            <h3>
+              Seu vídeo aparecerá aqui
+            </h3>
 
             <p>
-                O vídeo continua reproduzindo enquanto
-                capturamos o áudio compartilhado.
+              Cole um link do YouTube, selecione um MP4
+              ou compartilhe sua tela para começar.
             </p>
+
+          </div>
 
         </div>
 
-    </div>
 
+        <!-- INFORMAÇÕES -->
+        <div class="video-info">
 
-    <span
-        id="liveBadge"
-        class="live-badge"
-    >
-        AGUARDANDO
-    </span>
+          <div class="info-box">
 
-</div>
+            <div class="info-label">
+              Origem
+            </div>
 
+            <div
+              id="sourceInfo"
+              class="info-value"
+            >
+              Nenhum conteúdo
+            </div>
 
-<div class="live-buttons">
+          </div>
 
-    <button
-        id="shareButton"
-        class="share"
-    >
-        🖥️ Compartilhar tela/áudio
-    </button>
+          <div class="info-box">
 
-    <button
-        id="stopButton"
-        class="stop"
-        disabled
-    >
-        ⏹️ Parar
-    </button>
+            <div class="info-label">
+              Idioma
+            </div>
 
-</div>
+            <div
+              id="languageInfo"
+              class="info-value"
+            >
+              Detectar automaticamente
+            </div>
 
+          </div>
 
-<div class="languages">
+          <div class="info-box">
 
+            <div class="info-label">
+              Tradução
+            </div>
 
-    <div class="field">
+            <div
+              id="targetInfo"
+              class="info-value"
+            >
+              Português
+            </div>
 
-        <label>
-            Idioma original
-        </label>
+          </div>
 
-        <select
-            id="sourceLanguage"
-        >
+          <div class="info-box">
 
-            <option value="auto">
-                Detectar automaticamente
-            </option>
+            <div class="info-label">
+              Status
+            </div>
 
-            <option value="en">
-                🇺🇸 Inglês
-            </option>
+            <div
+              id="videoStatus"
+              class="info-value"
+            >
+              Aguardando
+            </div>
 
-            <option value="es">
-                🇪🇸 Espanhol
-            </option>
+          </div>
 
-            <option value="fr">
-                🇫🇷 Francês
-            </option>
+        </div>
 
-            <option value="de">
-                🇩🇪 Alemão
-            </option>
-
-            <option value="it">
-                🇮🇹 Italiano
-            </option>
-
-            <option value="pt">
-                🇧🇷 Português
-            </option>
-
-            <option value="ja">
-                🇯🇵 Japonês
-            </option>
-
-            <option value="ko">
-                🇰🇷 Coreano
-            </option>
-
-        </select>
+      </section>
 
     </div>
 
+  </main>
 
-    <div class="field">
 
-        <label>
-            Traduzir para
-        </label>
-
-        <select
-            id="targetLanguage"
-        >
-
-            <option value="pt-BR">
-                🇧🇷 Português
-            </option>
-
-            <option value="en">
-                🇺🇸 Inglês
-            </option>
-
-            <option value="es">
-                🇪🇸 Espanhol
-            </option>
-
-            <option value="fr">
-                🇫🇷 Francês
-            </option>
-
-            <option value="de">
-                🇩🇪 Alemão
-            </option>
-
-            <option value="it">
-                🇮🇹 Italiano
-            </option>
-
-            <option value="ja">
-                🇯🇵 Japonês
-            </option>
-
-            <option value="ko">
-                🇰🇷 Coreano
-            </option>
-
-        </select>
-
-    </div>
+  <footer>
+    Keep - Tradutor Universal © 2026
+  </footer>
 
 </div>
-
-
-<div class="translation">
-
-    <div class="translation-head">
-
-        <span>
-            📝 Tradução
-        </span>
-
-        <span id="translationStatus">
-            ⚪ Aguardando áudio
-        </span>
-
-    </div>
-
-
-    <div id="translation">
-
-        A tradução aparecerá aqui...
-
-    </div>
-
-</div>
-
-
-<div class="audio-status">
-
-    <span>
-        🔊 Voz traduzida
-    </span>
-
-    <strong id="voiceStatus">
-        Desativada
-    </strong>
-
-</div>
-
-
-<div class="notice">
-
-    <strong>Como testar:</strong>
-
-    Abra o vídeo, clique em
-    <strong>“Compartilhar tela/áudio”</strong>,
-    escolha a aba que está reproduzindo o vídeo
-    e marque <strong>“Compartilhar áudio”</strong>.
-
-    O player continua separado da captura.
-
-</div>
-
-
-</section>
-
-
-</div>
-
-</div>
-
-</main>
 
 
 <script>
 
-/* =========================================
-   CONFIGURAÇÃO
-========================================= */
+  /*
+   ============================================================
+   CONFIGURAÇÃO DO BACKEND
+   ============================================================
 
-/*
- * COLOQUE AQUI O ENDEREÇO DO SEU BACKEND.
- *
- * Exemplo:
- *
- * const BACKEND_URL =
- * "https://tradutor-ia.onrender.com";
- */
+   TROQUE ESTA URL pelo endereço do seu backend no Render.
 
-const BACKEND_URL =
+   Exemplo:
+
+   const BACKEND_URL =
+     "https://keep-tradutor-backend.onrender.com";
+
+   NÃO coloque sua chave da API da OpenAI aqui.
+
+   A chave deve ficar SOMENTE no backend.
+  */
+
+  const BACKEND_URL =
   "https://repository-name-tradutor-ia-5kne.onrender.com";
 
 
-/* =========================================
+  /*
+   ============================================================
    ELEMENTOS
-========================================= */
+   ============================================================
+  */
 
-const videoUrl =
-    document.getElementById(
-        "videoUrl"
-    );
+  const tabs =
+    document.querySelectorAll(".tab");
 
-const openButton =
-    document.getElementById(
-        "openButton"
-    );
+  const panels =
+    document.querySelectorAll(".tab-panel");
 
-const videoPlayer =
-    document.getElementById(
-        "videoPlayer"
-    );
+  const youtubeUrl =
+    document.getElementById("youtubeUrl");
 
-const videoContainer =
-    document.getElementById(
-        "videoContainer"
-    );
+  const videoFile =
+    document.getElementById("videoFile");
 
-const youtubeContainer =
-    document.getElementById(
-        "youtubeContainer"
-    );
+  const fileName =
+    document.getElementById("fileName");
 
-const youtubeFrame =
-    document.getElementById(
-        "youtubeFrame"
-    );
+  const videoPlayer =
+    document.getElementById("videoPlayer");
 
-const emptyPlayer =
-    document.getElementById(
-        "emptyPlayer"
-    );
+  const videoPlaceholder =
+    document.getElementById("videoPlaceholder");
 
-const youtubeButton =
-    document.getElementById(
-        "youtubeButton"
-    );
+  const sourceInfo =
+    document.getElementById("sourceInfo");
 
-const mp4Button =
-    document.getElementById(
-        "mp4Button"
-    );
+  const languageInfo =
+    document.getElementById("languageInfo");
 
-const shareSourceButton =
-    document.getElementById(
-        "shareSourceButton"
-    );
+  const targetInfo =
+    document.getElementById("targetInfo");
 
-const shareButton =
-    document.getElementById(
-        "shareButton"
-    );
+  const videoStatus =
+    document.getElementById("videoStatus");
 
-const stopButton =
-    document.getElementById(
-        "stopButton"
-    );
+  const translateBtn =
+    document.getElementById("translateBtn");
 
-const sourceLanguage =
-    document.getElementById(
-        "sourceLanguage"
-    );
+  const loadYoutubeBtn =
+    document.getElementById("loadYoutubeBtn");
 
-const targetLanguage =
-    document.getElementById(
-        "targetLanguage"
-    );
+  const loadMp4Btn =
+    document.getElementById("loadMp4Btn");
 
-const translation =
-    document.getElementById(
-        "translation"
-    );
+  const startScreenBtn =
+    document.getElementById("startScreenBtn");
 
-const translationStatus =
-    document.getElementById(
-        "translationStatus"
-    );
+  const stopScreenBtn =
+    document.getElementById("stopScreenBtn");
 
-const voiceStatus =
-    document.getElementById(
-        "voiceStatus"
-    );
+  const screenInfo =
+    document.getElementById("screenInfo");
 
-const liveBadge =
-    document.getElementById(
-        "liveBadge"
-    );
+  const sourceLanguage =
+    document.getElementById("sourceLanguage");
 
-const serverStatus =
-    document.getElementById(
-        "serverStatus"
-    );
+  const targetLanguage =
+    document.getElementById("targetLanguage");
+
+  const dubbingEnabled =
+    document.getElementById("dubbingEnabled");
+
+  const transcriptionEnabled =
+    document.getElementById("transcriptionEnabled");
+
+  const progressSection =
+    document.getElementById("progressSection");
+
+  const progressBar =
+    document.getElementById("progressBar");
+
+  const progressText =
+    document.getElementById("progressText");
+
+  const progressPercent =
+    document.getElementById("progressPercent");
+
+  const log =
+    document.getElementById("log");
 
 
-let sharedStream =
-    null;
+  /*
+   ============================================================
+   VARIÁVEIS
+   ============================================================
+  */
 
-let recorder =
-    null;
+  let currentSource = null;
 
-let sending =
-    false;
+  let currentVideoBlob = null;
+
+  let screenStream = null;
+
+  let mediaRecorder = null;
+
+  let recordedChunks = [];
+
+  let youtubeId = null;
 
 
-/* =========================================
-   SERVIDOR
-========================================= */
+  /*
+   ============================================================
+   ABAS
+   ============================================================
+  */
 
-async function checkServer() {
+  tabs.forEach(tab => {
 
-    try {
+    tab.addEventListener("click", () => {
 
-        const response =
-            await fetch(
-                BACKEND_URL +
-                "/api/status"
-            );
+      const target =
+        tab.dataset.tab;
 
-        if (!response.ok) {
+      tabs.forEach(t => {
+        t.classList.remove("active");
+      });
 
-            throw new Error();
+      panels.forEach(panel => {
+        panel.classList.remove("active");
+      });
 
-        }
+      tab.classList.add("active");
 
-        serverStatus.classList.add(
-            "online"
-        );
+      const panel =
+        document.getElementById(target);
 
-        serverStatus.innerHTML =
-            `
-            <span class="status-dot"></span>
-            Servidor online
-            `;
+      if (panel) {
+        panel.classList.add("active");
+      }
 
-    } catch (error) {
+    });
 
-        serverStatus.innerHTML =
-            `
-            <span class="status-dot"></span>
-            Backend desconectado
-            `;
+  });
 
+
+  /*
+   ============================================================
+   LOG
+   ============================================================
+  */
+
+  function addLog(message, type = "info") {
+
+    const line =
+      document.createElement("div");
+
+    line.className =
+      "log-line log-" + type;
+
+    const time =
+      new Date().toLocaleTimeString("pt-BR");
+
+    line.textContent =
+      `[${time}] ${message}`;
+
+    log.appendChild(line);
+
+    log.scrollTop =
+      log.scrollHeight;
+
+  }
+
+
+  /*
+   ============================================================
+   PROGRESSO
+   ============================================================
+  */
+
+  function setProgress(percent, text) {
+
+    progressSection.classList.add("show");
+
+    const value =
+      Math.max(0, Math.min(100, percent));
+
+    progressBar.style.width =
+      value + "%";
+
+    progressPercent.textContent =
+      Math.round(value) + "%";
+
+    progressText.textContent =
+      text;
+
+  }
+
+
+  /*
+   ============================================================
+   EXTRAIR ID DO YOUTUBE
+   ============================================================
+  */
+
+  function extractYouTubeId(url) {
+
+    if (!url) {
+      return null;
     }
 
-}
-
-checkServer();
-
-
-/* =========================================
-   MOSTRAR MP4
-========================================= */
-
-function showVideoPlayer() {
-
-    emptyPlayer.style.display =
-        "none";
-
-    youtubeContainer.style.display =
-        "none";
-
-    videoContainer.style.display =
-        "block";
-
-}
-
-
-/* =========================================
-   MOSTRAR YOUTUBE
-========================================= */
-
-function showYoutubePlayer() {
-
-    emptyPlayer.style.display =
-        "none";
-
-    videoContainer.style.display =
-        "none";
-
-    youtubeContainer.style.display =
-        "block";
-
-}
-
-
-/* =========================================
-   ESCONDER PLAYERS
-========================================= */
-
-function resetPlayers() {
-
-    emptyPlayer.style.display =
-        "flex";
-
-    videoContainer.style.display =
-        "none";
-
-    youtubeContainer.style.display =
-        "none";
-
-    youtubeFrame.src =
-        "";
-
-    videoPlayer.pause();
-
-    videoPlayer.removeAttribute(
-        "src"
-    );
-
-    videoPlayer.load();
-
-}
-
-
-/* =========================================
-   PEGAR ID YOUTUBE
-========================================= */
-
-function getYouTubeId(url) {
-
     try {
 
-        const parsed =
-            new URL(url);
+      const parsed =
+        new URL(url);
 
-        if (
-            parsed.hostname.includes(
-                "youtu.be"
-            )
-        ) {
+      if (
+        parsed.hostname.includes("youtube.com")
+      ) {
 
-            return parsed.pathname
-                .replace("/", "")
-                .split("?")[0];
+        const id =
+          parsed.searchParams.get("v");
 
+        if (id) {
+          return id;
         }
 
+        const parts =
+          parsed.pathname.split("/");
 
         if (
-            parsed.hostname.includes(
-                "youtube.com"
-            )
+          parts[1] === "shorts" ||
+          parts[1] === "embed"
         ) {
-
-            return parsed.searchParams.get(
-                "v"
-            );
-
+          return parts[2] || null;
         }
+      }
+
+      if (
+        parsed.hostname === "youtu.be"
+      ) {
+
+        return parsed.pathname
+          .replace("/", "")
+          .split("?")[0];
+
+      }
 
     } catch (error) {
 
-        return null;
+      return null;
 
     }
 
     return null;
 
-}
+  }
 
 
-/* =========================================
-   ABRIR URL
-========================================= */
+  /*
+   ============================================================
+   CARREGAR YOUTUBE
+   ============================================================
+  */
 
-openButton.addEventListener(
+  loadYoutubeBtn.addEventListener(
     "click",
-    function () {
+    () => {
 
-        const url =
-            videoUrl.value.trim();
+      const url =
+        youtubeUrl.value.trim();
 
-
-        if (!url) {
-
-            alert(
-                "Cole o link do vídeo primeiro."
-            );
-
-            return;
-
-        }
-
-
-        const youtubeId =
-            getYouTubeId(url);
-
-
-        /* ==============================
-           YOUTUBE
-        ============================== */
-
-        if (youtubeId) {
-
-            youtubeFrame.src =
-                "https://www.youtube.com/embed/" +
-                youtubeId +
-                "?autoplay=1&rel=0";
-
-            showYoutubePlayer();
-
-            return;
-
-        }
-
-
-        /* ==============================
-           VÍDEO DIRETO
-        ============================== */
-
-        const isVideo =
-            /\.(mp4|webm|ogg)(\?.*)?$/i
-                .test(url);
-
-
-        if (isVideo) {
-
-            videoPlayer.src =
-                url;
-
-            showVideoPlayer();
-
-            videoPlayer.play()
-                .catch(
-                    () => {}
-                );
-
-            return;
-
-        }
-
+      if (!url) {
 
         alert(
-            "Esse link não é um vídeo direto nem um link do YouTube. Para Instagram/TikTok, use o compartilhamento da aba/tela com áudio."
+          "Cole primeiro o link do YouTube."
         );
-
-    }
-);
-
-
-/* =========================================
-   BOTÃO YOUTUBE
-========================================= */
-
-youtubeButton.addEventListener(
-    "click",
-    function () {
-
-        videoUrl.focus();
-
-        videoUrl.placeholder =
-            "Cole o link do YouTube aqui...";
-
-    }
-);
-
-
-/* =========================================
-   BOTÃO MP4
-========================================= */
-
-mp4Button.addEventListener(
-    "click",
-    function () {
-
-        videoUrl.focus();
-
-        videoUrl.placeholder =
-            "Cole o link direto .mp4 ou .webm aqui...";
-
-    }
-);
-
-
-/* =========================================
-   COMPARTILHAR TELA + ÁUDIO
-========================================= */
-
-shareSourceButton.addEventListener(
-    "click",
-    startSharing
-);
-
-shareButton.addEventListener(
-    "click",
-    startSharing
-);
-
-
-async function startSharing() {
-
-    try {
-
-        /*
-         * O navegador mostrará:
-         *
-         * Aba
-         * Janela
-         * Tela inteira
-         *
-         * Escolha a aba onde está
-         * o vídeo e marque
-         * "Compartilhar áudio".
-         */
-
-        sharedStream =
-            await navigator.mediaDevices
-                .getDisplayMedia({
-
-                    video: true,
-
-                    audio: true
-
-                });
-
-
-        const audioTracks =
-            sharedStream.getAudioTracks();
-
-
-        if (
-            audioTracks.length === 0
-        ) {
-
-            alert(
-                "Nenhum áudio foi compartilhado. Escolha uma aba e ative “Compartilhar áudio”."
-            );
-
-
-            stopSharing();
-
-            return;
-
-        }
-
-
-        liveBadge.textContent =
-            "🟢 AO VIVO";
-
-
-        translationStatus.textContent =
-            "🟢 Capturando";
-
-
-        voiceStatus.textContent =
-            "🟡 Processando";
-
-
-        shareButton.disabled =
-            true;
-
-        shareSourceButton.disabled =
-            true;
-
-        stopButton.disabled =
-            false;
-
-
-        /*
-         * IMPORTANTE:
-         *
-         * O stream compartilhado NÃO é
-         * colocado no player principal.
-         *
-         * Isso evita substituir/parar
-         * o vídeo que está sendo assistido.
-         */
-
-
-        let mimeType =
-            "audio/webm";
-
-
-        if (
-            !MediaRecorder.isTypeSupported(
-                "audio/webm"
-            )
-        ) {
-
-            mimeType =
-                "";
-
-        }
-
-
-        recorder =
-            new MediaRecorder(
-
-                sharedStream,
-
-                mimeType
-                    ? { mimeType }
-                    : undefined
-
-            );
-
-
-        recorder.ondataavailable =
-            async function (event) {
-
-                if (
-                    event.data &&
-                    event.data.size > 0
-                ) {
-
-                    await sendLiveAudio(
-                        event.data
-                    );
-
-                }
-
-            };
-
-
-        recorder.onerror =
-            function (event) {
-
-                console.error(
-                    "MediaRecorder:",
-                    event
-                );
-
-            };
-
-
-        /*
-         * Envia um pequeno trecho
-         * aproximadamente a cada 3 segundos.
-         */
-
-        recorder.start(
-            3000
-        );
-
-
-        /*
-         * Detecta quando o usuário
-         * encerra o compartilhamento.
-         */
-
-        sharedStream
-            .getTracks()
-            .forEach(
-                track => {
-
-                    track.addEventListener(
-                        "ended",
-                        stopSharing
-                    );
-
-                }
-            );
-
-
-    } catch (error) {
-
-        console.error(
-            error
-        );
-
-        liveBadge.textContent =
-            "AGUARDANDO";
-
-        translationStatus.textContent =
-            "⚪ Aguardando áudio";
-
-        voiceStatus.textContent =
-            "Desativada";
-
-    }
-
-}
-
-
-/* =========================================
-   ENVIAR ÁUDIO
-========================================= */
-
-async function sendLiveAudio(
-    blob
-) {
-
-    if (sending) {
 
         return;
+      }
+
+      const id =
+        extractYouTubeId(url);
+
+      if (!id) {
+
+        alert(
+          "Não consegui identificar esse link do YouTube."
+        );
+
+        return;
+      }
+
+      youtubeId = id;
+
+      currentSource = "youtube";
+
+      sourceInfo.textContent =
+        "YouTube";
+
+      videoStatus.textContent =
+        "Vídeo carregado";
+
+      videoPlaceholder.style.display =
+        "none";
+
+      /*
+       * O elemento <video> não reproduz diretamente
+       * páginas do YouTube.
+       *
+       * Para exibição do vídeo, usamos iframe.
+       */
+
+      let oldFrame =
+        document.getElementById("youtubeFrame");
+
+      if (oldFrame) {
+        oldFrame.remove();
+      }
+
+      videoPlayer.style.display =
+        "none";
+
+      const iframe =
+        document.createElement("iframe");
+
+      iframe.id =
+        "youtubeFrame";
+
+      iframe.src =
+        `https://www.youtube.com/embed/${id}?autoplay=0&rel=0`;
+
+      iframe.allow =
+        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+
+      iframe.allowFullscreen =
+        true;
+
+      iframe.style.width =
+        "100%";
+
+      iframe.style.height =
+        "100%";
+
+      iframe.style.border =
+        "0";
+
+      document
+        .querySelector(".video-container")
+        .appendChild(iframe);
+
+      addLog(
+        "Vídeo do YouTube carregado.",
+        "success"
+      );
+
+    }
+  );
+
+
+  /*
+   ============================================================
+   SELECIONAR MP4
+   ============================================================
+  */
+
+  videoFile.addEventListener(
+    "change",
+    () => {
+
+      const file =
+        videoFile.files[0];
+
+      if (!file) {
+
+        fileName.textContent =
+          "Nenhum arquivo selecionado";
+
+        loadMp4Btn.disabled =
+          true;
+
+        return;
+      }
+
+      fileName.textContent =
+        `${file.name} — ${formatBytes(file.size)}`;
+
+      loadMp4Btn.disabled =
+        false;
+
+      addLog(
+        "Arquivo selecionado: " + file.name,
+        "info"
+      );
+
+    }
+  );
+
+
+  /*
+   ============================================================
+   ABRIR MP4
+   ============================================================
+  */
+
+  loadMp4Btn.addEventListener(
+    "click",
+    () => {
+
+      const file =
+        videoFile.files[0];
+
+      if (!file) {
+        return;
+      }
+
+      currentSource =
+        "mp4";
+
+      currentVideoBlob =
+        file;
+
+      sourceInfo.textContent =
+        "Arquivo MP4";
+
+      videoStatus.textContent =
+        "Vídeo carregado";
+
+      const url =
+        URL.createObjectURL(file);
+
+      const youtubeFrame =
+        document.getElementById(
+          "youtubeFrame"
+        );
+
+      if (youtubeFrame) {
+        youtubeFrame.remove();
+      }
+
+      videoPlayer.style.display =
+        "block";
+
+      videoPlaceholder.style.display =
+        "none";
+
+      videoPlayer.src =
+        url;
+
+      videoPlayer.load();
+
+      addLog(
+        "Vídeo MP4 carregado no player.",
+        "success"
+      );
+
+    }
+  );
+
+
+  /*
+   ============================================================
+   COMPARTILHAMENTO DE TELA
+   ============================================================
+  */
+
+  startScreenBtn.addEventListener(
+    "click",
+    async () => {
+
+      try {
+
+        if (
+          !navigator.mediaDevices ||
+          !navigator.mediaDevices.getDisplayMedia
+        ) {
+
+          alert(
+            "Seu navegador não oferece suporte ao compartilhamento de tela."
+          );
+
+          return;
+        }
+
+        addLog(
+          "Solicitando compartilhamento de tela...",
+          "info"
+        );
+
+        screenStream =
+          await navigator.mediaDevices.getDisplayMedia({
+            video: true,
+            audio: true
+          });
+
+        currentSource =
+          "screen";
+
+        sourceInfo.textContent =
+          "Tela compartilhada";
+
+        videoStatus.textContent =
+          "Capturando tela";
+
+        const youtubeFrame =
+          document.getElementById(
+            "youtubeFrame"
+          );
+
+        if (youtubeFrame) {
+          youtubeFrame.remove();
+        }
+
+        videoPlayer.style.display =
+          "block";
+
+        videoPlaceholder.style.display =
+          "none";
+
+        videoPlayer.srcObject =
+          screenStream;
+
+        await videoPlayer.play();
+
+        startScreenBtn.style.display =
+          "none";
+
+        stopScreenBtn.style.display =
+          "flex";
+
+        screenInfo.classList.add("show");
+
+        addLog(
+          "Compartilhamento de tela iniciado.",
+          "success"
+        );
+
+        const videoTrack =
+          screenStream.getVideoTracks()[0];
+
+        if (videoTrack) {
+
+          videoTrack.addEventListener(
+            "ended",
+            () => {
+
+              stopScreenSharing();
+
+            }
+          );
+
+        }
+
+      } catch (error) {
+
+        addLog(
+          "Compartilhamento cancelado ou bloqueado.",
+          "error"
+        );
+
+        console.error(error);
+
+      }
+
+    }
+  );
+
+
+  /*
+   ============================================================
+   PARAR COMPARTILHAMENTO
+   ============================================================
+  */
+
+  stopScreenBtn.addEventListener(
+    "click",
+    stopScreenSharing
+  );
+
+
+  function stopScreenSharing() {
+
+    if (screenStream) {
+
+      screenStream
+        .getTracks()
+        .forEach(track => {
+          track.stop();
+        });
 
     }
 
+    screenStream =
+      null;
 
-    sending =
-        true;
+    videoPlayer.srcObject =
+      null;
 
+    startScreenBtn.style.display =
+      "flex";
+
+    stopScreenBtn.style.display =
+      "none";
+
+    screenInfo.classList.remove(
+      "show"
+    );
+
+    videoStatus.textContent =
+      "Compartilhamento encerrado";
+
+    addLog(
+      "Compartilhamento de tela encerrado.",
+      "info"
+    );
+
+  }
+
+
+  /*
+   ============================================================
+   FORMATAR TAMANHO DO ARQUIVO
+   ============================================================
+  */
+
+  function formatBytes(bytes) {
+
+    if (!bytes) {
+      return "0 B";
+    }
+
+    const units =
+      ["B", "KB", "MB", "GB"];
+
+    const index =
+      Math.floor(
+        Math.log(bytes) /
+        Math.log(1024)
+      );
+
+    return (
+      parseFloat(
+        (bytes /
+        Math.pow(1024, index))
+        .toFixed(2)
+      ) +
+      " " +
+      units[index]
+    );
+
+  }
+
+
+  /*
+   ============================================================
+   ATUALIZAR INFORMAÇÕES
+   ============================================================
+  */
+
+  function updateLanguageInfo() {
+
+    const source =
+      sourceLanguage.options[
+        sourceLanguage.selectedIndex
+      ].text;
+
+    const target =
+      targetLanguage.options[
+        targetLanguage.selectedIndex
+      ].text;
+
+    languageInfo.textContent =
+      source;
+
+    targetInfo.textContent =
+      target;
+
+  }
+
+
+  sourceLanguage.addEventListener(
+    "change",
+    updateLanguageInfo
+  );
+
+  targetLanguage.addEventListener(
+    "change",
+    updateLanguageInfo
+  );
+
+
+  /*
+   ============================================================
+   TESTAR BACKEND
+   ============================================================
+  */
+
+  async function testBackend() {
+
+    if (
+      BACKEND_URL.includes(
+        "SEU-BACKEND"
+      )
+    ) {
+
+      addLog(
+        "BACKEND_URL ainda não foi configurada.",
+        "error"
+      );
+
+      return false;
+
+    }
 
     try {
 
-        const formData =
-            new FormData();
-
-
-        formData.append(
-            "audio",
-            blob,
-            "live.webm"
+      const response =
+        await fetch(
+          `${BACKEND_URL}/api/health`,
+          {
+            method: "GET"
+          }
         );
 
-
-        formData.append(
-            "idiomaOrigem",
-            sourceLanguage.value
+      if (!response.ok) {
+        throw new Error(
+          "Backend respondeu com erro."
         );
+      }
 
+      addLog(
+        "Backend conectado.",
+        "success"
+      );
 
-        formData.append(
-            "idiomaDestino",
-            targetLanguage.value
-        );
-
-
-        const response =
-            await fetch(
-
-                BACKEND_URL +
-                "/api/live/audio",
-
-                {
-
-                    method:
-                        "POST",
-
-                    body:
-                        formData
-
-                }
-
-            );
-
-
-        const data =
-            await response.json();
-
-
-        if (
-            !response.ok ||
-            !data.success
-        ) {
-
-            throw new Error(
-                data.error ||
-                "Erro no backend."
-            );
-
-        }
-
-
-        /* =========================
-           TEXTO TRADUZIDO
-        ========================= */
-
-        if (
-            data.translation
-        ) {
-
-            translation.textContent =
-                data.translation;
-
-
-            translationStatus.textContent =
-                "🟢 Traduzindo";
-
-        }
-
-
-        /* =========================
-           VOZ
-        ========================= */
-
-        if (
-            data.audioUrl
-        ) {
-
-            voiceStatus.textContent =
-                "🟢 Voz ativa";
-
-
-            const audio =
-                new Audio(
-                    data.audioUrl
-                );
-
-
-            audio.play()
-                .catch(
-                    error => {
-
-                        console.log(
-                            "Reprodução bloqueada:",
-                            error
-                        );
-
-                    }
-                );
-
-        }
-
+      return true;
 
     } catch (error) {
 
-        console.error(
-            "LIVE:",
-            error
-        );
+      addLog(
+        "Não foi possível conectar ao backend.",
+        "error"
+      );
 
+      console.error(error);
 
-        translationStatus.textContent =
-            "🔴 Erro";
-
-
-        translation.textContent =
-            error.message;
-
-
-    } finally {
-
-        sending =
-            false;
+      return false;
 
     }
 
-}
+  }
 
 
-/* =========================================
-   PARAR
-========================================= */
+  /*
+   ============================================================
+   ENVIAR MP4 PARA O BACKEND
+   ============================================================
+  */
 
-stopButton.addEventListener(
-    "click",
-    stopSharing
-);
+  async function sendVideoToBackend() {
+
+    if (!currentVideoBlob) {
+
+      addLog(
+        "Nenhum arquivo MP4 disponível.",
+        "error"
+      );
+
+      return null;
+
+    }
+
+    if (
+      BACKEND_URL.includes(
+        "SEU-BACKEND"
+      )
+    ) {
+
+      addLog(
+        "Configure o BACKEND_URL antes de enviar o vídeo.",
+        "error"
+      );
+
+      return null;
+
+    }
+
+    const formData =
+      new FormData();
+
+    formData.append(
+      "video",
+      currentVideoBlob,
+      currentVideoBlob.name ||
+      "video.mp4"
+    );
+
+    formData.append(
+      "sourceLanguage",
+      sourceLanguage.value
+    );
+
+    formData.append(
+      "targetLanguage",
+      targetLanguage.value
+    );
+
+    formData.append(
+      "dubbing",
+      String(dubbingEnabled.checked)
+    );
+
+    formData.append(
+      "transcription",
+      String(transcriptionEnabled.checked)
+    );
+
+    addLog(
+      "Enviando vídeo para o backend...",
+      "info"
+    );
+
+    setProgress(
+      15,
+      "Enviando vídeo..."
+    );
+
+    const response =
+      await fetch(
+        `${BACKEND_URL}/api/translate-video`,
+        {
+          method: "POST",
+          body: formData
+        }
+      );
+
+    if (!response.ok) {
+
+      const text =
+        await response.text();
+
+      throw new Error(
+        text ||
+        `Erro HTTP ${response.status}`
+      );
+
+    }
+
+    setProgress(
+      70,
+      "Processando tradução..."
+    );
+
+    return await response.json();
+
+  }
 
 
-function stopSharing() {
+  /*
+   ============================================================
+   ENVIAR LINK DO YOUTUBE
+   ============================================================
+  */
 
-    if (recorder) {
+  async function sendYoutubeToBackend() {
 
-        try {
+    if (!youtubeId) {
+
+      addLog(
+        "Nenhum vídeo do YouTube selecionado.",
+        "error"
+      );
+
+      return null;
+
+    }
+
+    if (
+      BACKEND_URL.includes(
+        "SEU-BACKEND"
+      )
+    ) {
+
+      addLog(
+        "Configure o BACKEND_URL antes de usar o backend.",
+        "error"
+      );
+
+      return null;
+
+    }
+
+    setProgress(
+      15,
+      "Enviando link..."
+    );
+
+    const response =
+      await fetch(
+        `${BACKEND_URL}/api/translate-youtube`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+
+            url:
+              youtubeUrl.value.trim(),
+
+            videoId:
+              youtubeId,
+
+            sourceLanguage:
+              sourceLanguage.value,
+
+            targetLanguage:
+              targetLanguage.value,
+
+            dubbing:
+              dubbingEnabled.checked,
+
+            transcription:
+              transcriptionEnabled.checked
+
+          })
+
+        }
+      );
+
+    if (!response.ok) {
+
+      const text =
+        await response.text();
+
+      throw new Error(
+        text ||
+        `Erro HTTP ${response.status}`
+      );
+
+    }
+
+    setProgress(
+      70,
+      "Processando tradução..."
+    );
+
+    return await response.json();
+
+  }
+
+
+  /*
+   ============================================================
+   PROCESSAR COMPARTILHAMENTO
+   ============================================================
+  */
+
+  async function processScreenShare() {
+
+    if (!screenStream) {
+
+      throw new Error(
+        "O compartilhamento de tela não está ativo."
+      );
+
+    }
+
+    const audioTracks =
+      screenStream.getAudioTracks();
+
+    if (!audioTracks.length) {
+
+      addLog(
+        "A tela foi compartilhada, mas o navegador não forneceu uma faixa de áudio.",
+        "error"
+      );
+
+      throw new Error(
+        "Nenhum áudio foi capturado."
+      );
+
+    }
+
+    const stream =
+      new MediaStream([
+        ...audioTracks
+      ]);
+
+    recordedChunks = [];
+
+    let mimeType =
+      "audio/webm";
+
+    if (
+      MediaRecorder.isTypeSupported(
+        "audio/webm;codecs=opus"
+      )
+    ) {
+
+      mimeType =
+        "audio/webm;codecs=opus";
+
+    }
+
+    mediaRecorder =
+      new MediaRecorder(
+        stream,
+        {
+          mimeType
+        }
+      );
+
+    return new Promise(
+      (resolve, reject) => {
+
+        mediaRecorder.ondataavailable =
+          event => {
 
             if (
-                recorder.state !==
-                "inactive"
+              event.data &&
+              event.data.size > 0
             ) {
 
-                recorder.stop();
+              recordedChunks.push(
+                event.data
+              );
 
             }
 
-        } catch (error) {
+          };
 
-            console.log(
-                error
+        mediaRecorder.onerror =
+          event => {
+
+            reject(
+              event.error ||
+              new Error(
+                "Erro na gravação do áudio."
+              )
             );
 
+          };
+
+        mediaRecorder.onstop =
+          async () => {
+
+            try {
+
+              const blob =
+                new Blob(
+                  recordedChunks,
+                  {
+                    type: mimeType
+                  }
+                );
+
+              resolve(blob);
+
+            } catch (error) {
+
+              reject(error);
+
+            }
+
+          };
+
+        mediaRecorder.start();
+
+        addLog(
+          "Capturando áudio da tela...",
+          "success"
+        );
+
+        setProgress(
+          25,
+          "Capturando áudio..."
+        );
+
+        /*
+         * Captura durante alguns segundos como demonstração.
+         *
+         * No backend final podemos trocar por processamento
+         * contínuo em tempo real.
+         */
+
+        setTimeout(
+          () => {
+
+            if (
+              mediaRecorder &&
+              mediaRecorder.state !==
+              "inactive"
+            ) {
+
+              mediaRecorder.stop();
+
+            }
+
+          },
+          10000
+        );
+
+      }
+    );
+
+  }
+
+
+  /*
+   ============================================================
+   ENVIAR ÁUDIO DA TELA
+   ============================================================
+  */
+
+  async function sendScreenAudioToBackend(
+    audioBlob
+  ) {
+
+    if (
+      BACKEND_URL.includes(
+        "SEU-BACKEND"
+      )
+    ) {
+
+      throw new Error(
+        "BACKEND_URL não configurada."
+      );
+
+    }
+
+    const formData =
+      new FormData();
+
+    formData.append(
+      "audio",
+      audioBlob,
+      "screen-audio.webm"
+    );
+
+    formData.append(
+      "sourceLanguage",
+      sourceLanguage.value
+    );
+
+    formData.append(
+      "targetLanguage",
+      targetLanguage.value
+    );
+
+    formData.append(
+      "dubbing",
+      String(dubbingEnabled.checked)
+    );
+
+    formData.append(
+      "transcription",
+      String(transcriptionEnabled.checked)
+    );
+
+    setProgress(
+      55,
+      "Transcrevendo áudio..."
+    );
+
+    const response =
+      await fetch(
+        `${BACKEND_URL}/api/translate-audio`,
+        {
+          method: "POST",
+          body: formData
         }
+      );
 
-        recorder =
-            null;
+    if (!response.ok) {
 
-    }
+      const text =
+        await response.text();
 
-
-    if (sharedStream) {
-
-        sharedStream
-            .getTracks()
-            .forEach(
-                track =>
-                    track.stop()
-            );
-
-        sharedStream =
-            null;
+      throw new Error(
+        text ||
+        `Erro HTTP ${response.status}`
+      );
 
     }
 
+    setProgress(
+      80,
+      "Gerando tradução..."
+    );
 
-    shareButton.disabled =
-        false;
+    return await response.json();
 
-    shareSourceButton.disabled =
-        false;
-
-    stopButton.disabled =
-        true;
-
-
-    liveBadge.textContent =
-        "AGUARDANDO";
+  }
 
 
-    translationStatus.textContent =
-        "⚪ Aguardando áudio";
+  /*
+   ============================================================
+   APLICAR RESULTADO DA TRADUÇÃO
+   ============================================================
+  */
+
+  function applyTranslationResult(
+    result
+  ) {
+
+    if (!result) {
+      return;
+    }
+
+    /*
+     * Se o backend retornar uma URL de áudio,
+     * podemos reproduzir a dublagem.
+     */
+
+    if (result.audioUrl) {
+
+      const audio =
+        new Audio(
+          result.audioUrl
+        );
+
+      audio.play()
+        .catch(() => {
+
+          addLog(
+            "Áudio traduzido pronto. Toque para reproduzir.",
+            "success"
+          );
+
+        });
+
+    }
+
+    /*
+     * Se o backend retornar uma URL de vídeo,
+     * colocamos no player.
+     */
+
+    if (result.videoUrl) {
+
+      const youtubeFrame =
+        document.getElementById(
+          "youtubeFrame"
+        );
+
+      if (youtubeFrame) {
+        youtubeFrame.remove();
+      }
+
+      videoPlayer.style.display =
+        "block";
+
+      videoPlayer.srcObject =
+        null;
+
+      videoPlayer.src =
+        result.videoUrl;
+
+      videoPlayer.load();
+
+      videoPlayer.play()
+        .catch(() => {});
+
+    }
+
+    if (result.transcription) {
+
+      addLog(
+        "Transcrição recebida.",
+        "success"
+      );
+
+    }
+
+    if (result.translation) {
+
+      addLog(
+        "Tradução recebida.",
+        "success"
+      );
+
+    }
+
+  }
 
 
-    voiceStatus.textContent =
-        "Desativada";
+  /*
+   ============================================================
+   BOTÃO PRINCIPAL
+   ============================================================
+  */
 
-}
+  translateBtn.addEventListener(
+    "click",
+    async () => {
+
+      try {
+
+        translateBtn.disabled =
+          true;
+
+        videoStatus.textContent =
+          "Processando";
+
+        addLog(
+          "Iniciando processo de tradução...",
+          "info"
+        );
+
+        updateLanguageInfo();
+
+        setProgress(
+          5,
+          "Iniciando..."
+        );
 
 
-/* =========================================
-   ENTER NO CAMPO
-========================================= */
-
-videoUrl.addEventListener(
-    "keydown",
-    function (event) {
+        /*
+         * YOUTUBE
+         */
 
         if (
-            event.key === "Enter"
+          currentSource === "youtube"
         ) {
 
-            openButton.click();
+          addLog(
+            "Modo YouTube selecionado.",
+            "info"
+          );
+
+          const result =
+            await sendYoutubeToBackend();
+
+          applyTranslationResult(
+            result
+          );
 
         }
 
+
+        /*
+         * MP4
+         */
+
+        else if (
+          currentSource === "mp4"
+        ) {
+
+          addLog(
+            "Modo MP4 selecionado.",
+            "info"
+          );
+
+          const result =
+            await sendVideoToBackend();
+
+          applyTranslationResult(
+            result
+          );
+
+        }
+
+
+        /*
+         * TELA
+         */
+
+        else if (
+          currentSource === "screen"
+        ) {
+
+          addLog(
+            "Modo compartilhamento de tela selecionado.",
+            "info"
+          );
+
+          const audioBlob =
+            await processScreenShare();
+
+          addLog(
+            "Áudio capturado.",
+            "success"
+          );
+
+          const result =
+            await sendScreenAudioToBackend(
+              audioBlob
+            );
+
+          applyTranslationResult(
+            result
+          );
+
+        }
+
+
+        /*
+         * NENHUM CONTEÚDO
+         */
+
+        else {
+
+          alert(
+            "Primeiro carregue um vídeo ou compartilhe sua tela."
+          );
+
+          addLog(
+            "Nenhum conteúdo foi selecionado.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        setProgress(
+          100,
+          "Processamento concluído!"
+        );
+
+        videoStatus.textContent =
+          "Concluído";
+
+        addLog(
+          "Tradução concluída.",
+          "success"
+        );
+
+      } catch (error) {
+
+        console.error(error);
+
+        videoStatus.textContent =
+          "Erro";
+
+        addLog(
+          error.message ||
+          "Erro durante o processamento.",
+          "error"
+        );
+
+        setProgress(
+          0,
+          "Erro no processamento"
+        );
+
+        alert(
+          "Ocorreu um erro: " +
+          (
+            error.message ||
+            "verifique o backend."
+          )
+        );
+
+      } finally {
+
+        translateBtn.disabled =
+          false;
+
+      }
+
     }
-);
+  );
+
+
+  /*
+   ============================================================
+   INICIALIZAÇÃO
+   ============================================================
+  */
+
+  updateLanguageInfo();
+
+  addLog(
+    "Interface carregada.",
+    "success"
+  );
+
+  if (
+    !BACKEND_URL.includes(
+      "SEU-BACKEND"
+    )
+  ) {
+
+    testBackend();
+
+  } else {
+
+    addLog(
+      "Configure o endereço do Render em BACKEND_URL.",
+      "info"
+    );
+
+  }
 
 </script>
 
 </body>
-
     </html>
