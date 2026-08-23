@@ -1,706 +1,1067 @@
-// ============================================================
-// TRADUTOR IA - BACKEND
-// server.js
-// Node.js + Express + OpenAI
-// ============================================================
+require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
-
-// ------------------------------------------------------------
-// OpenAI
-// ------------------------------------------------------------
+const multer = require("multer");
+const fs = require("fs");
+const path = require("path");
+const ffmpeg = require("fluent-ffmpeg");
 const OpenAI = require("openai");
-
-// ------------------------------------------------------------
-// Configuração
-// ------------------------------------------------------------
 
 const app = express();
 
-const PORT = Number(process.env.PORT) || 10000;
+const PORT = process.env.PORT || 3000;
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+/*
+|--------------------------------------------------------------------------
+| OPENAI
+|--------------------------------------------------------------------------
+*/
 
-// ------------------------------------------------------------
-// Cliente OpenAI
-// ------------------------------------------------------------
+const openai = process.env.OPENAI_API_KEY
+  ? new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    })
+  : null;
 
-let openai = null;
 
-if (OPENAI_API_KEY) {
-    openai = new OpenAI({
-        apiKey: OPENAI_API_KEY
-    });
+/*
+|--------------------------------------------------------------------------
+| MIDDLEWARE
+|--------------------------------------------------------------------------
+*/
+
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+
+
+/*
+|--------------------------------------------------------------------------
+| PASTAS
+|--------------------------------------------------------------------------
+*/
+
+const uploadsDir = path.join(__dirname, "uploads");
+const outputsDir = path.join(__dirname, "outputs");
+
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, {
+    recursive: true,
+  });
 }
 
-// ------------------------------------------------------------
-// Middlewares
-// ------------------------------------------------------------
+if (!fs.existsSync(outputsDir)) {
+  fs.mkdirSync(outputsDir, {
+    recursive: true,
+  });
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| ARQUIVOS ESTÁTICOS
+|--------------------------------------------------------------------------
+*/
 
 app.use(
-    cors({
-        origin: "*",
-        methods: ["GET", "POST", "OPTIONS"],
-        allowedHeaders: ["Content-Type", "Authorization"]
-    })
+  "/uploads",
+  express.static(uploadsDir)
 );
 
 app.use(
-    express.json({
-        limit: "25mb"
-    })
+  "/outputs",
+  express.static(outputsDir)
 );
 
-app.use(
-    express.urlencoded({
-        extended: true,
-        limit: "25mb"
-    })
-);
 
-// ------------------------------------------------------------
-// Logs
-// ------------------------------------------------------------
+/*
+|--------------------------------------------------------------------------
+| MULTER
+|--------------------------------------------------------------------------
+*/
 
-app.use((req, res, next) => {
-    console.log(
-        `[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`
-    );
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadsDir);
+  },
 
-    next();
+  filename: function (req, file, cb) {
+    const extension =
+      path.extname(file.originalname) || ".bin";
+
+    const filename =
+      Date.now() +
+      "-" +
+      Math.random()
+        .toString(36)
+        .substring(2, 10) +
+      extension;
+
+    cb(null, filename);
+  },
 });
-
-// ============================================================
-// HOME
-// ============================================================
-
-app.get("/", (req, res) => {
-    res.json({
-        status: "online",
-        message: "Tradutor IA Backend funcionando!",
-        openai: !!OPENAI_API_KEY,
-        service: "tradutor-ia-backend",
-        version: "1.0.0"
-    });
-});
-
-// ============================================================
-// HEALTH CHECK
-// ============================================================
-
-app.get("/health", (req, res) => {
-    res.status(200).json({
-        status: "ok",
-        server: "online",
-        openai: !!OPENAI_API_KEY,
-        timestamp: new Date().toISOString()
-    });
-});
-
-// ============================================================
-// STATUS DA API
-// ============================================================
-
-app.get("/api/status", (req, res) => {
-    res.json({
-        online: true,
-        openai_configurada: !!OPENAI_API_KEY,
-        openai_cliente: !!openai,
-        timestamp: new Date().toISOString()
-    });
-});
-
-// ============================================================
-// TRADUÇÃO DE TEXTO
-// POST /translate
-//
-// Exemplo:
-//
-// {
-//   "text": "Hello, how are you?",
-//   "targetLanguage": "Portuguese"
-// }
-// ============================================================
-
-app.post("/translate", async (req, res) => {
-    try {
-        const { text, targetLanguage } = req.body;
-
-        if (!text) {
-            return res.status(400).json({
-                error: "Texto não informado."
-            });
-        }
-
-        if (!targetLanguage) {
-            return res.status(400).json({
-                error: "Idioma de destino não informado."
-            });
-        }
-
-        if (!openai) {
-            return res.status(500).json({
-                error: "OPENAI_API_KEY não configurada no Render."
-            });
-        }
-
-        console.log("Texto recebido para tradução:");
-        console.log(text);
-
-        console.log("Idioma de destino:", targetLanguage);
-
-        // ----------------------------------------------------
-        // Tradução
-        // ----------------------------------------------------
-
-        const response = await openai.responses.create({
-            model: "gpt-5-mini",
-            input: [
-                {
-                    role: "system",
-                    content:
-                        `Você é um tradutor profissional de áudio e vídeo.
-Traduza o texto para ${targetLanguage}.
-Mantenha o significado original.
-Não explique a tradução.
-Retorne somente o texto traduzido.`
-                },
-                {
-                    role: "user",
-                    content: text
-                }
-            ]
-        });
-
-        const translation = response.output_text;
-
-        return res.json({
-            success: true,
-            original: text,
-            translation: translation,
-            targetLanguage: targetLanguage
-        });
-
-    } catch (error) {
-
-        console.error("ERRO NA TRADUÇÃO:");
-        console.error(error);
-
-        return res.status(500).json({
-            success: false,
-            error: "Erro ao traduzir o texto.",
-            details:
-                process.env.NODE_ENV === "production"
-                    ? undefined
-                    : error.message
-        });
-    }
-});
-
-// ============================================================
-// GERAÇÃO DE VOZ
-//
-// POST /speech
-//
-// Exemplo:
-//
-// {
-//   "text": "Olá, pessoal!",
-//   "voice": "alloy"
-// }
-//
-// Retorna áudio em base64.
-// ============================================================
-
-app.post("/speech", async (req, res) => {
-
-    try {
-
-        const { text, voice = "alloy" } = req.body;
-
-        if (!text) {
-            return res.status(400).json({
-                error: "Texto para voz não informado."
-            });
-        }
-
-        if (!openai) {
-            return res.status(500).json({
-                error: "OPENAI_API_KEY não configurada no Render."
-            });
-        }
-
-        console.log("Gerando voz:");
-
-        console.log(text);
-
-        // ----------------------------------------------------
-        // Geração do áudio
-        // ----------------------------------------------------
-
-        const speech = await openai.audio.speech.create({
-            model: "gpt-4o-mini-tts",
-            voice: voice,
-            input: text,
-            format: "mp3"
-        });
-
-        const buffer = Buffer.from(
-            await speech.arrayBuffer()
-        );
-
-        const audioBase64 = buffer.toString("base64");
-
-        return res.json({
-            success: true,
-            audio: audioBase64,
-            mimeType: "audio/mpeg"
-        });
-
-    } catch (error) {
-
-        console.error("ERRO AO GERAR VOZ:");
-        console.error(error);
-
-        return res.status(500).json({
-            success: false,
-            error: "Erro ao gerar o áudio.",
-            details:
-                process.env.NODE_ENV === "production"
-                    ? undefined
-                    : error.message
-        });
-    }
-});
-
-// ============================================================
-// TRADUZIR + GERAR VOZ
-//
-// POST /translate-and-speak
-//
-// Esse será um dos principais endpoints do aplicativo.
-//
-// Exemplo:
-//
-// {
-//   "text": "Hello everyone",
-//   "targetLanguage": "Portuguese",
-//   "voice": "alloy"
-// }
-// ============================================================
-
-app.post("/translate-and-speak", async (req, res) => {
-
-    try {
-
-        const {
-            text,
-            targetLanguage,
-            voice = "alloy"
-        } = req.body;
-
-        if (!text) {
-            return res.status(400).json({
-                error: "Texto não informado."
-            });
-        }
-
-        if (!targetLanguage) {
-            return res.status(400).json({
-                error: "Idioma de destino não informado."
-            });
-        }
-
-        if (!openai) {
-            return res.status(500).json({
-                error: "OPENAI_API_KEY não configurada no Render."
-            });
-        }
-
-        console.log("=================================");
-        console.log("TRADUZIR + GERAR VOZ");
-        console.log("=================================");
-
-        // ----------------------------------------------------
-        // 1. Traduz
-        // ----------------------------------------------------
-
-        const translationResponse =
-            await openai.responses.create({
-
-                model: "gpt-5-mini",
-
-                input: [
-                    {
-                        role: "system",
-                        content:
-                            `Você é um tradutor profissional.
-Traduza para ${targetLanguage}.
-Retorne somente a tradução.
-Não adicione explicações.`
-                    },
-                    {
-                        role: "user",
-                        content: text
-                    }
-                ]
-            });
-
-        const translation =
-            translationResponse.output_text;
-
-        console.log("Tradução:");
-        console.log(translation);
-
-        // ----------------------------------------------------
-        // 2. Gera a voz
-        // ----------------------------------------------------
-
-        const speech =
-            await openai.audio.speech.create({
-
-                model: "gpt-4o-mini-tts",
-
-                voice: voice,
-
-                input: translation,
-
-                format: "mp3"
-            });
-
-        const buffer =
-            Buffer.from(
-                await speech.arrayBuffer()
-            );
-
-        const audioBase64 =
-            buffer.toString("base64");
-
-        // ----------------------------------------------------
-        // 3. Retorna tudo
-        // ----------------------------------------------------
-
-        return res.json({
-
-            success: true,
-
-            original: text,
-
-            translation: translation,
-
-            targetLanguage: targetLanguage,
-
-            audio: audioBase64,
-
-            mimeType: "audio/mpeg"
-        });
-
-    } catch (error) {
-
-        console.error(
-            "ERRO EM /translate-and-speak:"
-        );
-
-        console.error(error);
-
-        return res.status(500).json({
-
-            success: false,
-
-            error:
-                "Não foi possível traduzir e gerar a voz.",
-
-            details:
-                process.env.NODE_ENV === "production"
-                    ? undefined
-                    : error.message
-        });
-    }
-});
-
-// ============================================================
-// TRANSCRIÇÃO DE ÁUDIO
-//
-// POST /transcribe
-//
-// Futuramente o index.html poderá enviar pequenos trechos
-// de áudio capturados do vídeo para este endpoint.
-//
-// O áudio deverá ser enviado como arquivo multipart/form-data
-// com o campo "audio".
-// ============================================================
-
-const multer = require("multer");
 
 const upload = multer({
-    storage: multer.memoryStorage(),
-    limits: {
-        fileSize: 25 * 1024 * 1024
-    }
+  storage,
+
+  limits: {
+    fileSize: 500 * 1024 * 1024,
+  },
 });
 
+
+/*
+|--------------------------------------------------------------------------
+| ROTA PRINCIPAL
+|--------------------------------------------------------------------------
+*/
+
+app.get("/", (req, res) => {
+  res.json({
+    name: "Keep Tradutor Universal",
+    status: "online",
+    message: "Backend funcionando no Render",
+    version: "1.0.0",
+  });
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| HEALTH CHECK
+|--------------------------------------------------------------------------
+*/
+
+app.get("/api/health", (req, res) => {
+  res.json({
+    ok: true,
+    status: "online",
+    service: "Keep Tradutor Universal",
+    openaiConfigured: !!process.env.OPENAI_API_KEY,
+    ffmpegAvailable: true,
+    time: new Date().toISOString(),
+  });
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| TESTE DO BACKEND
+|--------------------------------------------------------------------------
+*/
+
+app.get("/api/test", (req, res) => {
+  res.json({
+    ok: true,
+    message: "Endpoint funcionando corretamente.",
+  });
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| TRADUÇÃO DE VÍDEO MP4
+|--------------------------------------------------------------------------
+*/
+
 app.post(
-    "/transcribe",
-    upload.single("audio"),
-    async (req, res) => {
+  "/api/translate-video",
+  upload.single("video"),
+  async (req, res) => {
+
+    let inputFile = null;
+    let audioFile = null;
+
+    try {
+
+      if (!req.file) {
+
+        return res.status(400).json({
+          ok: false,
+          error: "Nenhum vídeo foi enviado.",
+        });
+
+      }
+
+      inputFile = req.file.path;
+
+      const sourceLanguage =
+        req.body.sourceLanguage || "auto";
+
+      const targetLanguage =
+        req.body.targetLanguage || "pt-BR";
+
+      const shouldDubbing =
+        req.body.dubbing === "true";
+
+      const shouldTranscription =
+        req.body.transcription !== "false";
+
+
+      /*
+      |--------------------------------------------------------------------------
+      | EXTRAIR ÁUDIO
+      |--------------------------------------------------------------------------
+      */
+
+      audioFile = path.join(
+        outputsDir,
+        `${Date.now()}-audio.mp3`
+      );
+
+
+      await extractAudio(
+        inputFile,
+        audioFile
+      );
+
+
+      /*
+      |--------------------------------------------------------------------------
+      | SEM OPENAI
+      |--------------------------------------------------------------------------
+      */
+
+      if (!openai) {
+
+        return res.json({
+          ok: true,
+
+          message:
+            "Vídeo recebido e áudio extraído. Configure OPENAI_API_KEY no Render para ativar transcrição, tradução e voz.",
+
+          translation:
+            "Backend funcionando. Configure sua chave da OpenAI para ativar a IA.",
+
+          audioUrl:
+            `/outputs/${path.basename(audioFile)}`,
+
+          sourceLanguage,
+          targetLanguage,
+          dubbing: shouldDubbing,
+          transcription: shouldTranscription,
+        });
+
+      }
+
+
+      /*
+      |--------------------------------------------------------------------------
+      | TRANSCRIÇÃO
+      |--------------------------------------------------------------------------
+      */
+
+      let transcriptionText = "";
+
+      if (shouldTranscription) {
+
+        const transcriptionResponse =
+          await openai.audio.transcriptions.create({
+
+            file: fs.createReadStream(
+              audioFile
+            ),
+
+            model: "gpt-4o-mini-transcribe",
+
+            ...(sourceLanguage !== "auto"
+              ? {
+                  language:
+                    normalizeLanguage(
+                      sourceLanguage
+                    ),
+                }
+              : {}),
+          });
+
+
+        transcriptionText =
+          transcriptionResponse.text || "";
+
+      }
+
+
+      /*
+      |--------------------------------------------------------------------------
+      | TRADUÇÃO
+      |--------------------------------------------------------------------------
+      */
+
+      let translatedText =
+        transcriptionText;
+
+
+      if (
+        transcriptionText &&
+        targetLanguage
+      ) {
+
+        const translationResponse =
+          await openai.responses.create({
+
+            model: "gpt-4o-mini",
+
+            input: `
+Traduza o texto abaixo para ${languageName(
+              targetLanguage
+            )}.
+
+Mantenha o significado natural,
+o contexto e o tom da fala.
+
+Não explique a tradução.
+Retorne somente o texto traduzido.
+
+Texto:
+${transcriptionText}
+`,
+          });
+
+
+        translatedText =
+          translationResponse.output_text ||
+          transcriptionText;
+
+      }
+
+
+      /*
+      |--------------------------------------------------------------------------
+      | VOZ
+      |--------------------------------------------------------------------------
+      */
+
+      let generatedAudioUrl =
+        null;
+
+
+      if (
+        shouldDubbing &&
+        translatedText
+      ) {
+
+        const speechFile =
+          path.join(
+            outputsDir,
+            `${Date.now()}-dubbed.mp3`
+          );
+
+
+        const speechResponse =
+          await openai.audio.speech.create({
+
+            model: "gpt-4o-mini-tts",
+
+            voice: "alloy",
+
+            input:
+              translatedText,
+
+            response_format:
+              "mp3",
+          });
+
+
+        const buffer =
+          Buffer.from(
+            await speechResponse.arrayBuffer()
+          );
+
+
+        fs.writeFileSync(
+          speechFile,
+          buffer
+        );
+
+
+        generatedAudioUrl =
+          `/outputs/${path.basename(
+            speechFile
+          )}`;
+
+      }
+
+
+      /*
+      |--------------------------------------------------------------------------
+      | RESPOSTA
+      |--------------------------------------------------------------------------
+      */
+
+      return res.json({
+
+        ok: true,
+
+        message:
+          "Vídeo processado com sucesso.",
+
+        transcription:
+          transcriptionText,
+
+        translation:
+          translatedText,
+
+        audioUrl:
+          generatedAudioUrl,
+
+        sourceLanguage,
+        targetLanguage,
+
+        dubbing:
+          shouldDubbing,
+
+        transcriptionEnabled:
+          shouldTranscription,
+      });
+
+
+    } catch (error) {
+
+      console.error(
+        "ERRO /api/translate-video:",
+        error
+      );
+
+
+      return res.status(500).json({
+
+        ok: false,
+
+        error:
+          error.message ||
+          "Erro ao processar vídeo.",
+
+      });
+
+    } finally {
+
+      /*
+      |--------------------------------------------------------------------------
+      | LIMPAR VÍDEO ENVIADO
+      |--------------------------------------------------------------------------
+      */
+
+      if (
+        inputFile &&
+        fs.existsSync(inputFile)
+      ) {
 
         try {
+          fs.unlinkSync(inputFile);
+        } catch {}
 
-            if (!req.file) {
-                return res.status(400).json({
-                    error: "Nenhum arquivo de áudio enviado."
-                });
-            }
+      }
 
-            if (!openai) {
-                return res.status(500).json({
-                    error:
-                        "OPENAI_API_KEY não configurada no Render."
-                });
-            }
+    }
+
+  }
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| TRADUÇÃO DE ÁUDIO
+|--------------------------------------------------------------------------
+*/
+
+app.post(
+  "/api/translate-audio",
+  upload.single("audio"),
+  async (req, res) => {
+
+    let inputFile = null;
+
+    try {
+
+      if (!req.file) {
+
+        return res.status(400).json({
+          ok: false,
+          error: "Nenhum áudio foi enviado.",
+        });
+
+      }
+
+
+      inputFile =
+        req.file.path;
+
+
+      const sourceLanguage =
+        req.body.sourceLanguage ||
+        "auto";
+
+      const targetLanguage =
+        req.body.targetLanguage ||
+        "pt-BR";
+
+      const shouldDubbing =
+        req.body.dubbing !== "false";
+
+
+      /*
+      |--------------------------------------------------------------------------
+      | SEM OPENAI
+      |--------------------------------------------------------------------------
+      */
+
+      if (!openai) {
+
+        return res.json({
+
+          ok: true,
+
+          message:
+            "Áudio recebido. Configure OPENAI_API_KEY no Render para ativar a IA.",
+
+          translation:
+            "Configure OPENAI_API_KEY no Render.",
+
+          audioUrl:
+            null,
+
+        });
+
+      }
+
+
+      /*
+      |--------------------------------------------------------------------------
+      | TRANSCRIÇÃO
+      |--------------------------------------------------------------------------
+      */
+
+      const transcriptionResponse =
+        await openai.audio.transcriptions.create({
+
+          file: fs.createReadStream(
+            inputFile
+          ),
+
+          model:
+            "gpt-4o-mini-transcribe",
+
+          ...(sourceLanguage !== "auto"
+            ? {
+                language:
+                  normalizeLanguage(
+                    sourceLanguage
+                  ),
+              }
+            : {}),
+        });
+
+
+      const transcriptionText =
+        transcriptionResponse.text ||
+        "";
+
+
+      /*
+      |--------------------------------------------------------------------------
+      | TRADUÇÃO
+      |--------------------------------------------------------------------------
+      */
+
+      let translatedText =
+        transcriptionText;
+
+
+      if (transcriptionText) {
+
+        const response =
+          await openai.responses.create({
+
+            model:
+              "gpt-4o-mini",
+
+            input: `
+Traduza o texto abaixo para ${languageName(
+              targetLanguage
+            )}.
+
+Retorne somente a tradução.
+
+Texto:
+${transcriptionText}
+`,
+          });
+
+
+        translatedText =
+          response.output_text ||
+          transcriptionText;
+
+      }
+
+
+      /*
+      |--------------------------------------------------------------------------
+      | DUBLAGEM
+      |--------------------------------------------------------------------------
+      */
+
+      let audioUrl =
+        null;
+
+
+      if (
+        shouldDubbing &&
+        translatedText
+      ) {
+
+        const outputFile =
+          path.join(
+            outputsDir,
+            `${Date.now()}-translation.mp3`
+          );
+
+
+        const speech =
+          await openai.audio.speech.create({
+
+            model:
+              "gpt-4o-mini-tts",
+
+            voice:
+              "alloy",
+
+            input:
+              translatedText,
+
+            response_format:
+              "mp3",
+          });
+
+
+        const buffer =
+          Buffer.from(
+            await speech.arrayBuffer()
+          );
+
+
+        fs.writeFileSync(
+          outputFile,
+          buffer
+        );
+
+
+        audioUrl =
+          `/outputs/${path.basename(
+            outputFile
+          )}`;
+
+      }
+
+
+      return res.json({
+
+        ok: true,
+
+        transcription:
+          transcriptionText,
+
+        translation:
+          translatedText,
+
+        audioUrl,
+
+        sourceLanguage,
+        targetLanguage,
+
+      });
+
+
+    } catch (error) {
+
+      console.error(
+        "ERRO /api/translate-audio:",
+        error
+      );
+
+
+      return res.status(500).json({
+
+        ok: false,
+
+        error:
+          error.message ||
+          "Erro ao processar áudio.",
+
+      });
+
+    } finally {
+
+      if (
+        inputFile &&
+        fs.existsSync(inputFile)
+      ) {
+
+        try {
+          fs.unlinkSync(inputFile);
+        } catch {}
+
+      }
+
+    }
+
+  }
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| YOUTUBE
+|--------------------------------------------------------------------------
+*/
+
+app.post(
+  "/api/translate-youtube",
+  async (req, res) => {
+
+    try {
+
+      const {
+        url,
+        videoId,
+        sourceLanguage,
+        targetLanguage,
+        dubbing,
+        transcription,
+      } = req.body;
+
+
+      if (!url && !videoId) {
+
+        return res.status(400).json({
+
+          ok: false,
+
+          error:
+            "Informe o link do YouTube.",
+
+        });
+
+      }
+
+
+      /*
+      |--------------------------------------------------------------------------
+      | IMPORTANTE
+      |--------------------------------------------------------------------------
+      |
+      | O navegador consegue mostrar o YouTube
+      | através do iframe.
+      |
+      | Este endpoint recebe o link e confirma
+      | que o backend recebeu a solicitação.
+      |
+      */
+
+      return res.json({
+
+        ok: true,
+
+        readyForProcessing: false,
+
+        message:
+          "Link do YouTube recebido. O vídeo pode ser exibido pelo player incorporado. A captura/dublagem automática do áudio do YouTube precisa de um fluxo específico de processamento no servidor.",
+
+        url:
+          url || null,
+
+        videoId:
+          videoId || null,
+
+        sourceLanguage:
+          sourceLanguage || "auto",
+
+        targetLanguage:
+          targetLanguage || "pt-BR",
+
+        dubbing:
+          !!dubbing,
+
+        transcription:
+          transcription !== false,
+
+      });
+
+
+    } catch (error) {
+
+      console.error(
+        "ERRO /api/translate-youtube:",
+        error
+      );
+
+
+      return res.status(500).json({
+
+        ok: false,
+
+        error:
+          error.message ||
+          "Erro ao processar YouTube.",
+
+      });
+
+    }
+
+  }
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| FFmpeg
+|--------------------------------------------------------------------------
+*/
+
+function extractAudio(
+  input,
+  output
+) {
+
+  return new Promise(
+    (resolve, reject) => {
+
+      ffmpeg(input)
+
+        .noVideo()
+
+        .audioCodec("libmp3lame")
+
+        .audioBitrate("128k")
+
+        .audioChannels(1)
+
+        .audioFrequency(16000)
+
+        .output(output)
+
+        .on(
+          "start",
+          command => {
 
             console.log(
-                "Áudio recebido:",
-                req.file.originalname
+              "FFmpeg:",
+              command
             );
 
-            // ------------------------------------------------
-            // Criar arquivo temporário
-            // ------------------------------------------------
+          }
+        )
 
-            const fs = require("fs");
-            const os = require("os");
-            const path = require("path");
+        .on(
+          "progress",
+          progress => {
 
-            const tempFile = path.join(
-                os.tmpdir(),
-                `audio-${Date.now()}-${req.file.originalname}`
+            console.log(
+              "FFmpeg:",
+              progress.percent
             );
 
-            fs.writeFileSync(
-                tempFile,
-                req.file.buffer
-            );
+          }
+        )
 
-            // ------------------------------------------------
-            // Transcrição
-            // ------------------------------------------------
+        .on(
+          "end",
+          () => {
 
-            const transcription =
-                await openai.audio.transcriptions.create({
+            resolve();
 
-                    file: fs.createReadStream(tempFile),
+          }
+        )
 
-                    model: "gpt-4o-mini-transcribe"
-                });
+        .on(
+          "error",
+          error => {
 
-            // ------------------------------------------------
-            // Apagar arquivo temporário
-            // ------------------------------------------------
+            reject(error);
 
-            try {
-                fs.unlinkSync(tempFile);
-            } catch (e) {
-                console.log(
-                    "Não foi possível apagar arquivo temporário."
-                );
-            }
+          }
+        )
 
-            return res.json({
+        .run();
 
-                success: true,
-
-                text: transcription.text
-            });
-
-        } catch (error) {
-
-            console.error(
-                "ERRO NA TRANSCRIÇÃO:"
-            );
-
-            console.error(error);
-
-            return res.status(500).json({
-
-                success: false,
-
-                error:
-                    "Erro ao transcrever o áudio.",
-
-                details:
-                    process.env.NODE_ENV === "production"
-                        ? undefined
-                        : error.message
-            });
-        }
     }
-);
+  );
 
-// ============================================================
-// TRADUÇÃO DE TRANSCRIÇÃO
-//
-// POST /translate-transcription
-// ============================================================
+}
 
-app.post(
-    "/translate-transcription",
-    async (req, res) => {
 
-        try {
+/*
+|--------------------------------------------------------------------------
+| IDIOMAS
+|--------------------------------------------------------------------------
+*/
 
-            const {
-                text,
-                targetLanguage
-            } = req.body;
+function languageName(
+  code
+) {
 
-            if (!text) {
-                return res.status(400).json({
-                    error: "Transcrição não informada."
-                });
-            }
+  const languages = {
 
-            if (!targetLanguage) {
-                return res.status(400).json({
-                    error:
-                        "Idioma de destino não informado."
-                });
-            }
+    "pt-BR":
+      "português do Brasil",
 
-            if (!openai) {
-                return res.status(500).json({
-                    error:
-                        "OPENAI_API_KEY não configurada."
-                });
-            }
+    "pt":
+      "português",
 
-            const response =
-                await openai.responses.create({
+    "en":
+      "inglês",
 
-                    model: "gpt-5-mini",
+    "es":
+      "espanhol",
 
-                    input: [
-                        {
-                            role: "system",
+    "fr":
+      "francês",
 
-                            content:
-                                `Traduza o texto abaixo para ${targetLanguage}.
-Retorne somente a tradução.
-Preserve o sentido e o contexto da fala.`
-                        },
-                        {
-                            role: "user",
-                            content: text
-                        }
-                    ]
-                });
+    "de":
+      "alemão",
 
-            return res.json({
+    "it":
+      "italiano",
 
-                success: true,
+    "ja":
+      "japonês",
 
-                original: text,
+    "ko":
+      "coreano",
 
-                translation:
-                    response.output_text,
+    "zh":
+      "chinês",
 
-                targetLanguage:
-                    targetLanguage
-            });
+  };
 
-        } catch (error) {
 
-            console.error(error);
+  return (
+    languages[code] ||
+    code
+  );
 
-            return res.status(500).json({
+}
 
-                success: false,
 
-                error:
-                    "Erro ao traduzir a transcrição."
-            });
-        }
-    }
-);
+function normalizeLanguage(
+  code
+) {
 
-// ============================================================
-// 404
-// ============================================================
+  if (!code) {
+    return undefined;
+  }
 
-app.use((req, res) => {
+
+  return code
+    .split("-")[0]
+    .toLowerCase();
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| 404
+|--------------------------------------------------------------------------
+*/
+
+app.use(
+  (req, res) => {
 
     res.status(404).json({
 
-        success: false,
+      ok: false,
 
-        error: "Endpoint não encontrado.",
+      error:
+        "Endpoint não encontrado.",
 
-        path: req.originalUrl
+      path:
+        req.originalUrl,
+
+      method:
+        req.method,
+
     });
-});
 
-// ============================================================
-// TRATAMENTO GLOBAL DE ERROS
-// ============================================================
+  }
+);
 
-app.use((error, req, res, next) => {
+
+/*
+|--------------------------------------------------------------------------
+| ERROS
+|--------------------------------------------------------------------------
+*/
+
+app.use(
+  (
+    error,
+    req,
+    res,
+    next
+  ) => {
 
     console.error(
-        "ERRO GLOBAL:",
-        error
+      "ERRO:",
+      error
     );
+
 
     res.status(500).json({
 
-        success: false,
+      ok: false,
 
-        error: "Erro interno do servidor."
+      error:
+        error.message ||
+        "Erro interno do servidor.",
+
     });
-});
 
-// ============================================================
-// INICIAR SERVIDOR
-// ============================================================
+  }
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| INICIAR SERVIDOR
+|--------------------------------------------------------------------------
+*/
 
 app.listen(
-    PORT,
-    "0.0.0.0",
-    () => {
+  PORT,
+  "0.0.0.0",
+  () => {
 
-        console.log("");
-        console.log(
-            "=========================================="
-        );
+    console.log(
+      "======================================"
+    );
 
-        console.log(
-            "      TRADUTOR IA BACKEND ONLINE"
-        );
+    console.log(
+      "Keep Tradutor Universal"
+    );
 
-        console.log(
-            "=========================================="
-        );
+    console.log(
+      `Servidor rodando na porta ${PORT}`
+    );
 
-        console.log(
-            `PORTA: ${PORT}`
-        );
+    console.log(
+      `OpenAI configurada: ${
+        !!process.env.OPENAI_API_KEY
+      }`
+    );
 
-        console.log(
-            "HOST: 0.0.0.0"
-        );
+    console.log(
+      "======================================"
 
-        console.log(
-            `OPENAI: ${
-                OPENAI_API_KEY
-                    ? "CONFIGURADA"
-                    : "NÃO CONFIGURADA"
-            }`
-        );
+    );
 
-        console.log(
-            "=========================================="
-        );
-
-        console.log("");
-    }
+  }
 );
