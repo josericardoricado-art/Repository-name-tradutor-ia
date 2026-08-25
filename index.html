@@ -1,1186 +1,1268 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-    <title>Tradutor IA</title>
+<title>Keep Tradutor IA</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
 
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #07090d;
-            color: #fff;
-            min-height: 100vh;
-        }
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#07090d;
+    color:#fff;
+    min-height:100vh;
+}
 
-        .container {
-            width: 100%;
-            max-width: 1100px;
-            margin: auto;
-            padding: 20px;
-        }
+.container{
+    width:100%;
+    max-width:1100px;
+    margin:auto;
+    padding:20px;
+}
 
-        header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px 0 25px;
-        }
+header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px 0 25px;
+}
 
-        .logo {
-            font-size: 25px;
-            font-weight: 800;
-        }
+.logo{
+    font-size:25px;
+    font-weight:800;
+}
 
-        .logo span {
-            color: #7c5cff;
-        }
+.logo span{
+    color:#7657ff;
+}
 
-        .status {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: #111722;
-            padding: 9px 14px;
-            border-radius: 30px;
-            font-size: 13px;
-        }
+.status{
+    background:#111722;
+    border:1px solid #252e3d;
+    padding:9px 14px;
+    border-radius:30px;
+    font-size:13px;
+}
 
-        .status-dot {
-            width: 9px;
-            height: 9px;
-            background: #22c55e;
-            border-radius: 50%;
-        }
+.dot{
+    display:inline-block;
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:#22c55e;
+    margin-right:7px;
+}
 
-        .hero {
-            text-align: center;
-            padding: 25px 10px;
-        }
+.hero{
+    text-align:center;
+    padding:25px 5px;
+}
 
-        .hero h1 {
-            font-size: clamp(30px, 6vw, 55px);
-            margin-bottom: 12px;
-        }
+.hero h1{
+    font-size:clamp(30px,6vw,55px);
+    margin-bottom:12px;
+}
 
-        .hero h1 span {
-            color: #8b6cff;
-        }
+.hero h1 span{
+    color:#8062ff;
+}
 
-        .hero p {
-            color: #9ca3af;
-            font-size: 17px;
-        }
+.hero p{
+    color:#9ca3af;
+    font-size:17px;
+}
 
-        .card {
-            background: #0e121a;
-            border: 1px solid #202735;
-            border-radius: 22px;
-            padding: 20px;
-            margin-top: 20px;
-            box-shadow: 0 15px 50px rgba(0,0,0,.25);
-        }
+.card{
+    background:#0e121a;
+    border:1px solid #202735;
+    border-radius:22px;
+    padding:20px;
+    margin-top:20px;
+}
 
-        .tabs {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
+.tabs{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    margin-bottom:20px;
+}
 
-        .tab {
-            border: 1px solid #293244;
-            background: #121823;
-            color: #cbd5e1;
-            padding: 15px 10px;
-            border-radius: 13px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 14px;
-        }
+.tab{
+    background:#121823;
+    color:#d5dbea;
+    border:1px solid #293244;
+    padding:15px;
+    border-radius:12px;
+    cursor:pointer;
+    font-weight:bold;
+}
 
-        .tab.active {
-            background: #6d4aff;
-            color: white;
-            border-color: #6d4aff;
-        }
+.tab.active{
+    background:#6d4aff;
+    border-color:#6d4aff;
+    color:white;
+}
 
-        .mode {
-            display: none;
-        }
+.mode{
+    display:none;
+}
 
-        .mode.active {
-            display: block;
-        }
+.mode.active{
+    display:block;
+}
 
-        label {
-            display: block;
-            margin-bottom: 9px;
-            color: #dbe2ef;
-            font-weight: 700;
-        }
+label{
+    display:block;
+    font-weight:bold;
+    margin-bottom:9px;
+}
 
-        input[type="text"],
-        input[type="url"] {
-            width: 100%;
-            background: #080c13;
-            color: white;
-            border: 1px solid #303a4d;
-            padding: 16px;
-            border-radius: 12px;
-            outline: none;
-            font-size: 15px;
-        }
+input[type=text],
+input[type=url],
+select{
+    width:100%;
+    background:#080c13;
+    color:white;
+    border:1px solid #303a4d;
+    padding:15px;
+    border-radius:11px;
+    outline:none;
+}
 
-        input:focus {
-            border-color: #7c5cff;
-        }
+input[type=file]{
+    width:100%;
+    background:#080c13;
+    color:#ddd;
+    border:1px dashed #39465c;
+    padding:18px;
+    border-radius:12px;
+}
 
-        .btn {
-            width: 100%;
-            border: none;
-            padding: 16px;
-            margin-top: 12px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 800;
-            font-size: 15px;
-        }
+.btn{
+    width:100%;
+    padding:16px;
+    margin-top:12px;
+    border:0;
+    border-radius:12px;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+}
 
-        .btn-primary {
-            background: #6d4aff;
-            color: white;
-        }
+.primary{
+    background:#6d4aff;
+    color:white;
+}
 
-        .btn-primary:hover {
-            background: #805fff;
-        }
+.secondary{
+    background:#182131;
+    color:white;
+    border:1px solid #303b50;
+}
 
-        .btn-secondary {
-            background: #182131;
-            color: white;
-            border: 1px solid #303b50;
-        }
+.video-container{
+    position:relative;
+    width:100%;
+    aspect-ratio:16/9;
+    background:#000;
+    border-radius:18px;
+    overflow:hidden;
+    margin-top:20px;
+}
 
-        input[type="file"] {
-            width: 100%;
-            background: #080c13;
-            border: 1px dashed #39465c;
-            padding: 20px;
-            border-radius: 12px;
-            color: #cbd5e1;
-        }
+video,
+iframe{
+    width:100%;
+    height:100%;
+    border:0;
+}
 
-        .video-container {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            background: #000;
-            border-radius: 18px;
-            overflow: hidden;
-            margin-top: 20px;
-            border: 1px solid #252e3e;
-        }
+.placeholder{
+    position:absolute;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    color:#687386;
+}
 
-        .video-container video,
-        .video-container iframe {
-            width: 100%;
-            height: 100%;
-            border: 0;
-            display: block;
-        }
+.placeholder div{
+    font-size:50px;
+    margin-bottom:10px;
+}
 
-        .placeholder {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #697386;
-            text-align: center;
-            padding: 20px;
-        }
+.controls{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+    margin-top:20px;
+}
 
-        .placeholder .icon {
-            font-size: 50px;
-            margin-bottom: 12px;
-        }
+.box{
+    background:#111722;
+    border:1px solid #252f40;
+    border-radius:14px;
+    padding:15px;
+}
 
-        .controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 20px;
-        }
+.translate{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+    margin-top:20px;
+}
 
-        .control-box {
-            background: #111722;
-            border: 1px solid #242e3e;
-            border-radius: 14px;
-            padding: 15px;
-        }
+.textbox{
+    background:#080c13;
+    border:1px solid #273244;
+    border-radius:14px;
+    padding:15px;
+    min-height:130px;
+}
 
-        .control-box select {
-            width: 100%;
-            background: #080c13;
-            color: white;
-            border: 1px solid #303a4d;
-            padding: 13px;
-            border-radius: 10px;
-            margin-top: 8px;
-        }
+.textbox h3{
+    color:#929dae;
+    font-size:13px;
+    margin-bottom:10px;
+}
 
-        .translate-area {
-            margin-top: 20px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
+.textbox p{
+    line-height:1.6;
+}
 
-        .text-box {
-            background: #080c13;
-            border: 1px solid #273244;
-            border-radius: 14px;
-            padding: 15px;
-            min-height: 130px;
-        }
+.loading,
+.message{
+    display:none;
+    margin-top:15px;
+    padding:13px;
+    border-radius:10px;
+    background:#121a27;
+    text-align:center;
+}
 
-        .text-box h3 {
-            font-size: 13px;
-            color: #9ca3af;
-            margin-bottom: 10px;
-        }
+.show{
+    display:block;
+}
 
-        .text-box p {
-            line-height: 1.6;
-            color: #e5e7eb;
-        }
+/* PLANOS */
 
-        .loading {
-            display: none;
-            margin-top: 15px;
-            padding: 13px;
-            border-radius: 10px;
-            background: #151b28;
-            color: #b8aaff;
-            text-align: center;
-        }
+.plans-title{
+    text-align:center;
+    margin-top:50px;
+    margin-bottom:20px;
+}
 
-        .loading.show {
-            display: block;
-        }
+.plans-title h2{
+    font-size:32px;
+    margin-bottom:8px;
+}
 
-        .message {
-            display: none;
-            margin-top: 15px;
-            padding: 13px;
-            border-radius: 10px;
-            background: #101722;
-            border: 1px solid #29364b;
-            color: #cbd5e1;
-        }
+.plans-title p{
+    color:#929baa;
+}
 
-        .message.show {
-            display: block;
-        }
+.plans{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
 
-        .features {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-top: 20px;
-        }
+.plan{
+    background:#0e131c;
+    border:1px solid #283243;
+    border-radius:20px;
+    padding:25px;
+    position:relative;
+}
 
-        .feature {
-            background: #0e131c;
-            border: 1px solid #202a39;
-            padding: 18px;
-            border-radius: 15px;
-        }
+.plan.featured{
+    border:2px solid #7657ff;
+}
 
-        .feature strong {
-            display: block;
-            margin-bottom: 8px;
-        }
+.badge{
+    position:absolute;
+    top:-13px;
+    right:20px;
+    background:#7657ff;
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:bold;
+}
 
-        .feature p {
-            color: #8994a6;
-            font-size: 14px;
-            line-height: 1.5;
-        }
+.plan h3{
+    font-size:23px;
+    margin-bottom:10px;
+}
 
-        @media (max-width: 700px) {
-            .tabs {
-                grid-template-columns: 1fr;
-            }
+.price{
+    font-size:38px;
+    font-weight:800;
+    margin:15px 0;
+}
 
-            .controls,
-            .translate-area,
-            .features {
-                grid-template-columns: 1fr;
-            }
+.price small{
+    font-size:14px;
+    color:#9ca3af;
+}
 
-            .container {
-                padding: 12px;
-            }
-        }
-    </style>
+.plan ul{
+    list-style:none;
+    margin:20px 0;
+}
+
+.plan li{
+    padding:8px 0;
+    color:#d4dae5;
+}
+
+.plan li::before{
+    content:"✓ ";
+    color:#7c61ff;
+    font-weight:bold;
+}
+
+.mp{
+    background:#00a650;
+    color:white;
+}
+
+footer{
+    text-align:center;
+    padding:40px 10px;
+    color:#687386;
+    font-size:13px;
+}
+
+@media(max-width:700px){
+
+    .tabs{
+        grid-template-columns:1fr;
+    }
+
+    .controls,
+    .translate,
+    .plans{
+        grid-template-columns:1fr;
+    }
+
+    .container{
+        padding:12px;
+    }
+}
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-    <header>
-        <div class="logo">
-            Keep <span>Tradutor IA</span>
-        </div>
-
-        <div class="status">
-            <div class="status-dot"></div>
-            <span id="statusText">Verificando...</span>
-        </div>
-    </header>
-
-    <section class="hero">
-        <h1>
-            Traduza seus vídeos
-            <span>em tempo real</span>
-        </h1>
+<header>
 
-        <p>
-            YouTube, MP4 ou compartilhamento de tela.
-        </p>
-    </section>
-
-    <section class="card">
+<div class="logo">
+Keep <span>Tradutor IA</span>
+</div>
 
-        <!-- ABAS -->
-
-        <div class="tabs">
+<div class="status">
+<span class="dot"></span>
+<span id="status">Conectando...</span>
+</div>
 
-            <button
-                class="tab active"
-                data-mode="youtube">
-                ▶️ YouTube
-            </button>
-
-            <button
-                class="tab"
-                data-mode="mp4">
-                🎬 MP4
-            </button>
-
-            <button
-                class="tab"
-                data-mode="screen">
-                🖥️ Compartilhar tela
-            </button>
-
-        </div>
+</header>
 
-        <!-- YOUTUBE -->
 
-        <div
-            id="youtubeMode"
-            class="mode active">
+<section class="hero">
 
-            <label>
-                Link do vídeo do YouTube
-            </label>
+<h1>
+Traduza seus vídeos
+<span>com IA</span>
+</h1>
 
-            <input
-                id="youtubeUrl"
-                type="url"
-                placeholder="https://www.youtube.com/watch?v=..."
-            >
+<p>
+YouTube, MP4 e compartilhamento de tela.
+</p>
 
-            <button
-                class="btn btn-primary"
-                id="loadYoutube">
-                ▶️ Mostrar vídeo
-            </button>
+</section>
 
-        </div>
 
-        <!-- MP4 -->
+<section class="card">
 
-        <div
-            id="mp4Mode"
-            class="mode">
+<div class="tabs">
 
-            <label>
-                Escolha um vídeo MP4
-            </label>
+<button class="tab active" data-mode="youtube">
+▶️ YouTube
+</button>
 
-            <input
-                id="mp4File"
-                type="file"
-                accept="video/mp4,video/webm,video/ogg,video/*"
-            >
+<button class="tab" data-mode="mp4">
+🎬 MP4
+</button>
 
-        </div>
+<button class="tab" data-mode="screen">
+🖥️ Tela
+</button>
 
-        <!-- TELA -->
+</div>
 
-        <div
-            id="screenMode"
-            class="mode">
 
-            <p style="color:#9ca3af; line-height:1.6;">
-                Compartilhe uma aba do navegador, uma janela ou
-                sua tela. Se o navegador oferecer a opção,
-                marque também o compartilhamento de áudio.
-            </p>
+<!-- YOUTUBE -->
 
-            <button
-                class="btn btn-primary"
-                id="shareScreen">
-                🖥️ Compartilhar tela + áudio
-            </button>
+<div id="youtubeMode" class="mode active">
 
-        </div>
+<label>Link do YouTube</label>
 
-        <!-- PLAYER -->
+<input
+id="youtubeUrl"
+type="url"
+placeholder="https://www.youtube.com/watch?v=..."
+>
 
-        <div class="video-container">
+<button
+class="btn primary"
+id="loadYoutube">
 
-            <div
-                id="placeholder"
-                class="placeholder">
+▶️ Mostrar vídeo
 
-                <div class="icon">
-                    🎬
-                </div>
+</button>
 
-                <p>
-                    Seu vídeo aparecerá aqui
-                </p>
+</div>
 
-            </div>
 
-            <video
-                id="videoPlayer"
-                controls
-                playsinline
-                style="display:none;">
-            </video>
+<!-- MP4 -->
 
-            <iframe
-                id="youtubePlayer"
-                style="display:none;"
-                allow="autoplay; encrypted-media; picture-in-picture"
-                allowfullscreen>
-            </iframe>
+<div id="mp4Mode" class="mode">
 
-        </div>
+<label>Escolha seu vídeo</label>
 
-        <!-- CONTROLES -->
+<input
+id="mp4File"
+type="file"
+accept="video/*"
+>
 
-        <div class="controls">
+</div>
 
-            <div class="control-box">
 
-                <label>
-                    Idioma de destino
-                </label>
+<!-- TELA -->
 
-                <select id="targetLanguage">
+<div id="screenMode" class="mode">
 
-                    <option value="Portuguese">
-                        🇧🇷 Português
-                    </option>
+<p style="color:#9ca3af;line-height:1.6">
 
-                    <option value="English">
-                        🇺🇸 Inglês
-                    </option>
+Compartilhe uma aba, janela ou tela.
+Quando aparecer a opção de áudio,
+marque também o compartilhamento do áudio.
 
-                    <option value="Spanish">
-                        🇪🇸 Espanhol
-                    </option>
+</p>
 
-                    <option value="French">
-                        🇫🇷 Francês
-                    </option>
+<button
+class="btn primary"
+id="shareScreen">
 
-                    <option value="German">
-                        🇩🇪 Alemão
-                    </option>
+🖥️ Compartilhar tela + áudio
 
-                    <option value="Italian">
-                        🇮🇹 Italiano
-                    </option>
+</button>
 
-                </select>
+</div>
 
-            </div>
 
-            <div class="control-box">
+<!-- PLAYER -->
 
-                <label>
-                    Voz da tradução
-                </label>
+<div class="video-container">
 
-                <select id="voice">
+<div
+id="placeholder"
+class="placeholder">
 
-                    <option value="alloy">
-                        Alloy
-                    </option>
+<div>🎬</div>
 
-                    <option value="echo">
-                        Echo
-                    </option>
+<p>
+Seu vídeo aparecerá aqui
+</p>
 
-                    <option value="fable">
-                        Fable
-                    </option>
+</div>
 
-                    <option value="onyx">
-                        Onyx
-                    </option>
+<video
+id="videoPlayer"
+controls
+playsinline
+style="display:none">
+</video>
 
-                    <option value="nova">
-                        Nova
-                    </option>
+<iframe
+id="youtubePlayer"
+style="display:none"
+allow="autoplay; encrypted-media; picture-in-picture"
+allowfullscreen>
+</iframe>
 
-                    <option value="shimmer">
-                        Shimmer
-                    </option>
+</div>
 
-                </select>
 
-            </div>
+<!-- CONTROLES -->
 
-        </div>
+<div class="controls">
 
-        <!-- TRADUÇÃO MANUAL DE TESTE -->
+<div class="box">
 
-        <div style="margin-top:20px;">
+<label>
+Idioma da dublagem
+</label>
 
-            <label>
-                Testar tradução e voz
-            </label>
+<select id="language">
 
-            <input
-                id="testText"
-                type="text"
-                placeholder="Digite uma frase para testar..."
-            >
+<option value="Portuguese">
+🇧🇷 Português
+</option>
 
-            <button
-                id="translateButton"
-                class="btn btn-primary">
-                🌎 Traduzir + 🔊 Gerar voz
-            </button>
+<option value="English">
+🇺🇸 Inglês
+</option>
 
-        </div>
+<option value="Spanish">
+🇪🇸 Espanhol
+</option>
 
-        <div
-            id="loading"
-            class="loading">
-            ⏳ Processando...
-        </div>
+<option value="French">
+🇫🇷 Francês
+</option>
 
-        <div
-            id="message"
-            class="message">
-        </div>
+<option value="German">
+🇩🇪 Alemão
+</option>
 
-        <!-- RESULTADO -->
+<option value="Italian">
+🇮🇹 Italiano
+</option>
 
-        <div class="translate-area">
+</select>
 
-            <div class="text-box">
+</div>
 
-                <h3>
-                    TEXTO ORIGINAL
-                </h3>
 
-                <p id="originalText">
-                    Aguardando...
-                </p>
+<div class="box">
 
-            </div>
+<label>
+Voz IA
+</label>
 
-            <div class="text-box">
+<select id="voice">
 
-                <h3>
-                    TRADUÇÃO
-                </h3>
+<option value="alloy">Alloy</option>
+<option value="echo">Echo</option>
+<option value="fable">Fable</option>
+<option value="onyx">Onyx</option>
+<option value="nova">Nova</option>
+<option value="shimmer">Shimmer</option>
 
-                <p id="translatedText">
-                    Aguardando...
-                </p>
+</select>
 
-            </div>
+</div>
 
-        </div>
+</div>
 
-        <audio
-            id="translatedAudio"
-            controls
-            style="width:100%; margin-top:20px; display:none;">
-        </audio>
 
-    </section>
+<!-- TESTE -->
 
-    <section class="features">
+<div style="margin-top:20px">
 
-        <div class="feature">
+<label>
+Teste a tradução e a voz
+</label>
 
-            <strong>
-                🎬 MP4
-            </strong>
+<input
+id="testText"
+type="text"
+placeholder="Digite uma frase..."
+>
 
-            <p>
-                Escolha um vídeo armazenado no
-                seu celular ou computador.
-            </p>
+<button
+class="btn primary"
+id="translateBtn">
 
-        </div>
+🌎 Traduzir + 🔊 Gerar voz
 
-        <div class="feature">
+</button>
 
-            <strong>
-                ▶️ YouTube
-            </strong>
+</div>
 
-            <p>
-                Cole o link do vídeo e carregue
-                o player na página.
-            </p>
 
-        </div>
+<div id="loading" class="loading">
+⏳ Processando...
+</div>
 
-        <div class="feature">
+<div id="message" class="message"></div>
 
-            <strong>
-                🖥️ Tela + áudio
-            </strong>
 
-            <p>
-                Compartilhe uma aba ou tela e
-                permita a captura do áudio.
-            </p>
+<div class="translate">
 
-        </div>
+<div class="textbox">
 
-    </section>
+<h3>
+ORIGINAL
+</h3>
+
+<p id="original">
+Aguardando...
+</p>
+
+</div>
+
+<div class="textbox">
+
+<h3>
+TRADUÇÃO
+</h3>
+
+<p id="translation">
+Aguardando...
+</p>
+
+</div>
+
+</div>
+
+
+<audio
+id="audio"
+controls
+style="display:none;width:100%;margin-top:20px">
+</audio>
+
+</section>
+
+
+<!-- PLANOS -->
+
+<section class="plans-title">
+
+<h2>
+Escolha seu plano
+</h2>
+
+<p>
+Tenha acesso aos recursos do Tradutor IA.
+</p>
+
+</section>
+
+
+<section class="plans">
+
+
+<!-- PLANO 100 -->
+
+<div class="plan">
+
+<h3>
+Plano Mensal
+</h3>
+
+<div class="price">
+R$ 100
+<small>/mês</small>
+</div>
+
+<ul>
+
+<li>Tradução de vídeos</li>
+
+<li>Tradução de áudio</li>
+
+<li>MP4</li>
+
+<li>YouTube</li>
+
+<li>Compartilhamento de tela</li>
+
+<li>Voz IA</li>
+
+<li>Vários idiomas</li>
+
+</ul>
+
+<button
+class="btn mp"
+onclick="assinar('mensal')">
+
+💳 Assinar com Mercado Pago
+
+</button>
+
+</div>
+
+
+<!-- PLANO 200 -->
+
+<div class="plan featured">
+
+<div class="badge">
+PREMIUM
+</div>
+
+<h3>
+Plano Premium
+</h3>
+
+<div class="price">
+R$ 200
+<small>/mês</small>
+</div>
+
+<ul>
+
+<li>Todos os recursos do Mensal</li>
+
+<li>Mais minutos de tradução</li>
+
+<li>Tradução de áudio</li>
+
+<li>Dublagem IA</li>
+
+<li>Voz IA avançada</li>
+
+<li>Mais idiomas</li>
+
+<li>Recursos Premium</li>
+
+</ul>
+
+<button
+class="btn mp"
+onclick="assinar('premium')">
+
+💎 Assinar Premium
+
+</button>
+
+</div>
+
+</section>
+
+
+<footer>
+
+Keep Tradutor IA © 2026
+
+</footer>
 
 </div>
 
 
 <script>
 
-    // ========================================================
-    // URL DO SEU BACKEND
-    // ========================================================
+/* =====================================================
+CONFIGURAÇÃO
+===================================================== */
 
-    const BACKEND_URL =
-        "https://adutor-ia-5kne.onrender.com";
+const BACKEND_URL =
+"https://repository-name-tradutor-ia-0h2r.onrender.com";
 
 
-    // ========================================================
-    // ELEMENTOS
-    // ========================================================
+/* =====================================================
+STATUS
+===================================================== */
 
-    const tabs =
-        document.querySelectorAll(".tab");
+async function verificarBackend(){
 
-    const modes =
-        document.querySelectorAll(".mode");
+try{
 
-    const videoPlayer =
-        document.getElementById("videoPlayer");
+const response =
+await fetch(
+`${BACKEND_URL}/health`
+);
 
-    const youtubePlayer =
-        document.getElementById("youtubePlayer");
+if(!response.ok)
+throw new Error();
 
-    const placeholder =
-        document.getElementById("placeholder");
+document.getElementById("status")
+.textContent =
+"Backend online";
 
-    const statusText =
-        document.getElementById("statusText");
+}catch(error){
 
-    const loading =
-        document.getElementById("loading");
+document.getElementById("status")
+.textContent =
+"Backend offline";
 
-    const message =
-        document.getElementById("message");
+}
 
-    const originalText =
-        document.getElementById("originalText");
+}
 
-    const translatedText =
-        document.getElementById("translatedText");
+verificarBackend();
 
-    const translatedAudio =
-        document.getElementById("translatedAudio");
 
+/* =====================================================
+ABAS
+===================================================== */
 
-    // ========================================================
-    // TROCA DE ABA
-    // ========================================================
+document
+.querySelectorAll(".tab")
+.forEach(tab=>{
 
-    tabs.forEach(tab => {
+tab.addEventListener("click",()=>{
 
-        tab.addEventListener("click", () => {
+document
+.querySelectorAll(".tab")
+.forEach(t=>
+t.classList.remove("active")
+);
 
-            tabs.forEach(t =>
-                t.classList.remove("active")
-            );
+document
+.querySelectorAll(".mode")
+.forEach(m=>
+m.classList.remove("active")
+);
 
-            modes.forEach(m =>
-                m.classList.remove("active")
-            );
+tab.classList.add("active");
 
-            tab.classList.add("active");
+document
+.getElementById(
+tab.dataset.mode+"Mode"
+)
+.classList.add("active");
 
-            const mode =
-                tab.dataset.mode;
+});
 
-            document
-                .getElementById(mode + "Mode")
-                .classList.add("active");
+});
 
-        });
 
-    });
+/* =====================================================
+YOUTUBE
+===================================================== */
 
+function getYoutubeId(url){
 
-    // ========================================================
-    // TESTAR BACKEND
-    // ========================================================
+try{
 
-    async function checkBackend() {
+const parsed =
+new URL(url);
 
-        try {
+if(
+parsed.hostname.includes(
+"youtube.com"
+)
+){
 
-            const response =
-                await fetch(
-                    `${BACKEND_URL}/health`
-                );
+return parsed
+.searchParams
+.get("v");
 
-            if (!response.ok) {
-                throw new Error();
-            }
+}
 
-            const data =
-                await response.json();
+if(
+parsed.hostname.includes(
+"youtu.be"
+)
+){
 
-            if (data.status === "ok") {
+return parsed
+.pathname
+.replace("/","");
 
-                statusText.textContent =
-                    "Backend online";
+}
 
-            } else {
+}catch(e){
 
-                statusText.textContent =
-                    "Backend conectado";
-            }
+return null;
 
-        } catch (error) {
+}
 
-            statusText.textContent =
-                "Backend offline";
+return null;
 
-        }
+}
 
-    }
 
-    checkBackend();
+document
+.getElementById("loadYoutube")
+.addEventListener("click",()=>{
 
+const url =
+document
+.getElementById("youtubeUrl")
+.value
+.trim();
 
-    // ========================================================
-    // YOUTUBE
-    // ========================================================
+const id =
+getYoutubeId(url);
 
-    function getYoutubeId(url) {
+if(!id){
 
-        try {
+mostrarMensagem(
+"Digite um link válido do YouTube."
+);
 
-            const parsed =
-                new URL(url);
+return;
 
-            if (
-                parsed.hostname.includes(
-                    "youtube.com"
-                )
-            ) {
+}
 
-                return parsed.searchParams.get(
-                    "v"
-                );
+document
+.getElementById("placeholder")
+.style.display="none";
 
-            }
+document
+.getElementById("videoPlayer")
+.style.display="none";
 
-            if (
-                parsed.hostname.includes(
-                    "youtu.be"
-                )
-            ) {
+const player =
+document
+.getElementById("youtubePlayer");
 
-                return parsed.pathname
-                    .replace("/", "");
-            }
+player.style.display="block";
 
-        } catch (error) {
+player.src =
+`https://www.youtube.com/embed/${id}?autoplay=0&rel=0`;
 
-            return null;
+mostrarMensagem(
+"Vídeo carregado."
+);
 
-        }
+});
 
-        return null;
-    }
 
+/* =====================================================
+MP4
+===================================================== */
 
-    document
-        .getElementById("loadYoutube")
-        .addEventListener(
-            "click",
-            () => {
+document
+.getElementById("mp4File")
+.addEventListener("change",event=>{
 
-                const url =
-                    document
-                    .getElementById(
-                        "youtubeUrl"
-                    )
-                    .value
-                    .trim();
+const file =
+event.target.files[0];
 
-                const videoId =
-                    getYoutubeId(url);
+if(!file)
+return;
 
-                if (!videoId) {
+const url =
+URL.createObjectURL(file);
 
-                    showMessage(
-                        "Cole um link válido do YouTube."
-                    );
+document
+.getElementById("placeholder")
+.style.display="none";
 
-                    return;
-                }
+document
+.getElementById("youtubePlayer")
+.style.display="none";
 
-                videoPlayer.style.display =
-                    "none";
+document
+.getElementById("youtubePlayer")
+.src="";
 
-                placeholder.style.display =
-                    "none";
+const video =
+document
+.getElementById("videoPlayer");
 
-                youtubePlayer.style.display =
-                    "block";
+video.style.display="block";
 
-                youtubePlayer.src =
-                    `https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0`;
+video.src=url;
 
-                showMessage(
-                    "Vídeo do YouTube carregado."
-                );
+video.load();
 
-            }
-        );
+mostrarMensagem(
+"Vídeo carregado."
+);
 
+});
 
-    // ========================================================
-    // MP4
-    // ========================================================
 
-    document
-        .getElementById("mp4File")
-        .addEventListener(
-            "change",
-            event => {
+/* =====================================================
+COMPARTILHAR TELA
+===================================================== */
 
-                const file =
-                    event.target.files[0];
+let screenStream=null;
 
-                if (!file) {
-                    return;
-                }
+document
+.getElementById("shareScreen")
+.addEventListener("click",async()=>{
 
-                if (
-                    !file.type.startsWith(
-                        "video/"
-                    )
-                ) {
+try{
 
-                    showMessage(
-                        "Escolha um arquivo de vídeo."
-                    );
+screenStream =
+await navigator
+.mediaDevices
+.getDisplayMedia({
 
-                    return;
-                }
+video:true,
+audio:true
 
-                const url =
-                    URL.createObjectURL(
-                        file
-                    );
+});
 
-                youtubePlayer.style.display =
-                    "none";
+document
+.getElementById("placeholder")
+.style.display="none";
 
-                youtubePlayer.src = "";
+document
+.getElementById("youtubePlayer")
+.style.display="none";
 
-                placeholder.style.display =
-                    "none";
+const video =
+document
+.getElementById("videoPlayer");
 
-                videoPlayer.style.display =
-                    "block";
+video.style.display="block";
 
-                videoPlayer.src =
-                    url;
+video.srcObject =
+screenStream;
 
-                videoPlayer.load();
+video.muted=false;
 
-                showMessage(
-                    "Vídeo MP4 carregado."
-                );
+await video.play();
 
-            }
-        );
+mostrarMensagem(
+"Tela compartilhada."
+);
 
+}catch(error){
 
-    // ========================================================
-    // COMPARTILHAR TELA
-    // ========================================================
+console.error(error);
 
-    let screenStream = null;
+mostrarMensagem(
+"Não foi possível compartilhar a tela."
+);
 
-    document
-        .getElementById("shareScreen")
-        .addEventListener(
-            "click",
-            async () => {
+}
 
-                try {
+});
 
-                    screenStream =
-                        await navigator.mediaDevices
-                            .getDisplayMedia({
 
-                                video: true,
+/* =====================================================
+TRADUZIR + VOZ
+===================================================== */
 
-                                audio: true
-                            });
+document
+.getElementById("translateBtn")
+.addEventListener(
+"click",
+traduzir
+);
 
-                    youtubePlayer.style.display =
-                        "none";
 
-                    youtubePlayer.src = "";
+async function traduzir(){
 
-                    placeholder.style.display =
-                        "none";
+const text =
+document
+.getElementById("testText")
+.value
+.trim();
 
-                    videoPlayer.style.display =
-                        "block";
+const targetLanguage =
+document
+.getElementById("language")
+.value;
 
-                    videoPlayer.srcObject =
-                        screenStream;
+const voice =
+document
+.getElementById("voice")
+.value;
 
-                    videoPlayer.muted =
-                        false;
+if(!text){
 
-                    await videoPlayer.play();
+mostrarMensagem(
+"Digite um texto para testar."
+);
 
-                    showMessage(
-                        "Tela compartilhada. Se disponível, selecione também o áudio."
-                    );
+return;
 
-                    screenStream
-                        .getVideoTracks()[0]
-                        .addEventListener(
-                            "ended",
-                            () => {
+}
 
-                                videoPlayer.srcObject =
-                                    null;
+setLoading(true);
 
-                                showMessage(
-                                    "O compartilhamento foi encerrado."
-                                );
+try{
 
-                            }
-                        );
+const response =
+await fetch(
+`${BACKEND_URL}/translate-and-speak`,
+{
 
-                } catch (error) {
+method:"POST",
 
-                    console.error(error);
+headers:{
+"Content-Type":
+"application/json"
+},
 
-                    showMessage(
-                        "Não foi possível compartilhar a tela. Verifique as permissões do navegador."
-                    );
+body:JSON.stringify({
 
-                }
+text:text,
 
-            }
-        );
+targetLanguage:
+targetLanguage,
 
+voice:voice
 
-    // ========================================================
-    // TRADUZIR + VOZ
-    // ========================================================
+})
 
-    document
-        .getElementById("translateButton")
-        .addEventListener(
-            "click",
-            translateAndSpeak
-        );
+});
 
+const data =
+await response.json();
 
-    async function translateAndSpeak() {
+if(!response.ok){
 
-        const text =
-            document
-            .getElementById("testText")
-            .value
-            .trim();
+throw new Error(
+data.error ||
+"Erro no backend."
+);
 
-        const targetLanguage =
-            document
-            .getElementById(
-                "targetLanguage"
-            )
-            .value;
+}
 
-        const voice =
-            document
-            .getElementById("voice")
-            .value;
+document
+.getElementById("original")
+.textContent =
+data.original;
 
-        if (!text) {
+document
+.getElementById("translation")
+.textContent =
+data.translation;
 
-            showMessage(
-                "Digite um texto para testar."
-            );
 
-            return;
-        }
+if(data.audio){
 
-        setLoading(true);
+const audio =
+document
+.getElementById("audio");
 
-        try {
+audio.src =
+`data:${data.mimeType};base64,${data.audio}`;
 
-            const response =
-                await fetch(
-                    `${BACKEND_URL}/translate-and-speak`,
-                    {
-                        method: "POST",
+audio.style.display="block";
 
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
+}
 
-                        body: JSON.stringify({
+mostrarMensagem(
+"Tradução concluída!"
+);
 
-                            text: text,
+}catch(error){
 
-                            targetLanguage:
-                                targetLanguage,
+console.error(error);
 
-                            voice: voice
+mostrarMensagem(
+"Erro: "+error.message
+);
 
-                        })
-                    }
-                );
+}finally{
 
-            const data =
-                await response.json();
+setLoading(false);
 
-            if (!response.ok) {
+}
 
-                throw new Error(
-                    data.error ||
-                    "Erro no backend."
-                );
-            }
+}
 
-            originalText.textContent =
-                data.original;
 
-            translatedText.textContent =
-                data.translation;
+/* =====================================================
+MERCADO PAGO
+===================================================== */
 
-            if (data.audio) {
+async function assinar(plano){
 
-                translatedAudio.src =
-                    `data:${data.mimeType};base64,${data.audio}`;
+setLoading(true);
 
-                translatedAudio.style.display =
-                    "block";
+mostrarMensagem(
+"Preparando pagamento..."
+);
 
-                try {
-                    await translatedAudio.play();
-                } catch (e) {
-                    console.log(
-                        "Autoplay bloqueado pelo navegador."
-                    );
-                }
-            }
+try{
 
-            showMessage(
-                "Tradução concluída!"
-            );
+const response =
+await fetch(
+`${BACKEND_URL}/api/checkout`,
+{
 
-        } catch (error) {
+method:"POST",
 
-            console.error(error);
+headers:{
+"Content-Type":
+"application/json"
+},
 
-            showMessage(
-                "Erro: " + error.message
-            );
+body:JSON.stringify({
 
-        } finally {
+plan:plano
 
-            setLoading(false);
+})
 
-        }
+});
 
-    }
+const data =
+await response.json();
 
+if(!response.ok){
 
-    // ========================================================
-    // MENSAGENS
-    // ========================================================
+throw new Error(
+data.error ||
+"Não foi possível criar o pagamento."
+);
 
-    function showMessage(text) {
+}
 
-        message.textContent =
-            text;
+if(data.init_point){
 
-        message.classList.add(
-            "show"
-        );
+window.location.href =
+data.init_point;
 
-    }
+return;
 
+}
 
-    function setLoading(value) {
+throw new Error(
+"Mercado Pago não retornou o link de pagamento."
+);
 
-        if (value) {
+}catch(error){
 
-            loading.classList.add(
-                "show"
-            );
+console.error(error);
 
-        } else {
+mostrarMensagem(
+"Pagamento ainda não configurado no backend. Primeiro precisamos adicionar o Mercado Pago ao server.js."
+);
 
-            loading.classList.remove(
-                "show"
-            );
-        }
+}finally{
 
-    }
+setLoading(false);
+
+}
+
+
+/* =====================================================
+UTILIDADES
+===================================================== */
+
+function mostrarMensagem(text){
+
+const box =
+document.getElementById("message");
+
+box.textContent=text;
+
+box.classList.add("show");
+
+}
+
+function setLoading(value){
+
+const box =
+document.getElementById("loading");
+
+if(value)
+box.classList.add("show");
+else
+box.classList.remove("show");
+
+}
+
+}
 
 </script>
 
 </body>
-  </html>
+    </html>
