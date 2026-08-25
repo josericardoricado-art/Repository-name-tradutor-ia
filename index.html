@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -8,20 +9,14 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <meta
-    name="description"
-    content="Keep Tradutor Universal - traduza e duble vídeos com inteligência artificial."
-  >
-
-  <meta
-    name="theme-color"
-    content="#0b1020"
-  >
-
   <title>Keep - Tradutor Universal</title>
 
-  <style>
+  <meta
+    name="description"
+    content="Keep - Tradutor Universal com tradução e dublagem por IA."
+  >
 
+  <style>
     * {
       box-sizing: border-box;
       margin: 0;
@@ -29,3401 +24,884 @@
     }
 
     body {
-      font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
+      font-family: Arial, Helvetica, sans-serif;
       background:
-        linear-gradient(
-          135deg,
-          #070b16,
-          #10172a,
-          #0b1020
+        radial-gradient(
+          circle at top,
+          #123d29 0%,
+          #07130d 35%,
+          #030504 100%
         );
-
-      color: #ffffff;
-
+      color: #fff;
       min-height: 100vh;
     }
 
-    button,
+    .container {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 25px 16px 60px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 36px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .header h1 span {
+      color: #00d26a;
+    }
+
+    .header p {
+      color: #a8b0aa;
+      font-size: 15px;
+    }
+
+    .card {
+      background: rgba(12, 18, 14, 0.96);
+      border: 1px solid #26332b;
+      border-radius: 22px;
+      padding: 24px;
+      margin-bottom: 22px;
+      box-shadow: 0 15px 45px rgba(0,0,0,.30);
+    }
+
+    .card h2 {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      color: #dfe5e1;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
     input,
     select {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    .app {
       width: 100%;
-      min-height: 100vh;
+      padding: 15px;
+      margin-bottom: 17px;
+      border-radius: 12px;
+      border: 1px solid #344039;
+      background: #080c09;
+      color: #fff;
+      outline: none;
+      font-size: 15px;
     }
 
-    /* =========================
-       HEADER
-    ========================== */
+    input:focus,
+    select:focus {
+      border-color: #00d26a;
+    }
 
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-
+    .video-area {
       width: 100%;
-
-      background:
-        rgba(7, 11, 22, 0.94);
-
-      backdrop-filter:
-        blur(18px);
-
-      border-bottom:
-        1px solid
-        rgba(255,255,255,0.08);
-    }
-
-    .header-inner {
-      max-width: 1200px;
-      margin: auto;
-
-      padding:
-        18px 20px;
-
+      min-height: 260px;
+      background: #050706;
+      border: 1px dashed #354039;
+      border-radius: 16px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 20px;
+      justify-content: center;
+      margin-bottom: 20px;
+      overflow: hidden;
+      color: #7e8982;
+      text-align: center;
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
+    #videoPlayer {
+      width: 100%;
+      max-height: 500px;
+      display: none;
+      border-radius: 14px;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: 1fr;
       gap: 12px;
     }
 
-    .brand-icon {
-      width: 46px;
-      height: 46px;
-
-      border-radius: 14px;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      font-size: 23px;
-
-      background:
-        linear-gradient(
-          135deg,
-          #6d5dfc,
-          #00c6ff
-        );
-
-      box-shadow:
-        0 10px 35px
-        rgba(0,198,255,0.20);
-    }
-
-    .brand-text h1 {
-      font-size: 20px;
-      font-weight: 800;
-    }
-
-    .brand-text span {
-      display: block;
-
-      margin-top: 3px;
-
-      font-size: 12px;
-
-      color: #8e9bb7;
-    }
-
-    .online {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-
-      font-size: 12px;
-
-      color: #8fe6b0;
-    }
-
-    .online-dot {
-      width: 8px;
-      height: 8px;
-
-      border-radius: 50%;
-
-      background: #27e57f;
-
-      box-shadow:
-        0 0 12px
-        rgba(39,229,127,0.8);
-    }
-
-    /* =========================
-       CONTAINER
-    ========================== */
-
-    .container {
-      max-width: 1200px;
-
-      margin: auto;
-
-      padding:
-        35px 20px 70px;
-    }
-
-    .hero {
-      text-align: center;
-
-      max-width: 780px;
-
-      margin:
-        0 auto 32px;
-    }
-
-    .hero h2 {
-      font-size:
-        clamp(30px, 5vw, 54px);
-
-      line-height: 1.05;
-
-      margin-bottom: 14px;
-    }
-
-    .hero h2 span {
-      background:
-        linear-gradient(
-          90deg,
-          #8d7aff,
-          #00d4ff
-        );
-
-      -webkit-background-clip:
-        text;
-
-      background-clip:
-        text;
-
-      color: transparent;
-    }
-
-    .hero p {
-      color: #9ca8c2;
-
-      font-size: 15px;
-
-      line-height: 1.7;
-    }
-
-    /* =========================
-       CARD
-    ========================== */
-
-    .card {
-      background:
-        rgba(18, 25, 45, 0.82);
-
-      border:
-        1px solid
-        rgba(255,255,255,0.08);
-
-      border-radius: 22px;
-
-      padding: 22px;
-
-      margin-bottom: 20px;
-
-      box-shadow:
-        0 20px 60px
-        rgba(0,0,0,0.22);
-    }
-
-    .card-title {
-      font-size: 18px;
-      font-weight: 800;
-
-      margin-bottom: 7px;
-    }
-
-    .card-subtitle {
-      color: #8e9bb7;
-
-      font-size: 13px;
-
-      margin-bottom: 20px;
-    }
-
-    /* =========================
-       SOURCE BUTTONS
-    ========================== */
-
-    .source-buttons {
-      display: grid;
-
-      grid-template-columns:
-        repeat(3, 1fr);
-
-      gap: 10px;
-
-      margin-bottom: 20px;
-    }
-
-    .source-button {
-      border: 1px solid
-        rgba(255,255,255,0.09);
-
-      background:
-        rgba(255,255,255,0.035);
-
-      color: #ffffff;
-
-      border-radius: 14px;
-
-      padding: 15px 10px;
-
-      transition:
-        0.2s ease;
-    }
-
-    .source-button:hover {
-      transform:
-        translateY(-2px);
-
-      background:
-        rgba(255,255,255,0.07);
-    }
-
-    .source-button.active {
-      border-color:
-        #7465ff;
-
-      background:
-        linear-gradient(
-          135deg,
-          rgba(116,101,255,0.22),
-          rgba(0,198,255,0.10)
-        );
-
-      box-shadow:
-        0 0 0 1px
-        rgba(116,101,255,0.15);
-    }
-
-    .source-button .icon {
-      display: block;
-
-      font-size: 25px;
-
-      margin-bottom: 7px;
-    }
-
-    .source-button small {
-      display: block;
-
-      margin-top: 5px;
-
-      color: #8995ae;
-
-      font-size: 11px;
-    }
-
-    /* =========================
-       INPUT
-    ========================== */
-
-    .field {
-      margin-bottom: 16px;
-    }
-
-    .field label {
-      display: block;
-
-      font-size: 13px;
-
-      font-weight: 700;
-
-      margin-bottom: 8px;
-
-      color: #dce4f7;
-    }
-
-    input[type="text"],
-    select {
+    button {
       width: 100%;
-
-      border:
-        1px solid
-        rgba(255,255,255,0.10);
-
-      background:
-        #0c1325;
-
-      color: #ffffff;
-
-      border-radius: 12px;
-
-      padding:
-        13px 14px;
-
-      outline: none;
-    }
-
-    input[type="text"]:focus,
-    select:focus {
-      border-color:
-        #7062ff;
-
-      box-shadow:
-        0 0 0 3px
-        rgba(112,98,255,0.10);
-    }
-
-    .url-row {
-      display: flex;
-
-      gap: 10px;
-    }
-
-    .url-row input {
-      flex: 1;
-    }
-
-    /* =========================
-       BUTTON
-    ========================== */
-
-    .primary-button {
-      width: 100%;
-
       border: 0;
-
-      border-radius: 14px;
-
-      padding: 15px;
-
-      color: #ffffff;
-
-      font-weight: 800;
-
-      background:
-        linear-gradient(
-          135deg,
-          #6d5dfc,
-          #00bde8
-        );
-
-      box-shadow:
-        0 12px 30px
-        rgba(0,190,232,0.18);
-
-      transition:
-        0.2s ease;
-    }
-
-    .primary-button:hover {
-      transform:
-        translateY(-1px);
-
-      filter:
-        brightness(1.08);
-    }
-
-    .primary-button:disabled {
-      opacity: 0.45;
-
-      cursor:
-        not-allowed;
-
-      transform:
-        none;
-    }
-
-    .secondary-button {
-      border:
-        1px solid
-        rgba(255,255,255,0.10);
-
-      background:
-        rgba(255,255,255,0.05);
-
-      color: #ffffff;
-
-      border-radius: 12px;
-
-      padding:
-        12px 16px;
-    }
-
-    /* =========================
-       FILE
-    ========================== */
-
-    .file-box {
-      border:
-        1px dashed
-        rgba(255,255,255,0.15);
-
-      border-radius: 15px;
-
-      padding: 20px;
-
-      text-align: center;
-
-      background:
-        rgba(255,255,255,0.025);
-    }
-
-    .file-box input {
-      width: 100%;
-      margin-bottom: 10px;
-    }
-
-    .file-name {
-      color: #8f9bb5;
-
-      font-size: 12px;
-    }
-
-    /* =========================
-       SCREEN
-    ========================== */
-
-    .screen-actions {
-      display: flex;
-
-      gap: 10px;
-
-      flex-wrap: wrap;
-    }
-
-    .screen-status {
-      margin-top: 13px;
-
-      padding: 12px;
-
-      border-radius: 12px;
-
-      background:
-        rgba(255,255,255,0.04);
-
-      color: #9ca8c2;
-
-      font-size: 12px;
-    }
-
-    /* =========================
-       SETTINGS
-    ========================== */
-
-    .settings-grid {
-      display: grid;
-
-      grid-template-columns:
-        repeat(2, 1fr);
-
-      gap: 15px;
-    }
-
-    .switch-row {
-      display: flex;
-
-      align-items: center;
-
-      justify-content: space-between;
-
-      gap: 20px;
-
-      padding: 14px;
-
       border-radius: 13px;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: .2s;
+    }
 
+    button:hover {
+      transform: translateY(-1px);
+      opacity: .94;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: .6;
+      transform: none;
+    }
+
+    .btn-green {
+      background: #00d26a;
+      color: #001a0c;
+    }
+
+    .btn-dark {
+      background: #1b241e;
+      color: #fff;
+      border: 1px solid #354039;
+    }
+
+    /* =========================
+       PAGAMENTO
+    ========================= */
+
+    .payment-card {
+      border: 1px solid #00d26a;
       background:
-        rgba(255,255,255,0.035);
+        linear-gradient(
+          145deg,
+          rgba(0,210,106,.12),
+          rgba(8,12,9,.98)
+        );
+    }
 
-      border:
-        1px solid
-        rgba(255,255,255,0.06);
-
+    .payment-title {
+      text-align: center;
+      font-size: 24px;
       margin-bottom: 10px;
     }
 
-    .switch-info strong {
-      display: block;
-
-      font-size: 13px;
-    }
-
-    .switch-info span {
-      display: block;
-
-      color: #8995ae;
-
-      font-size: 11px;
-
-      margin-top: 4px;
-    }
-
-    .switch {
-      position: relative;
-
-      width: 48px;
-      height: 26px;
-
-      flex-shrink: 0;
-    }
-
-    .switch input {
-      display: none;
-    }
-
-    .slider {
-      position: absolute;
-
-      inset: 0;
-
-      background: #30394f;
-
-      border-radius: 30px;
-
-      cursor: pointer;
-
-      transition: .2s;
-    }
-
-    .slider::before {
-      content: "";
-
-      position: absolute;
-
-      width: 20px;
-      height: 20px;
-
-      left: 3px;
-      top: 3px;
-
-      border-radius: 50%;
-
-      background: white;
-
-      transition: .2s;
-    }
-
-    .switch input:checked + .slider {
-      background:
-        #6d5dfc;
-    }
-
-    .switch input:checked + .slider::before {
-      transform:
-        translateX(22px);
-    }
-
-    /* =========================
-       PLAYER
-    ========================== */
-
-    .player-card {
-      padding: 0;
-
-      overflow: hidden;
-    }
-
-    .player-header {
-      padding:
-        18px 20px;
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: space-between;
-
-      border-bottom:
-        1px solid
-        rgba(255,255,255,0.07);
-    }
-
-    .player-header strong {
-      font-size: 16px;
-    }
-
-    .player-status {
-      font-size: 11px;
-
-      color: #8e9bb7;
-    }
-
-    .player {
-      position: relative;
-
-      width: 100%;
-
-      min-height:
-        300px;
-
-      background:
-        #05070d;
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: center;
-    }
-
-    video {
-      display: none;
-
-      width: 100%;
-
-      max-height: 620px;
-
-      background:
-        #000;
-
-      object-fit: contain;
-    }
-
-    #youtubeContainer {
-      display: none;
-
-      width: 100%;
-
-      aspect-ratio: 16 / 9;
-
-      background: #000;
-    }
-
-    #youtubeContainer iframe {
-      width: 100%;
-      height: 100%;
-
-      border: 0;
-    }
-
-    .player-placeholder {
+    .payment-subtitle {
       text-align: center;
-
-      padding: 50px 20px;
-
-      color: #7d89a3;
-    }
-
-    .player-placeholder .big-icon {
-      font-size: 48px;
-
-      margin-bottom: 15px;
-    }
-
-    .player-placeholder h3 {
-      color: #dce4f7;
-
-      font-size: 17px;
-
-      margin-bottom: 7px;
-    }
-
-    .player-placeholder p {
-      font-size: 12px;
-
-      line-height: 1.6;
-    }
-
-    /* =========================
-       INFO
-    ========================== */
-
-    .info-grid {
-      display: grid;
-
-      grid-template-columns:
-        repeat(3, 1fr);
-
-      gap: 10px;
-
-      padding: 15px 20px;
-    }
-
-    .info-box {
-      background:
-        rgba(255,255,255,0.035);
-
-      border-radius: 12px;
-
-      padding: 12px;
-    }
-
-    .info-box span {
-      display: block;
-
-      font-size: 10px;
-
-      color: #77839c;
-
-      margin-bottom: 4px;
-    }
-
-    .info-box strong {
-      display: block;
-
-      font-size: 12px;
-
-      color: #dfe7f8;
-
-      overflow: hidden;
-
-      text-overflow: ellipsis;
-
-      white-space: nowrap;
-    }
-
-    /* =========================
-       PROGRESS
-    ========================== */
-
-    .progress-wrap {
-      margin-top: 15px;
-    }
-
-    .progress-top {
-      display: flex;
-
-      justify-content: space-between;
-
-      margin-bottom: 7px;
-
-      font-size: 12px;
-
-      color: #9aa6be;
-    }
-
-    .progress {
-      height: 8px;
-
-      border-radius: 20px;
-
-      overflow: hidden;
-
-      background:
-        rgba(255,255,255,0.07);
-    }
-
-    .progress-bar {
-      height: 100%;
-
-      width: 0%;
-
-      border-radius: inherit;
-
-      background:
-        linear-gradient(
-          90deg,
-          #6d5dfc,
-          #00c6ff
-        );
-
-      transition:
-        width .3s ease;
-    }
-
-    /* =========================
-       LOG
-    ========================== */
-
-    .log {
-      background:
-        #080c17;
-
-      border-radius: 14px;
-
-      padding: 15px;
-
-      max-height: 220px;
-
-      overflow-y: auto;
-
-      font-family:
-        monospace;
-
-      font-size: 11px;
-
-      color: #91a0bd;
-    }
-
-    .log-line {
-      margin-bottom: 7px;
-
+      color: #aeb7b1;
       line-height: 1.5;
+      margin-bottom: 18px;
     }
 
-    .log-success {
-      color: #69e79a;
-    }
-
-    .log-error {
-      color: #ff7373;
-    }
-
-    .log-info {
-      color: #72cfff;
-    }
-
-    /* =========================
-       RESULTADO
-    ========================== */
-
-    .result {
-      display: none;
-
-      margin-top: 20px;
-
-      border:
-        1px solid
-        rgba(105,231,154,0.16);
-
-      background:
-        rgba(105,231,154,0.05);
-
-      border-radius: 15px;
-
-      padding: 17px;
-    }
-
-    .result h3 {
-      font-size: 15px;
-
-      margin-bottom: 12px;
-    }
-
-    .result-text {
-      white-space: pre-wrap;
-
-      line-height: 1.6;
-
-      color: #c9d3e8;
-
-      font-size: 13px;
-    }
-
-    .audio-player {
-      width: 100%;
-
-      margin-top: 15px;
-    }
-
-    /* =========================
-       FOOTER
-    ========================== */
-
-    footer {
+    .price {
       text-align: center;
-
-      padding:
-        30px 20px 50px;
-
-      color: #68758f;
-
-      font-size: 11px;
+      font-size: 46px;
+      font-weight: 800;
+      margin: 10px 0 4px;
     }
 
-    /* =========================
-       MOBILE
-    ========================== */
+    .price small {
+      font-size: 16px;
+      color: #9ba59f;
+      font-weight: normal;
+    }
 
-    @media (max-width: 700px) {
+    .features {
+      margin: 20px 0;
+      list-style: none;
+    }
 
-      .header-inner {
-        padding:
-          13px 15px;
-      }
+    .features li {
+      padding: 9px 0;
+      color: #dce4df;
+      border-bottom: 1px solid #202a23;
+    }
 
-      .brand-text h1 {
-        font-size: 17px;
-      }
+    .features li:last-child {
+      border-bottom: 0;
+    }
 
-      .brand-icon {
-        width: 40px;
-        height: 40px;
-      }
+    .payment-button {
+      background: #009ee3;
+      color: #fff;
+      font-size: 18px;
+      padding: 18px;
+      box-shadow: 0 8px 25px rgba(0,158,227,.22);
+    }
 
-      .container {
-        padding:
-          25px 12px 50px;
+    .payment-button:hover {
+      background: #008dcc;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      color: #aeb7b1;
+      margin-top: 14px;
+    }
+
+    .status {
+      display: none;
+      padding: 14px;
+      margin-top: 15px;
+      border-radius: 12px;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .success {
+      display: block;
+      background: rgba(0,210,106,.10);
+      border: 1px solid #00d26a;
+      color: #65f3a2;
+    }
+
+    .error {
+      display: block;
+      background: rgba(255,60,60,.10);
+      border: 1px solid #ff5050;
+      color: #ff8585;
+    }
+
+    .pending {
+      display: block;
+      background: rgba(255,193,7,.10);
+      border: 1px solid #ffc107;
+      color: #ffd866;
+    }
+
+    .footer {
+      text-align: center;
+      color: #67716a;
+      font-size: 13px;
+      margin-top: 25px;
+    }
+
+    @media (max-width: 600px) {
+      .header h1 {
+        font-size: 29px;
       }
 
       .card {
-        padding: 16px;
-
-        border-radius: 18px;
+        padding: 18px;
       }
 
-      .source-buttons {
-        grid-template-columns:
-          1fr;
+      .price {
+        font-size: 38px;
       }
-
-      .settings-grid {
-        grid-template-columns:
-          1fr;
-      }
-
-      .info-grid {
-        grid-template-columns:
-          1fr;
-
-        padding:
-          12px 16px;
-      }
-
-      .url-row {
-        flex-direction:
-          column;
-      }
-
-      .player {
-        min-height:
-          240px;
-      }
-
-      .online {
-        display: none;
-      }
-
     }
-
   </style>
 </head>
 
 <body>
 
-<div class="app">
-
-  <!-- HEADER -->
-
-  <header>
-
-    <div class="header-inner">
-
-      <div class="brand">
-
-        <div class="brand-icon">
-          🌎
-        </div>
-
-        <div class="brand-text">
-
-          <h1>
-            Keep Tradutor Universal
-          </h1>
-
-          <span>
-            Tradução e dublagem com IA
-          </span>
-
-        </div>
-
-      </div>
-
-      <div class="online">
-
-        <span class="online-dot"></span>
-
-        Sistema online
-
-      </div>
-
-    </div>
-
-  </header>
-
-
   <main class="container">
 
-    <!-- HERO -->
+    <!-- =========================
+         CABEÇALHO
+    ========================== -->
 
-    <section class="hero">
-
-      <h2>
-        Traduza e <span>duble</span>
-        seus vídeos
-      </h2>
+    <header class="header">
+      <h1>
+        Keep <span>Tradutor Universal</span>
+      </h1>
 
       <p>
-        Envie um vídeo MP4, coloque um link do YouTube
-        ou compartilhe sua tela. O Keep prepara o áudio
-        para transcrição, tradução e dublagem por IA.
+        Tradução e dublagem inteligente com IA
       </p>
-
-    </section>
-
-
-    <!-- CONTEÚDO -->
-
-    <section class="card">
-
-      <div class="card-title">
-        Adicionar conteúdo
-      </div>
-
-      <div class="card-subtitle">
-        Escolha como deseja enviar o conteúdo.
-      </div>
+    </header>
 
 
-      <div class="source-buttons">
-
-        <button
-          type="button"
-          class="source-button active"
-          id="youtubeTab"
-        >
-
-          <span class="icon">
-            ▶️
-          </span>
-
-          YouTube
-
-          <small>
-            Link do vídeo
-          </small>
-
-        </button>
-
-
-        <button
-          type="button"
-          class="source-button"
-          id="mp4Tab"
-        >
-
-          <span class="icon">
-            📁
-          </span>
-
-          MP4
-
-          <small>
-            Arquivo do celular
-          </small>
-
-        </button>
-
-
-        <button
-          type="button"
-          class="source-button"
-          id="screenTab"
-        >
-
-          <span class="icon">
-            🖥️
-          </span>
-
-          Tela
-
-          <small>
-            Compartilhar tela
-          </small>
-
-        </button>
-
-      </div>
-
-
-      <!-- YOUTUBE -->
-
-      <div id="youtubePanel">
-
-        <div class="field">
-
-          <label>
-            Link do YouTube
-          </label>
-
-          <div class="url-row">
-
-            <input
-              type="text"
-              id="youtubeUrl"
-              placeholder="https://www.youtube.com/watch?v=..."
-            >
-
-            <button
-              type="button"
-              class="secondary-button"
-              id="loadYoutubeBtn"
-            >
-              ▶️ Carregar
-            </button>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- MP4 -->
-
-      <div
-        id="mp4Panel"
-        style="display:none;"
-      >
-
-        <div class="file-box">
-
-          <input
-            type="file"
-            id="videoFile"
-            accept="video/mp4,video/*"
-          >
-
-          <div
-            class="file-name"
-            id="fileName"
-          >
-            Nenhum arquivo selecionado
-          </div>
-
-          <br>
-
-          <button
-            type="button"
-            class="secondary-button"
-            id="openVideoBtn"
-          >
-            🎬 Abrir vídeo
-          </button>
-
-        </div>
-
-      </div>
-
-
-      <!-- SCREEN -->
-
-      <div
-        id="screenPanel"
-        style="display:none;"
-      >
-
-        <div class="screen-actions">
-
-          <button
-            type="button"
-            class="secondary-button"
-            id="startScreenBtn"
-          >
-            🖥️ Compartilhar tela + áudio
-          </button>
-
-          <button
-            type="button"
-            class="secondary-button"
-            id="stopScreenBtn"
-            disabled
-          >
-            ⏹️ Parar compartilhamento
-          </button>
-
-        </div>
-
-        <div
-          class="screen-status"
-          id="screenStatus"
-        >
-          Aguardando compartilhamento de tela.
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- CONFIGURAÇÕES -->
+    <!-- =========================
+         ÁREA DO TRADUTOR
+    ========================== -->
 
     <section class="card">
 
-      <div class="card-title">
-        Configurações
-      </div>
+      <h2>🎬 Traduzir vídeo</h2>
 
-      <div class="card-subtitle">
-        Escolha o idioma e o tipo de processamento.
-      </div>
+      <label for="youtubeUrl">
+        Link do YouTube
+      </label>
 
-
-      <div class="settings-grid">
-
-        <div class="field">
-
-          <label>
-            Idioma original
-          </label>
-
-          <select id="sourceLanguage">
-
-            <option value="auto">
-              Detectar automaticamente
-            </option>
-
-            <option value="pt-BR">
-              Português
-            </option>
-
-            <option value="en">
-              Inglês
-            </option>
-
-            <option value="es">
-              Espanhol
-            </option>
-
-            <option value="fr">
-              Francês
-            </option>
-
-            <option value="de">
-              Alemão
-            </option>
-
-            <option value="it">
-              Italiano
-            </option>
-
-            <option value="ja">
-              Japonês
-            </option>
-
-            <option value="ko">
-              Coreano
-            </option>
-
-            <option value="zh">
-              Chinês
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <div class="field">
-
-          <label>
-            Traduzir para
-          </label>
-
-          <select id="targetLanguage">
-
-            <option value="pt-BR">
-              Português
-            </option>
-
-            <option value="en">
-              Inglês
-            </option>
-
-            <option value="es">
-              Espanhol
-            </option>
-
-            <option value="fr">
-              Francês
-            </option>
-
-            <option value="de">
-              Alemão
-            </option>
-
-            <option value="it">
-              Italiano
-            </option>
-
-            <option value="ja">
-              Japonês
-            </option>
-
-            <option value="ko">
-              Coreano
-            </option>
-
-            <option value="zh">
-              Chinês
-            </option>
-
-          </select>
-
-        </div>
-
-      </div>
-
-
-      <div class="switch-row">
-
-        <div class="switch-info">
-
-          <strong>
-            🔊 Dublagem por IA
-          </strong>
-
-          <span>
-            Gerar voz traduzida
-          </span>
-
-        </div>
-
-        <label class="switch">
-
-          <input
-            type="checkbox"
-            id="dubbing"
-            checked
-          >
-
-          <span class="slider"></span>
-
-        </label>
-
-      </div>
-
-
-      <div class="switch-row">
-
-        <div class="switch-info">
-
-          <strong>
-            📝 Transcrição automática
-          </strong>
-
-          <span>
-            Converter fala em texto
-          </span>
-
-        </div>
-
-        <label class="switch">
-
-          <input
-            type="checkbox"
-            id="transcription"
-            checked
-          >
-
-          <span class="slider"></span>
-
-        </label>
-
-      </div>
-
-
-      <button
-        type="button"
-        class="primary-button"
-        id="translateBtn"
+      <input
+        id="youtubeUrl"
+        type="url"
+        placeholder="Cole aqui o link do YouTube"
       >
-        🌎 Iniciar tradução e dublagem
-      </button>
 
 
-      <div class="progress-wrap">
+      <label for="videoFile">
+        Ou selecione um vídeo
+      </label>
 
-        <div class="progress-top">
-
-          <span id="progressText">
-            Preparando...
-          </span>
-
-          <span id="progressPercent">
-            0%
-          </span>
-
-        </div>
-
-        <div class="progress">
-
-          <div
-            class="progress-bar"
-            id="progressBar"
-          ></div>
-
-        </div>
-
-      </div>
-
-    </section>
+      <input
+        id="videoFile"
+        type="file"
+        accept="video/*"
+      >
 
 
-    <!-- PLAYER -->
+      <div class="video-area">
 
-    <section class="card player-card">
-
-      <div class="player-header">
-
-        <strong>
-          🎬 Reprodução
-        </strong>
-
-        <span
-          class="player-status"
-          id="playerStatus"
-        >
-          Aguardando conteúdo
+        <span id="videoMessage">
+          O vídeo aparecerá aqui
         </span>
-
-      </div>
-
-
-      <div class="player">
 
         <video
           id="videoPlayer"
           controls
           playsinline
-          preload="metadata"
         ></video>
 
-
-        <div
-          id="youtubeContainer"
-        ></div>
-
-
-        <div
-          class="player-placeholder"
-          id="videoPlaceholder"
-        >
-
-          <div class="big-icon">
-            ▶️
-          </div>
-
-          <h3>
-            Seu vídeo aparecerá aqui
-          </h3>
-
-          <p>
-            Cole um link do YouTube,
-            selecione um MP4 ou compartilhe
-            sua tela para começar.
-          </p>
-
-        </div>
-
       </div>
 
 
-      <div class="info-grid">
+      <label for="sourceLanguage">
+        Idioma original
+      </label>
 
-        <div class="info-box">
+      <select id="sourceLanguage">
 
-          <span>
-            ORIGEM
-          </span>
+        <option value="auto">
+          Detectar automaticamente
+        </option>
 
-          <strong id="sourceInfo">
-            Nenhum conteúdo
-          </strong>
+        <option value="pt-BR">
+          Português
+        </option>
 
-        </div>
+        <option value="en">
+          Inglês
+        </option>
+
+        <option value="es">
+          Espanhol
+        </option>
+
+        <option value="fr">
+          Francês
+        </option>
+
+        <option value="de">
+          Alemão
+        </option>
+
+      </select>
 
 
-        <div class="info-box">
+      <label for="targetLanguage">
+        Idioma da tradução
+      </label>
 
-          <span>
-            IDIOMA
-          </span>
+      <select id="targetLanguage">
 
-          <strong id="languageInfo">
-            Detectar automaticamente
-          </strong>
+        <option value="pt-BR">
+          Português
+        </option>
 
-        </div>
+        <option value="en">
+          Inglês
+        </option>
+
+        <option value="es">
+          Espanhol
+        </option>
+
+        <option value="fr">
+          Francês
+        </option>
+
+        <option value="de">
+          Alemão
+        </option>
+
+      </select>
 
 
-        <div class="info-box">
+      <div class="buttons">
 
-          <span>
-            STATUS
-          </span>
+        <button
+          class="btn-dark"
+          id="screenButton"
+          type="button"
+        >
+          🖥️ Compartilhar tela + áudio
+        </button>
 
-          <strong id="statusInfo">
-            Aguardando
-          </strong>
 
-        </div>
+        <button
+          class="btn-green"
+          id="translateButton"
+          type="button"
+        >
+          🎙️ Iniciar tradução e dublagem
+        </button>
 
       </div>
 
     </section>
 
 
-    <!-- RESULTADO -->
+    <!-- =========================
+         MERCADO PAGO
+    ========================== -->
 
-    <section
-      class="card result"
-      id="resultBox"
-    >
+    <section class="card payment-card">
 
-      <h3>
-        ✅ Resultado da tradução
-      </h3>
+      <h2 class="payment-title">
+        ⭐ Plano Premium
+      </h2>
+
+      <p class="payment-subtitle">
+        Tenha acesso aos recursos premium
+        do Keep - Tradutor Universal.
+      </p>
+
+
+      <div class="price">
+        R$ 100
+        <small>/mês</small>
+      </div>
+
+
+      <ul class="features">
+
+        <li>
+          ✅ Tradução de vídeos
+        </li>
+
+        <li>
+          ✅ Transcrição automática
+        </li>
+
+        <li>
+          ✅ Recursos de dublagem por IA
+        </li>
+
+        <li>
+          ✅ Tradução para vários idiomas
+        </li>
+
+      </ul>
+
+
+      <button
+        id="payButton"
+        class="payment-button"
+        type="button"
+      >
+        💳 Pagar com Mercado Pago
+      </button>
+
 
       <div
-        class="result-text"
-        id="translationText"
+        id="paymentLoading"
+        class="loading"
+      >
+        ⏳ Criando seu pagamento...
+      </div>
+
+
+      <div
+        id="paymentStatus"
+        class="status"
       ></div>
 
-
-      <audio
-        id="translatedAudio"
-        class="audio-player"
-        controls
-      ></audio>
-
     </section>
 
 
-    <!-- LOG -->
-
-    <section class="card">
-
-      <div class="card-title">
-        Status do sistema
-      </div>
-
-      <div class="card-subtitle">
-        Acompanhe o processamento.
-      </div>
-
-      <div id="log" class="log">
-
-        <div class="log-line log-info">
-          Sistema inicializado.
-        </div>
-
-        <div class="log-line">
-          Aguardando conteúdo...
-        </div>
-
-      </div>
-
-    </section>
+    <footer class="footer">
+      Keep - Tradutor Universal
+    </footer>
 
   </main>
 
 
-  <footer>
-    Keep - Tradutor Universal © 2026
-  </footer>
+  <script>
 
-</div>
+    // =====================================================
+    // SEU BACKEND NO RENDER
+    // =====================================================
 
+    const BACKEND_URL =
+      "https://repository-name-tradutor-ia-0h2r.onrender.com";
 
-<script>
 
-/* ============================================================
-   CONFIGURAÇÃO
-============================================================ */
+    // =====================================================
+    // ELEMENTOS
+    // =====================================================
 
-const BACKEND_URL =
-  "https://repository-name-tradutor-ia-5kne.onrender.com";
+    const payButton =
+      document.getElementById("payButton");
 
+    const paymentLoading =
+      document.getElementById("paymentLoading");
 
-/* ============================================================
-   ELEMENTOS
-============================================================ */
+    const paymentStatus =
+      document.getElementById("paymentStatus");
 
-const youtubeTab =
-  document.getElementById("youtubeTab");
+    const videoFile =
+      document.getElementById("videoFile");
 
-const mp4Tab =
-  document.getElementById("mp4Tab");
+    const videoPlayer =
+      document.getElementById("videoPlayer");
 
-const screenTab =
-  document.getElementById("screenTab");
+    const videoMessage =
+      document.getElementById("videoMessage");
 
-const youtubePanel =
-  document.getElementById("youtubePanel");
 
-const mp4Panel =
-  document.getElementById("mp4Panel");
+    // =====================================================
+    // MOSTRAR STATUS
+    // =====================================================
 
-const screenPanel =
-  document.getElementById("screenPanel");
-
-const youtubeUrl =
-  document.getElementById("youtubeUrl");
-
-const loadYoutubeBtn =
-  document.getElementById("loadYoutubeBtn");
-
-const videoFile =
-  document.getElementById("videoFile");
-
-const openVideoBtn =
-  document.getElementById("openVideoBtn");
-
-const fileName =
-  document.getElementById("fileName");
-
-const startScreenBtn =
-  document.getElementById("startScreenBtn");
-
-const stopScreenBtn =
-  document.getElementById("stopScreenBtn");
-
-const screenStatus =
-  document.getElementById("screenStatus");
-
-const videoPlayer =
-  document.getElementById("videoPlayer");
-
-const youtubeContainer =
-  document.getElementById("youtubeContainer");
-
-const videoPlaceholder =
-  document.getElementById("videoPlaceholder");
-
-const playerStatus =
-  document.getElementById("playerStatus");
-
-const sourceInfo =
-  document.getElementById("sourceInfo");
-
-const languageInfo =
-  document.getElementById("languageInfo");
-
-const statusInfo =
-  document.getElementById("statusInfo");
-
-const sourceLanguage =
-  document.getElementById("sourceLanguage");
-
-const targetLanguage =
-  document.getElementById("targetLanguage");
-
-const dubbing =
-  document.getElementById("dubbing");
-
-const transcription =
-  document.getElementById("transcription");
-
-const translateBtn =
-  document.getElementById("translateBtn");
-
-const progressBar =
-  document.getElementById("progressBar");
-
-const progressText =
-  document.getElementById("progressText");
-
-const progressPercent =
-  document.getElementById("progressPercent");
-
-const log =
-  document.getElementById("log");
-
-const resultBox =
-  document.getElementById("resultBox");
-
-const translationText =
-  document.getElementById("translationText");
-
-const translatedAudio =
-  document.getElementById("translatedAudio");
-
-
-/* ============================================================
-   ESTADO
-============================================================ */
-
-let currentSource =
-  null;
-
-let currentFile =
-  null;
-
-let youtubeVideoId =
-  null;
-
-let screenStream =
-  null;
-
-let mediaRecorder =
-  null;
-
-let recordedChunks =
-  [];
-
-
-/* ============================================================
-   LOG
-============================================================ */
-
-function addLog(
-  message,
-  type = "normal"
-) {
-
-  const item =
-    document.createElement("div");
-
-  item.className =
-    "log-line";
-
-  if (type === "success") {
-    item.classList.add(
-      "log-success"
-    );
-  }
-
-  if (type === "error") {
-    item.classList.add(
-      "log-error"
-    );
-  }
-
-  if (type === "info") {
-    item.classList.add(
-      "log-info"
-    );
-  }
-
-  const time =
-    new Date()
-      .toLocaleTimeString();
-
-  item.textContent =
-    `[${time}] ${message}`;
-
-  log.appendChild(item);
-
-  log.scrollTop =
-    log.scrollHeight;
-}
-
-
-/* ============================================================
-   PROGRESSO
-============================================================ */
-
-function setProgress(
-  percent,
-  text
-) {
-
-  percent =
-    Math.max(
-      0,
-      Math.min(
-        100,
-        percent
-      )
-    );
-
-  progressBar.style.width =
-    percent + "%";
-
-  progressPercent.textContent =
-    Math.round(percent) + "%";
-
-  progressText.textContent =
-    text || "";
-}
-
-
-/* ============================================================
-   TABS
-============================================================ */
-
-function selectTab(
-  source
-) {
-
-  currentSource =
-    source;
-
-  youtubeTab.classList.remove(
-    "active"
-  );
-
-  mp4Tab.classList.remove(
-    "active"
-  );
-
-  screenTab.classList.remove(
-    "active"
-  );
-
-  youtubePanel.style.display =
-    "none";
-
-  mp4Panel.style.display =
-    "none";
-
-  screenPanel.style.display =
-    "none";
-
-
-  if (source === "youtube") {
-
-    youtubeTab.classList.add(
-      "active"
-    );
-
-    youtubePanel.style.display =
-      "block";
-
-  }
-
-
-  if (source === "mp4") {
-
-    mp4Tab.classList.add(
-      "active"
-    );
-
-    mp4Panel.style.display =
-      "block";
-
-  }
-
-
-  if (source === "screen") {
-
-    screenTab.classList.add(
-      "active"
-    );
-
-    screenPanel.style.display =
-      "block";
-
-  }
-
-}
-
-
-youtubeTab.addEventListener(
-  "click",
-  () => {
-
-    selectTab("youtube");
-
-  }
-);
-
-
-mp4Tab.addEventListener(
-  "click",
-  () => {
-
-    selectTab("mp4");
-
-  }
-);
-
-
-screenTab.addEventListener(
-  "click",
-  () => {
-
-    selectTab("screen");
-
-  }
-);
-
-
-/* ============================================================
-   YOUTUBE ID
-============================================================ */
-
-function extractYouTubeId(
-  url
-) {
-
-  try {
-
-    const parsed =
-      new URL(url);
-
-    let id = "";
-
-
-    if (
-      parsed.hostname.includes(
-        "youtu.be"
-      )
+    function showPaymentStatus(
+      message,
+      type
     ) {
 
-      id =
-        parsed.pathname
-          .replace("/", "");
+      paymentStatus.className =
+        "status " + type;
+
+      paymentStatus.textContent =
+        message;
 
     }
 
 
-    if (
-      parsed.hostname.includes(
-        "youtube.com"
-      )
-    ) {
+    // =====================================================
+    // PAGAMENTO MERCADO PAGO
+    // =====================================================
 
-      if (
-        parsed.searchParams.has(
-          "v"
-        )
-      ) {
+    async function pagarMercadoPago() {
 
-        id =
-          parsed.searchParams.get(
-            "v"
-          );
+      payButton.disabled = true;
 
-      }
-
-      if (
-        parsed.pathname
-          .startsWith("/shorts/")
-      ) {
-
-        id =
-          parsed.pathname
-            .split("/")[2];
-
-      }
-
-      if (
-        parsed.pathname
-          .startsWith("/embed/")
-      ) {
-
-        id =
-          parsed.pathname
-            .split("/")[2];
-
-      }
-
-    }
-
-
-    if (
-      id &&
-      id.length >= 6
-    ) {
-
-      return id;
-
-    }
-
-  } catch (error) {
-
-    return null;
-
-  }
-
-  return null;
-}
-
-
-/* ============================================================
-   YOUTUBE
-============================================================ */
-
-loadYoutubeBtn.addEventListener(
-  "click",
-  () => {
-
-    const url =
-      youtubeUrl.value.trim();
-
-    if (!url) {
-
-      alert(
-        "Cole primeiro o link do YouTube."
-      );
-
-      return;
-
-    }
-
-
-    const id =
-      extractYouTubeId(
-        url
-      );
-
-
-    if (!id) {
-
-      alert(
-        "Não consegui identificar o vídeo do YouTube."
-      );
-
-      return;
-
-    }
-
-
-    youtubeVideoId =
-      id;
-
-    currentSource =
-      "youtube";
-
-
-    /* Esconde MP4 */
-
-    videoPlayer.pause();
-
-    videoPlayer.removeAttribute(
-      "src"
-    );
-
-    videoPlayer.load();
-
-    videoPlayer.style.display =
-      "none";
-
-
-    /* Remove player anterior */
-
-    youtubeContainer.innerHTML =
-      "";
-
-
-    /* Cria iframe */
-
-    const iframe =
-      document.createElement(
-        "iframe"
-      );
-
-    iframe.src =
-      "https://www.youtube.com/embed/" +
-      encodeURIComponent(id) +
-      "?rel=0&playsinline=1";
-
-    iframe.title =
-      "YouTube video player";
-
-    iframe.allow =
-      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
-
-    iframe.allowFullscreen =
-      true;
-
-    youtubeContainer.appendChild(
-      iframe
-    );
-
-    youtubeContainer.style.display =
-      "block";
-
-
-    videoPlaceholder.style.display =
-      "none";
-
-
-    sourceInfo.textContent =
-      "YouTube";
-
-    languageInfo.textContent =
-      sourceLanguage.options[
-        sourceLanguage.selectedIndex
-      ].text;
-
-    statusInfo.textContent =
-      "Vídeo carregado";
-
-    playerStatus.textContent =
-      "YouTube carregado";
-
-
-    addLog(
-      "Vídeo do YouTube carregado.",
-      "success"
-    );
-
-    setProgress(
-      10,
-      "Vídeo carregado"
-    );
-
-  }
-);
-
-
-/* ============================================================
-   MP4 - SELEÇÃO
-============================================================ */
-
-videoFile.addEventListener(
-  "change",
-  () => {
-
-    const file =
-      videoFile.files[0];
-
-    if (!file) {
-
-      fileName.textContent =
-        "Nenhum arquivo selecionado";
-
-      return;
-
-    }
-
-    currentFile =
-      file;
-
-    fileName.textContent =
-      file.name;
-
-
-    addLog(
-      `Arquivo selecionado: ${file.name}`,
-      "info"
-    );
-
-  }
-);
-
-
-/* ============================================================
-   MP4 - ABRIR
-============================================================ */
-
-openVideoBtn.addEventListener(
-  "click",
-  () => {
-
-    if (!currentFile) {
-
-      alert(
-        "Selecione um vídeo primeiro."
-      );
-
-      return;
-
-    }
-
-
-    currentSource =
-      "mp4";
-
-
-    youtubeContainer.innerHTML =
-      "";
-
-    youtubeContainer.style.display =
-      "none";
-
-
-    videoPlayer.style.display =
-      "block";
-
-    videoPlaceholder.style.display =
-      "none";
-
-
-    if (
-      videoPlayer.src &&
-      videoPlayer.src.startsWith(
-        "blob:"
-      )
-    ) {
-
-      URL.revokeObjectURL(
-        videoPlayer.src
-      );
-
-    }
-
-
-    const url =
-      URL.createObjectURL(
-        currentFile
-      );
-
-
-    videoPlayer.src =
-      url;
-
-    videoPlayer.load();
-
-
-    sourceInfo.textContent =
-      "Arquivo MP4";
-
-    languageInfo.textContent =
-      sourceLanguage.options[
-        sourceLanguage.selectedIndex
-      ].text;
-
-    statusInfo.textContent =
-      "Vídeo carregado";
-
-    playerStatus.textContent =
-      "MP4 carregado";
-
-
-    addLog(
-      "Vídeo MP4 carregado no player.",
-      "success"
-    );
-
-
-    setProgress(
-      10,
-      "Vídeo pronto"
-    );
-
-  }
-);
-
-
-/* ============================================================
-   COMPARTILHAMENTO DE TELA
-============================================================ */
-
-startScreenBtn.addEventListener(
-  "click",
-  async () => {
-
-    try {
-
-      if (
-        !navigator.mediaDevices ||
-        !navigator.mediaDevices.getDisplayMedia
-      ) {
-
-        throw new Error(
-          "Seu navegador não suporta compartilhamento de tela."
-        );
-
-      }
-
-
-      screenStream =
-        await navigator.mediaDevices.getDisplayMedia({
-
-          video: true,
-
-          audio: true
-
-        });
-
-
-      currentSource =
-        "screen";
-
-
-      videoPlayer.srcObject =
-        screenStream;
-
-      videoPlayer.style.display =
+      paymentLoading.style.display =
         "block";
 
-      videoPlaceholder.style.display =
-        "none";
+      paymentStatus.className =
+        "status";
 
-      youtubeContainer.innerHTML =
+      paymentStatus.textContent =
         "";
 
-      youtubeContainer.style.display =
-        "none";
 
+      try {
 
-      videoPlayer.play()
-        .catch(() => {});
-
-
-      startScreenBtn.disabled =
-        true;
-
-      stopScreenBtn.disabled =
-        false;
-
-
-      screenStatus.textContent =
-        "🟢 Tela sendo compartilhada. Se você marcou áudio na janela do navegador, ele também será capturado.";
-
-
-      sourceInfo.textContent =
-        "Tela compartilhada";
-
-      statusInfo.textContent =
-        "Capturando";
-
-      playerStatus.textContent =
-        "Compartilhamento ativo";
-
-
-      addLog(
-        "Compartilhamento de tela iniciado.",
-        "success"
-      );
-
-
-      setProgress(
-        10,
-        "Tela capturada"
-      );
-
-
-      const videoTrack =
-        screenStream.getVideoTracks()[0];
-
-
-      if (videoTrack) {
-
-        videoTrack.addEventListener(
-          "ended",
-          () => {
-
-            stopScreenSharing();
-
-          }
+        console.log(
+          "Conectando ao backend:",
+          BACKEND_URL
         );
 
-      }
 
-    } catch (error) {
-
-      console.error(error);
-
-      addLog(
-        "Não foi possível iniciar o compartilhamento: " +
-        error.message,
-        "error"
-      );
-
-      alert(
-        error.message ||
-        "Não foi possível compartilhar a tela."
-      );
-
-    }
-
-  }
-);
-
-
-/* ============================================================
-   PARAR TELA
-============================================================ */
-
-stopScreenBtn.addEventListener(
-  "click",
-  () => {
-
-    stopScreenSharing();
-
-  }
-);
-
-
-function stopScreenSharing() {
-
-  if (screenStream) {
-
-    screenStream
-      .getTracks()
-      .forEach(
-        track => track.stop()
-      );
-
-  }
-
-  screenStream =
-    null;
-
-  videoPlayer.srcObject =
-    null;
-
-  videoPlayer.pause();
-
-  startScreenBtn.disabled =
-    false;
-
-  stopScreenBtn.disabled =
-    true;
-
-  screenStatus.textContent =
-    "Compartilhamento encerrado.";
-
-  statusInfo.textContent =
-    "Parado";
-
-  playerStatus.textContent =
-    "Aguardando";
-
-
-  addLog(
-    "Compartilhamento de tela encerrado.",
-    "info"
-  );
-
-}
-
-
-/* ============================================================
-   ENVIO PARA O BACKEND
-============================================================ */
-
-async function sendToBackend(
-  endpoint,
-  formData
-) {
-
-  const response =
-    await fetch(
-      BACKEND_URL +
-      endpoint,
-      {
-        method: "POST",
-        body: formData
-      }
-    );
-
-
-  let data;
-
-  try {
-
-    data =
-      await response.json();
-
-  } catch {
-
-    throw new Error(
-      "O servidor não retornou JSON válido."
-    );
-
-  }
-
-
-  if (!response.ok) {
-
-    throw new Error(
-      data.error ||
-      "Erro no servidor."
-    );
-
-  }
-
-
-  return data;
-
-}
-
-
-/* ============================================================
-   TRADUZIR MP4
-============================================================ */
-
-async function translateMP4() {
-
-  if (!currentFile) {
-
-    throw new Error(
-      "Selecione um vídeo MP4."
-    );
-
-  }
-
-
-  const formData =
-    new FormData();
-
-
-  formData.append(
-    "video",
-    currentFile
-  );
-
-
-  formData.append(
-    "sourceLanguage",
-    sourceLanguage.value
-  );
-
-
-  formData.append(
-    "targetLanguage",
-    targetLanguage.value
-  );
-
-
-  formData.append(
-    "dubbing",
-    dubbing.checked
-      ? "true"
-      : "false"
-  );
-
-
-  formData.append(
-    "transcription",
-    transcription.checked
-      ? "true"
-      : "false"
-  );
-
-
-  addLog(
-    "Enviando vídeo para o Render...",
-    "info"
-  );
-
-
-  setProgress(
-    25,
-    "Enviando vídeo..."
-  );
-
-
-  const data =
-    await sendToBackend(
-      "/api/translate-video",
-      formData
-    );
-
-
-  return data;
-
-}
-
-
-/* ============================================================
-   TRADUZIR ÁUDIO DA TELA
-============================================================ */
-
-async function translateScreen() {
-
-  if (!screenStream) {
-
-    throw new Error(
-      "Compartilhe sua tela primeiro."
-    );
-
-  }
-
-
-  const audioTracks =
-    screenStream.getAudioTracks();
-
-
-  if (
-    audioTracks.length === 0
-  ) {
-
-    throw new Error(
-      "Nenhum áudio foi compartilhado. Ao selecionar a tela, marque também a opção de compartilhar áudio."
-    );
-
-  }
-
-
-  recordedChunks =
-    [];
-
-
-  let mimeType =
-    "audio/webm";
-
-
-  if (
-    MediaRecorder.isTypeSupported(
-      "audio/webm;codecs=opus"
-    )
-  ) {
-
-    mimeType =
-      "audio/webm;codecs=opus";
-
-  }
-
-
-  const audioOnlyStream =
-    new MediaStream(
-      audioTracks
-    );
-
-
-  mediaRecorder =
-    new MediaRecorder(
-      audioOnlyStream,
-      {
-        mimeType
-      }
-    );
-
-
-  return new Promise(
-    (
-      resolve,
-      reject
-    ) => {
-
-      mediaRecorder.ondataavailable =
-        event => {
-
-          if (
-            event.data &&
-            event.data.size > 0
-          ) {
-
-            recordedChunks.push(
-              event.data
-            );
-
-          }
-
-        };
-
-
-      mediaRecorder.onerror =
-        event => {
-
-          reject(
-            new Error(
-              "Erro ao capturar áudio."
-            )
+        const response =
+          await fetch(
+            `${BACKEND_URL}/create-preference`,
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
+
+              body: JSON.stringify({
+                plan: "premium",
+                price: 100
+              })
+            }
           );
 
-        };
 
+        const data =
+          await response.json();
 
-      mediaRecorder.onstop =
-        async () => {
 
-          try {
-
-            if (
-              recordedChunks.length === 0
-            ) {
-
-              throw new Error(
-                "Nenhum áudio foi capturado."
-              );
-
-            }
-
-
-            const blob =
-              new Blob(
-                recordedChunks,
-                {
-                  type: mimeType
-                }
-              );
-
-
-            const formData =
-              new FormData();
-
-
-            formData.append(
-              "audio",
-              blob,
-              "screen-audio.webm"
-            );
-
-
-            formData.append(
-              "sourceLanguage",
-              sourceLanguage.value
-            );
-
-
-            formData.append(
-              "targetLanguage",
-              targetLanguage.value
-            );
-
-
-            formData.append(
-              "dubbing",
-              dubbing.checked
-                ? "true"
-                : "false"
-            );
-
-
-            formData.append(
-              "transcription",
-              transcription.checked
-                ? "true"
-                : "false"
-            );
-
-
-            addLog(
-              "Enviando áudio da tela para o Render...",
-              "info"
-            );
-
-
-            setProgress(
-              30,
-              "Enviando áudio..."
-            );
-
-
-            const data =
-              await sendToBackend(
-                "/api/translate-audio",
-                formData
-              );
-
-
-            resolve(
-              data
-            );
-
-          } catch (error) {
-
-            reject(error);
-
-          }
-
-        };
-
-
-      mediaRecorder.start();
-
-
-      addLog(
-        "Capturando áudio da tela...",
-        "info"
-      );
-
-
-      setProgress(
-        20,
-        "Capturando áudio..."
-      );
-
-
-      /*
-       * Captura por alguns segundos antes de
-       * enviar para tradução.
-       *
-       * Isso é processamento por blocos,
-       * não streaming em tempo real ainda.
-       */
-
-      setTimeout(
-        () => {
-
-          if (
-            mediaRecorder &&
-            mediaRecorder.state ===
-              "recording"
-          ) {
-
-            mediaRecorder.stop();
-
-          }
-
-        },
-        10000
-      );
-
-    }
-  );
-
-}
-
-
-/* ============================================================
-   YOUTUBE
-============================================================ */
-
-async function translateYouTube() {
-
-  if (!youtubeVideoId) {
-
-    throw new Error(
-      "Carregue um vídeo do YouTube primeiro."
-    );
-
-  }
-
-
-  const response =
-    await fetch(
-      BACKEND_URL +
-      "/api/translate-youtube",
-      {
-
-        method: "POST",
-
-        headers: {
-          "Content-Type":
-            "application/json"
-        },
-
-        body:
-          JSON.stringify({
-
-            url:
-              youtubeUrl.value,
-
-            videoId:
-              youtubeVideoId,
-
-            sourceLanguage:
-              sourceLanguage.value,
-
-            targetLanguage:
-              targetLanguage.value,
-
-            dubbing:
-              dubbing.checked,
-
-            transcription:
-              transcription.checked
-
-          })
-
-      }
-    );
-
-
-  const data =
-    await response.json();
-
-
-  if (!response.ok) {
-
-    throw new Error(
-      data.error ||
-      "Erro no YouTube."
-    );
-
-  }
-
-
-  return data;
-
-}
-
-
-/* ============================================================
-   MOSTRAR RESULTADO
-============================================================ */
-
-function showResult(
-  data
-) {
-
-  resultBox.style.display =
-    "block";
-
-
-  translationText.textContent =
-    data.translation ||
-    "Nenhuma tradução retornada.";
-
-
-  if (
-    data.audioUrl
-  ) {
-
-    translatedAudio.src =
-      data.audioUrl;
-
-    translatedAudio.style.display =
-      "block";
-
-  } else {
-
-    translatedAudio.removeAttribute(
-      "src"
-    );
-
-    translatedAudio.style.display =
-      "none";
-
-  }
-
-}
-
-
-/* ============================================================
-   BOTÃO PRINCIPAL
-============================================================ */
-
-translateBtn.addEventListener(
-  "click",
-  async () => {
-
-    try {
-
-      translateBtn.disabled =
-        true;
-
-
-      resultBox.style.display =
-        "none";
-
-
-      statusInfo.textContent =
-        "Processando";
-
-      playerStatus.textContent =
-        "Processando";
-
-
-      setProgress(
-        5,
-        "Iniciando..."
-      );
-
-
-      addLog(
-        "Iniciando tradução e dublagem...",
-        "info"
-      );
-
-
-      let data;
-
-
-      /* =====================
-         MP4
-      ====================== */
-
-      if (
-        currentSource === "mp4"
-      ) {
-
-        data =
-          await translateMP4();
-
-      }
-
-
-      /* =====================
-         TELA
-      ====================== */
-
-      else if (
-        currentSource === "screen"
-      ) {
-
-        data =
-          await translateScreen();
-
-      }
-
-
-      /* =====================
-         YOUTUBE
-      ====================== */
-
-      else if (
-        currentSource === "youtube"
-      ) {
-
-        data =
-          await translateYouTube();
-
-      }
-
-
-      else {
-
-        throw new Error(
-          "Escolha YouTube, MP4 ou Tela."
-        );
-
-      }
-
-
-      setProgress(
-        90,
-        "Processamento concluído..."
-      );
-
-
-      if (data) {
-
-        showResult(
+        console.log(
+          "Resposta do backend:",
           data
         );
 
+
+        if (!response.ok) {
+
+          throw new Error(
+            data.error ||
+            "Erro ao criar pagamento."
+          );
+
+        }
+
+
+        if (!data.init_point) {
+
+          throw new Error(
+            "O Mercado Pago não retornou o link do checkout."
+          );
+
+        }
+
+
+        /*
+         * Abre o Checkout Pro do Mercado Pago.
+         */
+        window.location.href =
+          data.init_point;
+
       }
 
+      catch (error) {
 
-      statusInfo.textContent =
-        "Concluído";
+        console.error(
+          "Erro no pagamento:",
+          error
+        );
 
-      playerStatus.textContent =
-        "Concluído";
+
+        showPaymentStatus(
+          "❌ Não foi possível iniciar o pagamento. " +
+          error.message,
+          "error"
+        );
 
 
-      setProgress(
-        100,
-        "Concluído"
+        payButton.disabled = false;
+
+      }
+
+      finally {
+
+        paymentLoading.style.display =
+          "none";
+
+      }
+
+    }
+
+
+    // =====================================================
+    // CLIQUE DO BOTÃO
+    // =====================================================
+
+    payButton.addEventListener(
+      "click",
+      pagarMercadoPago
+    );
+
+
+    // =====================================================
+    // CARREGAR MP4
+    // =====================================================
+
+    videoFile.addEventListener(
+      "change",
+      function(event) {
+
+        const file =
+          event.target.files[0];
+
+
+        if (!file) {
+          return;
+        }
+
+
+        const url =
+          URL.createObjectURL(file);
+
+
+        videoPlayer.src =
+          url;
+
+        videoPlayer.srcObject =
+          null;
+
+        videoPlayer.style.display =
+          "block";
+
+        videoMessage.style.display =
+          "none";
+
+      }
+    );
+
+
+    // =====================================================
+    // COMPARTILHAMENTO DE TELA
+    // =====================================================
+
+    document
+      .getElementById("screenButton")
+      .addEventListener(
+        "click",
+        async function() {
+
+          try {
+
+            const stream =
+              await navigator
+                .mediaDevices
+                .getDisplayMedia({
+                  video: true,
+                  audio: true
+                });
+
+
+            videoPlayer.src =
+              "";
+
+            videoPlayer.srcObject =
+              stream;
+
+            videoPlayer.style.display =
+              "block";
+
+            videoMessage.style.display =
+              "none";
+
+
+            const videoTrack =
+              stream.getVideoTracks()[0];
+
+
+            videoTrack.addEventListener(
+              "ended",
+              function() {
+
+                videoPlayer.srcObject =
+                  null;
+
+                videoPlayer.style.display =
+                  "none";
+
+                videoMessage.style.display =
+                  "block";
+
+              }
+            );
+
+          }
+
+          catch (error) {
+
+            console.error(
+              "Compartilhamento cancelado:",
+              error
+            );
+
+          }
+
+        }
       );
 
 
-      addLog(
-        "Processamento concluído.",
-        "success"
+    // =====================================================
+    // TRADUÇÃO
+    // =====================================================
+
+    document
+      .getElementById("translateButton")
+      .addEventListener(
+        "click",
+        function() {
+
+          const source =
+            document.getElementById(
+              "sourceLanguage"
+            ).value;
+
+
+          const target =
+            document.getElementById(
+              "targetLanguage"
+            ).value;
+
+
+          if (source === target) {
+
+            alert(
+              "Escolha idiomas diferentes para realizar a tradução."
+            );
+
+            return;
+
+          }
+
+
+          alert(
+            "🎙️ Tradução/dublagem iniciada.\n\n" +
+            "Idioma original: " +
+            source +
+            "\n" +
+            "Idioma destino: " +
+            target
+          );
+
+        }
       );
 
 
-      /*
-       * Para YouTube, o backend atual apenas
-       * valida o link.
-       */
+    // =====================================================
+    // VERIFICAR RETORNO DO MERCADO PAGO
+    // =====================================================
+
+    function verificarPagamento() {
+
+      const params =
+        new URLSearchParams(
+          window.location.search
+        );
+
+
+      const pagamento =
+        params.get("pagamento");
+
 
       if (
-        currentSource === "youtube" &&
-        data &&
-        data.readyForProcessing === false
+        pagamento ===
+        "sucesso"
       ) {
 
-        addLog(
-          "O player do YouTube está funcionando, mas o backend ainda não captura o áudio do YouTube.",
-          "info"
+        showPaymentStatus(
+          "✅ Pagamento aprovado! Seu pagamento foi recebido.",
+          "success"
         );
 
       }
 
-    } catch (error) {
 
-      console.error(
-        error
-      );
+      else if (
+        pagamento ===
+        "pendente"
+      ) {
 
+        showPaymentStatus(
+          "⏳ Pagamento pendente. Aguarde a confirmação.",
+          "pending"
+        );
 
-      statusInfo.textContent =
-        "Erro";
-
-      playerStatus.textContent =
-        "Erro";
-
-
-      addLog(
-        error.message ||
-        "Erro desconhecido.",
-        "error"
-      );
-
-
-      alert(
-        error.message ||
-        "Ocorreu um erro."
-      );
-
-
-      setProgress(
-        0,
-        "Erro no processamento"
-      );
-
-    } finally {
-
-      translateBtn.disabled =
-        false;
-
-    }
-
-  }
-);
-
-
-/* ============================================================
-   ALTERAÇÃO DE IDIOMA
-============================================================ */
-
-sourceLanguage.addEventListener(
-  "change",
-  () => {
-
-    languageInfo.textContent =
-      sourceLanguage.options[
-        sourceLanguage.selectedIndex
-      ].text;
-
-  }
-);
-
-
-/* ============================================================
-   TESTAR BACKEND
-============================================================ */
-
-async function testBackend() {
-
-  try {
-
-    addLog(
-      "Verificando conexão com o Render...",
-      "info"
-    );
-
-
-    const response =
-      await fetch(
-        BACKEND_URL +
-        "/api/health"
-      );
-
-
-    if (!response.ok) {
-
-      throw new Error(
-        "Backend retornou erro."
-      );
-
-    }
-
-
-    const data =
-      await response.json();
-
-
-    if (data.ok) {
-
-      addLog(
-        "Backend do Render conectado.",
-        "success"
-      );
-
-    } else {
-
-      addLog(
-        "Backend respondeu, mas não confirmou status OK.",
-        "info"
-      );
-
-    }
-
-  } catch (error) {
-
-    addLog(
-      "Não foi possível conectar ao Render. Verifique se o serviço está ativo.",
-      "error"
-    );
-
-  }
-
-}
-
-
-/* ============================================================
-   INICIALIZAÇÃO
-============================================================ */
-
-selectTab(
-  "youtube"
-);
-
-testBackend();
-
-</script>
-<!-- MERCADO PAGO -->
-<section id="premium" class="premium-section">
-  <div class="premium-card">
-    <span class="premium-badge">PLANO PREMIUM</span>
-
-    <h2>Keep Tradutor Universal</h2>
-
-    <div class="premium-price">
-      <span>R$</span> 100<small>/mês</small>
-    </div>
-
-    <p class="premium-description">
-      Tenha acesso aos recursos premium de tradução e dublagem com IA.
-    </p>
-
-    <ul class="premium-features">
-      <li>✓ Tradução de vídeos</li>
-      <li>✓ Dublagem com voz IA</li>
-      <li>✓ Tradução em tempo real</li>
-      <li>✓ Suporte a MP4 e YouTube</li>
-      <li>✓ Captura de áudio e tela</li>
-    </ul>
-
-    <button id="btnMercadoPago" class="btn-premium">
-      Assinar por R$ 100/mês
-    </button>
-
-    <div id="statusPagamento" class="payment-status"></div>
-
-    <p class="secure-payment">
-      🔒 Pagamento seguro processado pelo Mercado Pago
-    </p>
-  </div>
-</section>
-
-<style>
-.premium-section {
-  width: 100%;
-  padding: 40px 20px;
-  box-sizing: border-box;
-}
-
-.premium-card {
-  max-width: 430px;
-  margin: auto;
-  padding: 30px 25px;
-  border-radius: 24px;
-  background: #ffffff;
-  box-shadow: 0 15px 45px rgba(0,0,0,.12);
-  text-align: center;
-}
-
-.premium-badge {
-  display: inline-block;
-  padding: 7px 14px;
-  border-radius: 20px;
-  background: #111827;
-  color: white;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.premium-card h2 {
-  margin: 18px 0 10px;
-}
-
-.premium-price {
-  font-size: 48px;
-  font-weight: 800;
-  margin: 15px 0;
-}
-
-.premium-price span {
-  font-size: 20px;
-}
-
-.premium-price small {
-  font-size: 16px;
-  font-weight: 500;
-}
-
-.premium-description {
-  line-height: 1.6;
-  opacity: .75;
-}
-
-.premium-features {
-  list-style: none;
-  padding: 0;
-  margin: 25px 0;
-  text-align: left;
-}
-
-.premium-features li {
-  padding: 9px 0;
-}
-
-.btn-premium {
-  width: 100%;
-  border: 0;
-  padding: 16px;
-  border-radius: 14px;
-  background: #009ee3;
-  color: white;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.btn-premium:hover {
-  opacity: .9;
-}
-
-.btn-premium:disabled {
-  opacity: .6;
-  cursor: wait;
-}
-
-.payment-status {
-  margin-top: 15px;
-  min-height: 20px;
-  font-size: 14px;
-}
-
-.secure-payment {
-  margin-top: 20px;
-  font-size: 12px;
-  opacity: .65;
-}
-</style>
-
-<script>
-const BACKEND_URL =
-  "https://repository-name-tradutor-ia-0h2r.onrender.com";
-
-const btnMercadoPago =
-  document.getElementById("btnMercadoPago");
-
-const statusPagamento =
-  document.getElementById("statusPagamento");
-
-btnMercadoPago.addEventListener("click", async () => {
-
-  btnMercadoPago.disabled = true;
-  btnMercadoPago.textContent = "Preparando pagamento...";
-  statusPagamento.textContent = "";
-
-  try {
-
-    const response = await fetch(
-      `${BACKEND_URL}/api/criar-pagamento`,
-      {
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json"
-        },
-
-        body: JSON.stringify({
-          plano: "Keep Tradutor Universal - Premium",
-          valor: 100
-        })
       }
-    );
 
-    const data = await response.json();
 
-    if (!response.ok || !data.init_point) {
-      throw new Error(
-        data.error || "Não foi possível criar o pagamento."
-      );
+      else if (
+        pagamento ===
+        "falhou"
+      ) {
+
+        showPaymentStatus(
+          "❌ O pagamento não foi aprovado.",
+          "error"
+        );
+
+      }
+
     }
 
-    window.location.href = data.init_point;
 
-  } catch (error) {
+    verificarPagamento();
 
-    console.error(error);
+  </script>
 
-    statusPagamento.textContent =
-      "Não foi possível iniciar o pagamento. Tente novamente.";
-
-    btnMercadoPago.disabled = false;
-    btnMercadoPago.textContent =
-      "Assinar por R$ 100/mês";
-  }
-
-});
-</script>
 </body>
-  </html>
+</html>
+```
+
