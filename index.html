@@ -3236,6 +3236,194 @@ selectTab(
 testBackend();
 
 </script>
+<!-- MERCADO PAGO -->
+<section id="premium" class="premium-section">
+  <div class="premium-card">
+    <span class="premium-badge">PLANO PREMIUM</span>
 
+    <h2>Keep Tradutor Universal</h2>
+
+    <div class="premium-price">
+      <span>R$</span> 100<small>/mês</small>
+    </div>
+
+    <p class="premium-description">
+      Tenha acesso aos recursos premium de tradução e dublagem com IA.
+    </p>
+
+    <ul class="premium-features">
+      <li>✓ Tradução de vídeos</li>
+      <li>✓ Dublagem com voz IA</li>
+      <li>✓ Tradução em tempo real</li>
+      <li>✓ Suporte a MP4 e YouTube</li>
+      <li>✓ Captura de áudio e tela</li>
+    </ul>
+
+    <button id="btnMercadoPago" class="btn-premium">
+      Assinar por R$ 100/mês
+    </button>
+
+    <div id="statusPagamento" class="payment-status"></div>
+
+    <p class="secure-payment">
+      🔒 Pagamento seguro processado pelo Mercado Pago
+    </p>
+  </div>
+</section>
+
+<style>
+.premium-section {
+  width: 100%;
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+.premium-card {
+  max-width: 430px;
+  margin: auto;
+  padding: 30px 25px;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 15px 45px rgba(0,0,0,.12);
+  text-align: center;
+}
+
+.premium-badge {
+  display: inline-block;
+  padding: 7px 14px;
+  border-radius: 20px;
+  background: #111827;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.premium-card h2 {
+  margin: 18px 0 10px;
+}
+
+.premium-price {
+  font-size: 48px;
+  font-weight: 800;
+  margin: 15px 0;
+}
+
+.premium-price span {
+  font-size: 20px;
+}
+
+.premium-price small {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.premium-description {
+  line-height: 1.6;
+  opacity: .75;
+}
+
+.premium-features {
+  list-style: none;
+  padding: 0;
+  margin: 25px 0;
+  text-align: left;
+}
+
+.premium-features li {
+  padding: 9px 0;
+}
+
+.btn-premium {
+  width: 100%;
+  border: 0;
+  padding: 16px;
+  border-radius: 14px;
+  background: #009ee3;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-premium:hover {
+  opacity: .9;
+}
+
+.btn-premium:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
+.payment-status {
+  margin-top: 15px;
+  min-height: 20px;
+  font-size: 14px;
+}
+
+.secure-payment {
+  margin-top: 20px;
+  font-size: 12px;
+  opacity: .65;
+}
+</style>
+
+<script>
+const BACKEND_URL =
+  "https://repository-name-tradutor-ia-0h2r.onrender.com";
+
+const btnMercadoPago =
+  document.getElementById("btnMercadoPago");
+
+const statusPagamento =
+  document.getElementById("statusPagamento");
+
+btnMercadoPago.addEventListener("click", async () => {
+
+  btnMercadoPago.disabled = true;
+  btnMercadoPago.textContent = "Preparando pagamento...";
+  statusPagamento.textContent = "";
+
+  try {
+
+    const response = await fetch(
+      `${BACKEND_URL}/api/criar-pagamento`,
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          plano: "Keep Tradutor Universal - Premium",
+          valor: 100
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.init_point) {
+      throw new Error(
+        data.error || "Não foi possível criar o pagamento."
+      );
+    }
+
+    window.location.href = data.init_point;
+
+  } catch (error) {
+
+    console.error(error);
+
+    statusPagamento.textContent =
+      "Não foi possível iniciar o pagamento. Tente novamente.";
+
+    btnMercadoPago.disabled = false;
+    btnMercadoPago.textContent =
+      "Assinar por R$ 100/mês";
+  }
+
+});
+</script>
 </body>
   </html>
