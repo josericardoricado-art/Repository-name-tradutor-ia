@@ -1,12 +1,14 @@
 {
-  "name": "keep-tradutor-backend",
-  "version": "1.0.0",
+  "name": "tradutor-ia-backend",
+  "version": "2.0.0",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.21.2",
-    "cors": "^2.8.5"
+    "mercadopago": "^2.8.0",
+    "openai": "^5.0.0"
   }
 }
