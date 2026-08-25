@@ -1,240 +1,739 @@
 const express = require("express");
 const cors = require("cors");
+const OpenAI = require("openai");
+const { MercadoPagoConfig, Preference } = require("mercadopago");
 
 const app = express();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
-const BACKEND_URL =
-  "https://repository-name-tradutor-ia-0h2r.onrender.com";
+/* =========================================================
+   CONFIGURAÇÃO
+========================================================= */
 
-const SITE_URL =
-  "https://josericardoricado-art.github.io/Repository-name-tradutor-ia";
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const MERCADOPAGO_ACCESS_TOKEN =
+    process.env.MERCADOPAGO_ACCESS_TOKEN;
 
-const MP_ACCESS_TOKEN =
-  process.env.MP_ACCESS_TOKEN;
-
-app.use(cors());
-
-app.use(express.json());
+const FRONTEND_URL =
+    process.env.FRONTEND_URL ||
+    "https://josericardoricado-art.github.io/Repository-name-tradutor-ia/";
 
 
-// ==========================================
-// TESTE
-// ==========================================
+/* =========================================================
+   MIDDLEWARE
+========================================================= */
+
+app.use(
+    cors({
+        origin: "*",
+        methods: ["GET", "POST", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"]
+    })
+);
+
+app.use(express.json({ limit: "20mb" }));
+
+
+/* =========================================================
+   OPENAI
+========================================================= */
+
+let openai = null;
+
+if (OPENAI_API_KEY) {
+
+    openai = new OpenAI({
+        apiKey: OPENAI_API_KEY
+    });
+
+    console.log("OpenAI: configurada");
+
+} else {
+
+    console.log(
+        "AVISO: OPENAI_API_KEY não configurada"
+    );
+
+}
+
+
+/* =========================================================
+   MERCADO PAGO
+========================================================= */
+
+let mercadoPagoClient = null;
+let preferenceClient = null;
+
+if (MERCADOPAGO_ACCESS_TOKEN) {
+
+    mercadoPagoClient =
+        new MercadoPagoConfig({
+            accessToken:
+                MERCADOPAGO_ACCESS_TOKEN
+        });
+
+    preferenceClient =
+        new Preference(
+            mercadoPagoClient
+        );
+
+    console.log(
+        "Mercado Pago: configurado"
+    );
+
+} else {
+
+    console.log(
+        "AVISO: MERCADOPAGO_ACCESS_TOKEN não configurado"
+    );
+
+}
+
+
+/* =========================================================
+   HOME
+========================================================= */
 
 app.get("/", (req, res) => {
 
-  res.json({
-    online: true,
-    message: "Keep - Tradutor Universal",
-    mercadoPago: MP_ACCESS_TOKEN
-      ? "configurado"
-      : "não configurado"
-  });
+    res.json({
+        status: "online",
+        message:
+            "Tradutor IA Backend funcionando!",
+        service:
+            "tradutor-ia-backend",
+        openai:
+            !!OPENAI_API_KEY,
+        mercadoPago:
+            !!MERCADOPAGO_ACCESS_TOKEN,
+        version:
+            "2.0.0"
+    });
 
 });
 
 
-// ==========================================
-// CRIAR PAGAMENTO MERCADO PAGO
-// ==========================================
+/* =========================================================
+   HEALTH
+========================================================= */
 
-app.post("/create-preference", async (req, res) => {
+app.get("/health", (req, res) => {
 
-  try {
+    res.json({
+        status: "ok",
 
-    if (!MP_ACCESS_TOKEN) {
+        openai:
+            !!OPENAI_API_KEY,
 
-      return res.status(500).json({
-        success: false,
-        error:
-          "MP_ACCESS_TOKEN não está configurado no Render."
-      });
+        mercadoPago:
+            !!MERCADOPAGO_ACCESS_TOKEN,
 
-    }
+        timestamp:
+            new Date().toISOString()
+    });
 
-
-    const preference = {
-
-      items: [
-
-        {
-          id: "keep-premium",
-
-          title:
-            "Keep - Tradutor Universal Premium",
-
-          description:
-            "Plano Premium mensal",
-
-          quantity: 1,
-
-          currency_id: "BRL",
-
-          unit_price: 100
-        }
-
-      ],
+});
 
 
-      external_reference:
-        "KEEP-" + Date.now(),
+/* =========================================================
+   TESTE DA OPENAI
+========================================================= */
 
-
-      back_urls: {
-
-        success:
-          `${SITE_URL}/?pagamento=sucesso`,
-
-        failure:
-          `${SITE_URL}/?pagamento=falhou`,
-
-        pending:
-          `${SITE_URL}/?pagamento=pendente`
-
-      },
-
-
-      auto_return: "approved",
-
-
-      notification_url:
-        `${BACKEND_URL}/webhook/mercadopago`
-
-    };
-
-
-    const response =
-      await fetch(
-        "https://api.mercadopago.com/checkout/preferences",
-        {
-
-          method: "POST",
-
-          headers: {
-
-            "Content-Type":
-              "application/json",
-
-            "Authorization":
-              `Bearer ${MP_ACCESS_TOKEN}`
-
-          },
-
-          body:
-            JSON.stringify(preference)
-
-        }
-      );
-
-
-    const data =
-      await response.json();
-
-
-    if (!response.ok) {
-
-      console.error(
-        "Erro Mercado Pago:",
-        data
-      );
-
-      return res.status(
-        response.status
-      ).json({
-
-        success: false,
-
-        error:
-          "Erro ao criar pagamento no Mercado Pago.",
-
-        details:
-          data
-
-      });
-
-    }
-
-
-    console.log(
-      "Pagamento criado:",
-      data.id
-    );
-
+app.get("/api/status", (req, res) => {
 
     res.json({
 
-      success: true,
+        backend: "online",
 
-      preferenceId:
-        data.id,
+        openai:
+            !!OPENAI_API_KEY,
 
-      init_point:
-        data.init_point,
+        mercadoPago:
+            !!MERCADOPAGO_ACCESS_TOKEN,
 
-      sandbox_init_point:
-        data.sandbox_init_point
-
-    });
-
-  }
-
-  catch (error) {
-
-    console.error(
-      "Erro:",
-      error
-    );
-
-    res.status(500).json({
-
-      success: false,
-
-      error:
-        error.message
+        frontend:
+            FRONTEND_URL
 
     });
-
-  }
 
 });
 
 
-// ==========================================
-// WEBHOOK
-// ==========================================
+/* =========================================================
+   TRADUÇÃO
+========================================================= */
+
+app.post("/translate", async (req, res) => {
+
+    try {
+
+        if (!openai) {
+
+            return res.status(500).json({
+                error:
+                    "OPENAI_API_KEY não configurada no Render."
+            });
+
+        }
+
+        const {
+            text,
+            targetLanguage
+        } = req.body;
+
+        if (!text) {
+
+            return res.status(400).json({
+                error:
+                    "Informe o texto para tradução."
+            });
+
+        }
+
+        const language =
+            targetLanguage ||
+            "Portuguese";
+
+        const response =
+            await openai.responses.create({
+
+                model:
+                    "gpt-4o-mini",
+
+                input:
+                    `Traduza o texto abaixo para ${language}.
+Retorne somente a tradução, sem explicações.
+
+Texto:
+${text}`
+
+            });
+
+        const translation =
+            response.output_text || "";
+
+        res.json({
+
+            success: true,
+
+            original:
+                text,
+
+            translation:
+                translation,
+
+            targetLanguage:
+                language
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Erro na tradução:",
+            error
+        );
+
+        res.status(500).json({
+
+            error:
+                "Erro ao traduzir o texto.",
+
+            details:
+                error.message
+
+        });
+
+    }
+
+});
+
+
+/* =========================================================
+   TRADUÇÃO + VOZ
+========================================================= */
 
 app.post(
-  "/webhook/mercadopago",
-  (req, res) => {
+    "/translate-and-speak",
+    async (req, res) => {
 
-    console.log(
-      "Webhook Mercado Pago:"
-    );
+        try {
 
-    console.log(
-      req.body
-    );
+            if (!openai) {
 
-    res.sendStatus(200);
+                return res.status(500).json({
+                    error:
+                        "OPENAI_API_KEY não configurada."
+                });
 
-  }
+            }
+
+            const {
+                text,
+                targetLanguage,
+                voice
+            } = req.body;
+
+            if (!text) {
+
+                return res.status(400).json({
+                    error:
+                        "Informe o texto."
+                });
+
+            }
+
+            const language =
+                targetLanguage ||
+                "Portuguese";
+
+            const selectedVoice =
+                voice ||
+                "alloy";
+
+
+            /* -------------------------
+               TRADUÇÃO
+            ------------------------- */
+
+            const translationResponse =
+                await openai.responses.create({
+
+                    model:
+                        "gpt-4o-mini",
+
+                    input:
+                        `Traduza o texto abaixo para ${language}.
+Mantenha o significado natural para uma dublagem.
+Retorne somente o texto traduzido.
+
+Texto:
+${text}`
+
+                });
+
+            const translation =
+                translationResponse.output_text || "";
+
+
+            /* -------------------------
+               VOZ
+            ------------------------- */
+
+            const speech =
+                await openai.audio.speech.create({
+
+                    model:
+                        "gpt-4o-mini-tts",
+
+                    voice:
+                        selectedVoice,
+
+                    input:
+                        translation,
+
+                    format:
+                        "mp3"
+
+                });
+
+
+            const buffer =
+                Buffer.from(
+                    await speech.arrayBuffer()
+                );
+
+            const audio =
+                buffer.toString("base64");
+
+
+            res.json({
+
+                success: true,
+
+                original:
+                    text,
+
+                translation:
+                    translation,
+
+                targetLanguage:
+                    language,
+
+                voice:
+                    selectedVoice,
+
+                mimeType:
+                    "audio/mpeg",
+
+                audio:
+                    audio
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Erro tradução/voz:",
+                error
+            );
+
+            res.status(500).json({
+
+                error:
+                    "Erro ao traduzir e gerar voz.",
+
+                details:
+                    error.message
+
+            });
+
+        }
+
+    }
 );
 
 
-// ==========================================
-// INICIAR SERVIDOR
-// ==========================================
+/* =========================================================
+   MERCADO PAGO
+   CRIAR CHECKOUT
+========================================================= */
+
+app.post(
+    "/api/checkout",
+    async (req, res) => {
+
+        try {
+
+            if (!preferenceClient) {
+
+                return res.status(500).json({
+
+                    error:
+                        "Mercado Pago não está configurado no Render."
+
+                });
+
+            }
+
+            const {
+                plan
+            } = req.body;
+
+
+            /* -------------------------
+               PLANOS
+            ------------------------- */
+
+            const plans = {
+
+                mensal: {
+
+                    title:
+                        "Keep Tradutor IA - Plano Mensal",
+
+                    price:
+                        100
+
+                },
+
+                premium: {
+
+                    title:
+                        "Keep Tradutor IA - Plano Premium",
+
+                    price:
+                        200
+
+                }
+
+            };
+
+
+            const selectedPlan =
+                plans[plan];
+
+
+            if (!selectedPlan) {
+
+                return res.status(400).json({
+
+                    error:
+                        "Plano inválido. Use mensal ou premium."
+
+                });
+
+            }
+
+
+            /* -------------------------
+               PREFERÊNCIA
+            ------------------------- */
+
+            const preferenceData = {
+
+                body: {
+
+                    items: [
+
+                        {
+
+                            id:
+                                plan,
+
+                            title:
+                                selectedPlan.title,
+
+                            quantity:
+                                1,
+
+                            currency_id:
+                                "BRL",
+
+                            unit_price:
+                                selectedPlan.price
+
+                        }
+
+                    ],
+
+                    back_urls: {
+
+                        success:
+                            `${FRONTEND_URL}?payment=success`,
+
+                        failure:
+                            `${FRONTEND_URL}?payment=failure`,
+
+                        pending:
+                            `${FRONTEND_URL}?payment=pending`
+
+                    },
+
+                    auto_return:
+                        "approved",
+
+                    external_reference:
+                        `tradutor-ia-${plan}-${Date.now()}`
+
+                }
+
+            };
+
+
+            const response =
+                await preferenceClient.create(
+                    preferenceData
+                );
+
+
+            console.log(
+                "Preferência Mercado Pago criada:",
+                response.id
+            );
+
+
+            res.json({
+
+                success: true,
+
+                preferenceId:
+                    response.id,
+
+                init_point:
+                    response.init_point,
+
+                sandbox_init_point:
+                    response.sandbox_init_point,
+
+                plan:
+                    plan,
+
+                price:
+                    selectedPlan.price
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Erro Mercado Pago:",
+                error
+            );
+
+            res.status(500).json({
+
+                error:
+                    "Não foi possível criar o pagamento.",
+
+                details:
+                    error.message
+
+            });
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   VERIFICAR CONFIGURAÇÃO DO MERCADO PAGO
+========================================================= */
+
+app.get(
+    "/api/mercadopago/status",
+    (req, res) => {
+
+        res.json({
+
+            configured:
+                !!MERCADOPAGO_ACCESS_TOKEN,
+
+            message:
+                MERCADOPAGO_ACCESS_TOKEN
+                    ? "Mercado Pago configurado."
+                    : "Configure MERCADOPAGO_ACCESS_TOKEN no Render."
+
+        });
+
+    }
+);
+
+
+/* =========================================================
+   WEBHOOK MERCADO PAGO
+========================================================= */
+
+app.post(
+    "/api/mercadopago/webhook",
+    async (req, res) => {
+
+        try {
+
+            console.log(
+                "Webhook Mercado Pago:",
+                JSON.stringify(
+                    req.body,
+                    null,
+                    2
+                )
+            );
+
+            /*
+              Aqui futuramente vamos consultar
+              o pagamento e liberar o plano
+              do usuário somente quando estiver
+              aprovado.
+            */
+
+            res.sendStatus(200);
+
+        } catch (error) {
+
+            console.error(
+                "Erro webhook:",
+                error
+            );
+
+            res.sendStatus(500);
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   404
+========================================================= */
+
+app.use(
+    (req, res) => {
+
+        res.status(404).json({
+
+            error:
+                "Rota não encontrada.",
+
+            path:
+                req.path
+
+        });
+
+    }
+);
+
+
+/* =========================================================
+   ERRO GERAL
+========================================================= */
+
+app.use(
+    (error, req, res, next) => {
+
+        console.error(
+            "Erro geral:",
+            error
+        );
+
+        res.status(500).json({
+
+            error:
+                "Erro interno do servidor."
+
+        });
+
+    }
+);
+
+
+/* =========================================================
+   INICIAR SERVIDOR
+========================================================= */
 
 app.listen(
-  PORT,
-  "0.0.0.0",
-  () => {
+    PORT,
+    "0.0.0.0",
+    () => {
 
-    console.log(
-      `Servidor rodando na porta ${PORT}`
-    );
+        console.log(
+            "===================================="
+        );
 
-  }
+        console.log(
+            "Keep Tradutor IA Backend"
+        );
+
+        console.log(
+            `Servidor rodando na porta ${PORT}`
+        );
+
+        console.log(
+            `Frontend: ${FRONTEND_URL}`
+        );
+
+        console.log(
+            `OpenAI: ${
+                OPENAI_API_KEY
+                    ? "OK"
+                    : "NÃO CONFIGURADA"
+            }`
+        );
+
+        console.log(
+            `Mercado Pago: ${
+                MERCADOPAGO_ACCESS_TOKEN
+                    ? "OK"
+                    : "NÃO CONFIGURADO"
+            }`
+        );
+
+        console.log(
+            "===================================="
+
+        );
+
+    }
 );
