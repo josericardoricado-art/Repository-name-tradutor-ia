@@ -7,7 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // =====================================================
-// ENDEREÇOS DO SEU PROJETO
+// SEUS ENDEREÇOS
 // =====================================================
 
 const BACKEND_URL =
@@ -17,10 +17,11 @@ const SITE_URL =
   "https://josericardoricado-art.github.io/Repository-name-tradutor-ia";
 
 // =====================================================
-// ACCESS TOKEN DO MERCADO PAGO
+// TOKEN DO MERCADO PAGO
 // =====================================================
-// NÃO coloque o token aqui.
-// Ele será lido das Environment Variables do Render.
+// O token fica no Render:
+// Environment → MP_ACCESS_TOKEN
+// NÃO coloque o token diretamente neste arquivo.
 
 const MP_ACCESS_TOKEN =
   process.env.MP_ACCESS_TOKEN;
@@ -38,28 +39,20 @@ app.use(
       "https://josericardoricado-art.github.io",
       "http://localhost:5500",
       "http://127.0.0.1:5500"
-    ],
-    methods: ["GET", "POST", "OPTIONS"],
-    allowedHeaders: ["Content-Type"]
+    ]
   })
 );
 
 
 // =====================================================
-// ROTA PRINCIPAL
+// TESTE DO SERVIDOR
 // =====================================================
 
 app.get("/", (req, res) => {
 
   res.json({
     online: true,
-
-    message:
-      "Keep - Tradutor Universal",
-
-    backend:
-      BACKEND_URL,
-
+    message: "Keep - Tradutor Universal",
     mercadoPago:
       MP_ACCESS_TOKEN
         ? "configurado"
@@ -77,19 +70,16 @@ app.get("/status", (req, res) => {
 
   res.json({
 
-    server:
-      "online",
+    server: "online",
 
     mercadoPago:
       MP_ACCESS_TOKEN
         ? "configurado"
         : "não configurado",
 
-    backend:
-      BACKEND_URL,
+    backend: BACKEND_URL,
 
-    site:
-      SITE_URL
+    site: SITE_URL
 
   });
 
@@ -97,7 +87,7 @@ app.get("/status", (req, res) => {
 
 
 // =====================================================
-// CRIAR PAGAMENTO
+// CRIAR PREFERÊNCIA MERCADO PAGO
 // =====================================================
 
 app.post(
@@ -107,15 +97,7 @@ app.post(
     try {
 
       console.log(
-        "================================"
-      );
-
-      console.log(
-        "CRIANDO PAGAMENTO"
-      );
-
-      console.log(
-        "================================"
+        "Criando pagamento Mercado Pago..."
       );
 
 
@@ -124,10 +106,6 @@ app.post(
       // -------------------------------------------------
 
       if (!MP_ACCESS_TOKEN) {
-
-        console.error(
-          "MP_ACCESS_TOKEN não configurado."
-        );
 
         return res.status(500).json({
 
@@ -142,7 +120,7 @@ app.post(
 
 
       // -------------------------------------------------
-      // PREFERÊNCIA DO MERCADO PAGO
+      // PREFERÊNCIA
       // -------------------------------------------------
 
       const preference = {
@@ -150,25 +128,19 @@ app.post(
         items: [
 
           {
-
-            id:
-              "keep-premium-100",
+            id: "keep-premium",
 
             title:
-              "Keep - Tradutor Universal - Plano Premium",
+              "Keep - Tradutor Universal Premium",
 
             description:
-              "Plano Premium mensal do Keep - Tradutor Universal",
+              "Plano Premium mensal",
 
-            quantity:
-              1,
+            quantity: 1,
 
-            currency_id:
-              "BRL",
+            currency_id: "BRL",
 
-            unit_price:
-              100.00
-
+            unit_price: 100.00
           }
 
         ],
@@ -202,13 +174,8 @@ app.post(
       };
 
 
-      console.log(
-        "Enviando preferência para Mercado Pago..."
-      );
-
-
       // -------------------------------------------------
-      // API MERCADO PAGO
+      // CHAMAR MERCADO PAGO
       // -------------------------------------------------
 
       const response =
@@ -216,8 +183,7 @@ app.post(
           "https://api.mercadopago.com/checkout/preferences",
           {
 
-            method:
-              "POST",
+            method: "POST",
 
             headers: {
 
@@ -241,29 +207,24 @@ app.post(
 
 
       // -------------------------------------------------
-      // VERIFICAR RESPOSTA
+      // ERRO
       // -------------------------------------------------
 
       if (!response.ok) {
 
         console.error(
-          "ERRO MERCADO PAGO:"
-        );
-
-        console.error(
+          "Erro Mercado Pago:",
           data
         );
-
 
         return res.status(
           response.status
         ).json({
 
-          success:
-            false,
+          success: false,
 
           error:
-            "Mercado Pago recusou a criação do pagamento.",
+            "Erro ao criar preferência no Mercado Pago.",
 
           details:
             data
@@ -274,23 +235,18 @@ app.post(
 
 
       // -------------------------------------------------
-      // PAGAMENTO CRIADO
+      // SUCESSO
       // -------------------------------------------------
 
       console.log(
-        "Pagamento criado!"
-      );
-
-      console.log(
-        "Preference ID:",
+        "Preferência criada:",
         data.id
       );
 
 
       return res.json({
 
-        success:
-          true,
+        success: true,
 
         preferenceId:
           data.id,
@@ -298,4 +254,102 @@ app.post(
         init_point:
           data.init_point,
 
+        sandbox_init_point:
+          data.sandbox_init_point
+
+      });
+
+    }
+
+    catch (error) {
+
+      console.error(
+        "Erro interno:",
+        error
+      );
+
+
+      return res.status(500).json({
+
+        success: false,
+
+        error:
+          "Erro interno do servidor.",
+
+        details:
+          error.message
+
+      });
+
+    }
+
+  }
+);
+
+
+// =====================================================
+// WEBHOOK
+// =====================================================
+
+app.post(
+  "/webhook/mercadopago",
+  (req, res) => {
+
+    console.log(
+      "Webhook Mercado Pago recebido:"
+    );
+
+    console.log(
+      JSON.stringify(
+        req.body,
+        null,
+        2
+      )
+    );
+
+
+    res.sendStatus(200);
+
+  }
+);
+
+
+// =====================================================
+// INICIAR SERVIDOR
+// =====================================================
+
+app.listen(
+  PORT,
+  () => {
+
+    console.log(
+      "================================"
+    );
+
+    console.log(
+      "KEEP - TRADUTOR UNIVERSAL"
+    );
+
+    console.log(
+      `Servidor na porta ${PORT}`
+    );
+
+    console.log(
+      `Backend: ${BACKEND_URL}`
+    );
+
+    console.log(
+      "Mercado Pago:",
+      MP_ACCESS_TOKEN
+        ? "CONFIGURADO"
+        : "NÃO CONFIGURADO"
+    );
+
+    console.log(
+      "================================"
+    );
+
+  }
+);
 ```
+
