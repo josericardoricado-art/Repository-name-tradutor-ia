@@ -373,9 +373,73 @@
   </style>
 </head>
 
-<body>
+<body><button type="button" onclick="assinar('100', this)">
+  Assinar R$100/mês
+</button>
 
-  <!-- HEADER -->
+<button type="button" onclick="assinar('200', this)">
+  Assinar R$200/mês
+</button>
+
+<script>
+async function assinar(plano, botao) {
+
+  botao.disabled = true;
+  botao.textContent = "Abrindo pagamento...";
+
+  try {
+
+    const resposta = await fetch(
+      "https://repository-name-tradutor-ia-0h2r.onrender.com/create-checkout-session",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          plan: plano
+        })
+      }
+    );
+
+    const dados = await resposta.json();
+
+    console.log("Resposta do servidor:", dados);
+
+    if (!resposta.ok) {
+      throw new Error(
+        dados.error || "Erro no servidor"
+      );
+    }
+
+    if (!dados.url) {
+      throw new Error(
+        "O Stripe não retornou a página de pagamento."
+      );
+    }
+
+    window.location.href = dados.url;
+
+  } catch (erro) {
+
+    console.error(erro);
+
+    alert(
+      "Erro no pagamento Stripe:\n\n" +
+      erro.message
+    );
+
+    botao.disabled = false;
+
+    botao.textContent =
+      plano === "100"
+        ? "Assinar R$100/mês"
+        : "Assinar R$200/mês";
+  }
+}
+</script>
+
+  
 
   <header>
     <div class="container nav">
