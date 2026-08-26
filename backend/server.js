@@ -1,48 +1,51 @@
-// ============================================================
-// TRADUTOR IA - BACKEND
-// OpenAI + Stripe + Mercado Pago
-// Planos: R$100/mês e R$200/mês
-// Compatível com Render
-// ============================================================
+app.post("/create-checkout-session", async (req, res) => {
+  try {
+    if (!stripe) {
+      return res.status(500).json({
+        error: "Stripe não configurado"
+      });
+    }
 
-require("dotenv").config();
+    const { plan } = req.body;
 
-const express = require("express");
-const cors = require("cors");
-const path = require("path");
-const multer = require("multer");
-const OpenAI = require("openai");
-const Stripe = require("stripe");
+    const plans = {
+      "100": "price_1U8mAoP9zHRcVasofgpq69Nl",
+      "200": "price_1SyfsQP9zHRcVasov83JjPRe"
+    };
 
-const app = express();
+    if (!plans[plan]) {
+      return res.status(400).json({
+        error: "Plano inválido"
+      });
+    }
 
-// ============================================================
-// CONFIGURAÇÕES
-// ============================================================
+    const session = await stripe.checkout.sessions.create({
+      mode: "subscription",
 
-const PORT = process.env.PORT || 3000;
+      line_items: [
+        {
+          price: plans[plan],
+          quantity: 1
+        }
+      ],
 
-const FRONTEND_URL =
-  process.env.FRONTEND_URL ||
-  "https://josericardoricado-art.github.io/Repository-name-tradutor-ia";
+      success_url:
+        "https://josericardoricado-art.github.io/Repository-name-tradutor-ia/?pagamento=sucesso",
 
-// ============================================================
-// OPENAI
-// ============================================================
+      cancel_url:
+        "https://josericardoricado-art.github.io/Repository-name-tradutor-ia/?pagamento=cancelado"
+    });
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+    res.json({
+      success: true,
+      url: session.url
+    });
 
-const openai = OPENAI_API_KEY
-  ? new OpenAI({
-      apiKey: OPENAI_API_KEY,
-    })
-  : null;
+  } catch (error) {
+    console.error("Erro Stripe:", error);
 
-// ============================================================
-// STRIPE
-// ============================================================
-
-const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
-
-const stripe = STRIPE_SECRET_KEY
-  ? new
+    res.status(500).json({
+      error: error.message
+    });
+  }
+});
