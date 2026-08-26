@@ -1,3 +1,10 @@
+// ============================================================
+// TRADUTOR IA - BACKEND COMPLETO
+// OpenAI + Stripe + Mercado Pago
+// Tradução de áudio + geração de voz
+// Planos: R$100 e R$200 por mês
+// ============================================================
+
 require("dotenv").config();
 
 const express = require("express");
@@ -5,212 +12,187 @@ const cors = require("cors");
 const multer = require("multer");
 const Stripe = require("stripe");
 const OpenAI = require("openai");
-const path = require("path");
-const fs = require("fs");
-
-// =====================================================
-// CONFIGURAÇÃO
-// =====================================================
 
 const app = express();
+
+// ============================================================
+// CONFIGURAÇÕES
+// ============================================================
 
 const PORT = process.env.PORT || 3000;
 
 const FRONTEND_URL =
   process.env.FRONTEND_URL ||
-  "https://josericardoricado-art.github.io/Repository-name-tradutor-ia/";
+  "https://josericardoricado-art.github.io/Repository-name-tradutor-ia";
 
 const BACKEND_URL =
   process.env.BACKEND_URL ||
   "https://repository-name-tradutor-ia-0h2r.onrender.com";
 
-// =====================================================
-// CHAVES
-// =====================================================
+// ============================================================
+// OPENAI
+// ============================================================
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
-const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || "";
+const openai = OPENAI_API_KEY
+  ? new OpenAI({
+      apiKey: OPENAI_API_KEY,
+    })
+  : null;
 
-const STRIPE_WEBHOOK_SECRET =
-  process.env.STRIPE_WEBHOOK_SECRET || "";
+// Modelos
+const OPENAI_TEXT_MODEL =
+  process.env.OPENAI_TEXT_MODEL || "gpt-4o-mini";
 
-const MERCADOPAGO_ACCESS_TOKEN =
-  process.env.MERCADOPAGO_ACCESS_TOKEN || "";
+const OPENAI_TRANSCRIBE_MODEL =
+  process.env.OPENAI_TRANSCRIBE_MODEL || "gpt-4o-mini-transcribe";
 
-// =====================================================
-// STRIPE PRICE IDS
-// =====================================================
+const OPENAI_TTS_MODEL =
+  process.env.OPENAI_TTS_MODEL || "gpt-4o-mini-tts";
 
-// R$100/mês
+const OPENAI_TTS_VOICE =
+  process.env.OPENAI_TTS_VOICE || "alloy";
+
+// ============================================================
+// STRIPE
+// ============================================================
+
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+
+const stripe = STRIPE_SECRET_KEY
+  ? new Stripe(STRIPE_SECRET_KEY)
+  : null;
+
+// Seus Price IDs
 const STRIPE_PRICE_100 =
   process.env.STRIPE_PRICE_100 ||
   "price_1U8mAoP9zHRcVasofgpq69Nl";
 
-// R$200/mês
 const STRIPE_PRICE_200 =
   process.env.STRIPE_PRICE_200 ||
   "price_1SyfsQP9zHRcVasov83JjPRe";
 
-// =====================================================
+// ============================================================
 // MERCADO PAGO
-// =====================================================
+// ============================================================
 
-// Se você criar planos recorrentes no Mercado Pago,
-// coloque os IDs aqui no Render:
-//
-// MERCADOPAGO_PLAN_100=ID_DO_PLANO_100
-// MERCADOPAGO_PLAN_200=ID_DO_PLANO_200
+const MERCADO_PAGO_ACCESS_TOKEN =
+  process.env.MERCADO_PAGO_ACCESS_TOKEN;
 
-const MERCADOPAGO_PLAN_100 =
-  process.env.MERCADOPAGO_PLAN_100 || "";
+const MERCADO_PAGO_PLAN_100 =
+  process.env.MERCADO_PAGO_PLAN_100 || "";
 
-const MERCADOPAGO_PLAN_200 =
-  process.env.MERCADOPAGO_PLAN_200 || "";
+const MERCADO_PAGO_PLAN_200 =
+  process.env.MERCADO_PAGO_PLAN_200 || "";
 
-// =====================================================
-// OPENAI
-// =====================================================
-
-let openai = null;
-
-if (OPENAI_API_KEY) {
-  openai = new OpenAI({
-    apiKey: OPENAI_API_KEY
-  });
-}
-
-// =====================================================
-// STRIPE
-// =====================================================
-
-let stripe = null;
-
-if (STRIPE_SECRET_KEY) {
-  stripe = new Stripe(STRIPE_SECRET_KEY);
-}
-
-// =====================================================
+// ============================================================
 // MULTER
-// =====================================================
+// ============================================================
 
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 25 * 1024 * 1024
-  }
+    fileSize: 25 * 1024 * 1024,
+  },
 });
 
-// =====================================================
+// ============================================================
 // CORS
-// =====================================================
+// ============================================================
 
 app.use(
   cors({
     origin: true,
-    methods: [
-      "GET",
-      "POST",
-      "PUT",
-      "PATCH",
-      "DELETE",
-      "OPTIONS"
-    ],
-    allowedHeaders: [
-      "Content-Type",
-      "Authorization",
-      "X-Requested-With"
-    ]
+    methods: ["GET", "POST", "PUT", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
-// =====================================================
-// WEBHOOK STRIPE
+// ============================================================
+// STRIPE WEBHOOK
 // IMPORTANTE:
 // Deve ficar ANTES do express.json()
-// =====================================================
+// ============================================================
 
 app.post(
   "/webhook/stripe",
-  express.raw({ type: "application/json" }),
+  express.raw({
+    type: "application/json",
+  }),
   async (req, res) => {
     if (!stripe) {
-      return res.status(503).send("Stripe não configurado.");
+      return res.status(503).json({
+        error: "Stripe não configurado",
+      });
     }
 
-    let event;
+    const signature = req.headers["stripe-signature"];
+
+    if (!signature) {
+      return res.status(400).json({
+        error: "Stripe signature ausente",
+      });
+    }
 
     try {
-      if (STRIPE_WEBHOOK_SECRET) {
-        const signature = req.headers["stripe-signature"];
+      const webhookSecret =
+        process.env.STRIPE_WEBHOOK_SECRET;
 
-        event = stripe.webhooks.constructEvent(
-          req.body,
-          signature,
-          STRIPE_WEBHOOK_SECRET
+      if (!webhookSecret) {
+        console.error(
+          "STRIPE_WEBHOOK_SECRET não configurado"
         );
-      } else {
-        event = JSON.parse(req.body.toString());
+
+        return res.status(500).json({
+          error: "Webhook Stripe não configurado",
+        });
       }
-    } catch (error) {
-      console.error(
-        "Erro no webhook Stripe:",
-        error.message
+
+      const event = stripe.webhooks.constructEvent(
+        req.body,
+        signature,
+        webhookSecret
       );
 
-      return res.status(400).send(
-        `Webhook Error: ${error.message}`
+      console.log(
+        "Stripe webhook:",
+        event.type
       );
-    }
 
-    console.log(
-      "Stripe webhook:",
-      event.type
-    );
-
-    try {
       switch (event.type) {
-        // ---------------------------------------------
-        // Checkout concluído
-        // ---------------------------------------------
-
         case "checkout.session.completed": {
           const session = event.data.object;
 
           console.log(
-            "Pagamento/assinatura Stripe concluída:",
+            "Pagamento/assinatura Stripe concluído:",
             session.id
           );
 
           console.log(
             "Cliente:",
-            session.customer_details?.email || "sem email"
+            session.customer
+          );
+
+          console.log(
+            "Subscription:",
+            session.subscription
           );
 
           break;
         }
 
-        // ---------------------------------------------
-        // Assinatura criada/atualizada
-        // ---------------------------------------------
-
-        case "customer.subscription.created":
         case "customer.subscription.updated": {
           const subscription =
             event.data.object;
 
           console.log(
-            "Assinatura Stripe:",
-            subscription.id,
-            subscription.status
+            "Assinatura atualizada:",
+            subscription.id
           );
 
           break;
         }
-
-        // ---------------------------------------------
-        // Assinatura cancelada
-        // ---------------------------------------------
 
         case "customer.subscription.deleted": {
           const subscription =
@@ -224,25 +206,17 @@ app.post(
           break;
         }
 
-        // ---------------------------------------------
-        // Fatura paga
-        // ---------------------------------------------
-
         case "invoice.paid": {
           const invoice =
             event.data.object;
 
           console.log(
-            "Fatura Stripe paga:",
+            "Fatura paga:",
             invoice.id
           );
 
           break;
         }
-
-        // ---------------------------------------------
-        // Falha de pagamento
-        // ---------------------------------------------
 
         case "invoice.payment_failed": {
           const invoice =
@@ -258,62 +232,92 @@ app.post(
 
         default:
           console.log(
-            "Evento Stripe não tratado:",
+            "Evento Stripe recebido:",
             event.type
           );
       }
 
       return res.json({
-        received: true
+        received: true,
       });
     } catch (error) {
       console.error(
-        "Erro processando webhook Stripe:",
-        error
+        "Erro webhook Stripe:",
+        error.message
       );
 
-      return res.status(500).json({
-        error: "Erro ao processar webhook."
+      return res.status(400).json({
+        error: "Webhook Stripe inválido",
       });
     }
   }
 );
 
-// =====================================================
+// ============================================================
 // JSON
-// =====================================================
+// ============================================================
 
 app.use(
   express.json({
-    limit: "10mb"
+    limit: "10mb",
   })
 );
-
-// =====================================================
-// FORM URL ENCODED
-// =====================================================
 
 app.use(
   express.urlencoded({
-    extended: true
+    extended: true,
   })
 );
 
-// =====================================================
-// LOG
-// =====================================================
+// ============================================================
+// FUNÇÕES AUXILIARES
+// ============================================================
 
-app.use((req, res, next) => {
-  console.log(
-    `${new Date().toISOString()} ${req.method} ${req.originalUrl}`
-  );
+function getPlan(plan) {
+  if (
+    plan === "100" ||
+    plan === "plano100" ||
+    plan === "basic"
+  ) {
+    return {
+      id: "100",
+      name: "Plano R$100",
+      amount: 100,
+      stripePrice: STRIPE_PRICE_100,
+      mercadoPagoPlan:
+        MERCADO_PAGO_PLAN_100,
+    };
+  }
 
-  next();
-});
+  if (
+    plan === "200" ||
+    plan === "plano200" ||
+    plan === "premium"
+  ) {
+    return {
+      id: "200",
+      name: "Plano R$200",
+      amount: 200,
+      stripePrice: STRIPE_PRICE_200,
+      mercadoPagoPlan:
+        MERCADO_PAGO_PLAN_200,
+    };
+  }
 
-// =====================================================
-// HOME / HEALTH
-// =====================================================
+  return null;
+}
+
+function normalizeLanguage(language) {
+  if (!language) {
+    return "Português";
+  }
+
+  return String(language).trim();
+}
+
+// ============================================================
+// ROTA PRINCIPAL
+// ============================================================
 
 app.get("/", (req, res) => {
   res.json({
@@ -321,54 +325,51 @@ app.get("/", (req, res) => {
     message: "Tradutor IA Backend funcionando!",
     service: "tradutor-ia-backend",
 
-    openai: Boolean(OPENAI_API_KEY),
+    openai: !!OPENAI_API_KEY,
 
-    stripe: Boolean(STRIPE_SECRET_KEY),
+    stripe: !!STRIPE_SECRET_KEY,
 
-    mercadoPago: Boolean(MERCADOPAGO_ACCESS_TOKEN),
-
-    plans: {
-      stripe100: STRIPE_PRICE_100,
-      stripe200: STRIPE_PRICE_200,
-      mercadoPago100: Boolean(MERCADOPAGO_PLAN_100),
-      mercadoPago200: Boolean(MERCADOPAGO_PLAN_200)
-    },
-
-    version: "3.0.0"
-  });
-});
-
-// =====================================================
-// STATUS
-// =====================================================
-
-app.get("/api/status", (req, res) => {
-  res.json({
-    online: true,
-
-    services: {
-      openai: Boolean(OPENAI_API_KEY),
-      stripe: Boolean(STRIPE_SECRET_KEY),
-      mercadoPago: Boolean(MERCADOPAGO_ACCESS_TOKEN)
-    },
+    mercadoPago: !!MERCADO_PAGO_ACCESS_TOKEN,
 
     plans: {
-      stripe: {
-        100: STRIPE_PRICE_100,
-        200: STRIPE_PRICE_200
+      plano100: {
+        amount: 100,
+        currency: "BRL",
+        interval: "month",
+        stripePrice: STRIPE_PRICE_100,
       },
 
-      mercadoPago: {
-        100: Boolean(MERCADOPAGO_PLAN_100),
-        200: Boolean(MERCADOPAGO_PLAN_200)
-      }
-    }
+      plano200: {
+        amount: 200,
+        currency: "BRL",
+        interval: "month",
+        stripePrice: STRIPE_PRICE_200,
+      },
+    },
+
+    translation: true,
+
+    version: "3.0.0",
   });
 });
 
-// =====================================================
+// ============================================================
+// HEALTH CHECK
+// ============================================================
+
+app.get("/health", (req, res) => {
+  res.json({
+    status: "ok",
+    server: true,
+    openai: !!OPENAI_API_KEY,
+    stripe: !!STRIPE_SECRET_KEY,
+    mercadoPago: !!MERCADO_PAGO_ACCESS_TOKEN,
+  });
+});
+
+// ============================================================
 // PLANOS
-// =====================================================
+// ============================================================
 
 app.get("/api/plans", (req, res) => {
   res.json({
@@ -376,216 +377,66 @@ app.get("/api/plans", (req, res) => {
 
     plans: [
       {
-        id: "basico",
-        name: "Keep Tradutor Básico",
+        id: "100",
+        name: "Plano Básico",
         price: 100,
         currency: "BRL",
         interval: "month",
 
-        stripe: {
-          available: Boolean(STRIPE_SECRET_KEY),
-          priceId: STRIPE_PRICE_100
-        },
-
-        mercadoPago: {
-          available: Boolean(MERCADOPAGO_ACCESS_TOKEN),
-          planId: MERCADOPAGO_PLAN_100 || null
-        }
+        features: [
+          "Tradução em tempo real",
+          "Tradução de áudio",
+          "Voz IA",
+        ],
       },
 
       {
-        id: "premium",
-        name: "Keep Tradutor Premium",
+        id: "200",
+        name: "Plano Premium",
         price: 200,
         currency: "BRL",
         interval: "month",
 
-        stripe: {
-          available: Boolean(STRIPE_SECRET_KEY),
-          priceId: STRIPE_PRICE_200
-        },
-
-        mercadoPago: {
-          available: Boolean(MERCADOPAGO_ACCESS_TOKEN),
-          planId: MERCADOPAGO_PLAN_200 || null
-        }
-      }
-    ]
+        features: [
+          "Tradução em tempo real",
+          "Tradução de áudio",
+          "Voz IA",
+          "Maior limite de tradução",
+          "Recursos premium",
+        ],
+      },
+    ],
   });
 });
 
-// =====================================================
-// STRIPE - CHECKOUT R$100
-// =====================================================
-
-app.post("/api/stripe/checkout/100", async (req, res) => {
-  try {
-    if (!stripe) {
-      return res.status(503).json({
-        success: false,
-        error: "Stripe não configurado no backend."
-      });
-    }
-
-    const email =
-      req.body?.email || undefined;
-
-    const session =
-      await stripe.checkout.sessions.create({
-        mode: "subscription",
-
-        line_items: [
-          {
-            price: STRIPE_PRICE_100,
-            quantity: 1
-          }
-        ],
-
-        customer_email: email,
-
-        success_url:
-          FRONTEND_URL +
-          "?payment=success&provider=stripe&plan=100",
-
-        cancel_url:
-          FRONTEND_URL +
-          "?payment=cancelled&provider=stripe",
-
-        metadata: {
-          plan: "100",
-          product: "keep-tradutor"
-        },
-
-        subscription_data: {
-          metadata: {
-            plan: "100",
-            product: "keep-tradutor"
-          }
-        }
-      });
-
-    return res.json({
-      success: true,
-      provider: "stripe",
-      plan: 100,
-      url: session.url,
-      sessionId: session.id
-    });
-  } catch (error) {
-    console.error(
-      "Stripe R$100:",
-      error
-    );
-
-    return res.status(500).json({
-      success: false,
-      error: error.message
-    });
-  }
-});
-
-// =====================================================
-// STRIPE - CHECKOUT R$200
-// =====================================================
-
-app.post("/api/stripe/checkout/200", async (req, res) => {
-  try {
-    if (!stripe) {
-      return res.status(503).json({
-        success: false,
-        error: "Stripe não configurado no backend."
-      });
-    }
-
-    const email =
-      req.body?.email || undefined;
-
-    const session =
-      await stripe.checkout.sessions.create({
-        mode: "subscription",
-
-        line_items: [
-          {
-            price: STRIPE_PRICE_200,
-            quantity: 1
-          }
-        ],
-
-        customer_email: email,
-
-        success_url:
-          FRONTEND_URL +
-          "?payment=success&provider=stripe&plan=200",
-
-        cancel_url:
-          FRONTEND_URL +
-          "?payment=cancelled&provider=stripe",
-
-        metadata: {
-          plan: "200",
-          product: "keep-tradutor"
-        },
-
-        subscription_data: {
-          metadata: {
-            plan: "200",
-            product: "keep-tradutor"
-          }
-        }
-      });
-
-    return res.json({
-      success: true,
-      provider: "stripe",
-      plan: 200,
-      url: session.url,
-      sessionId: session.id
-    });
-  } catch (error) {
-    console.error(
-      "Stripe R$200:",
-      error
-    );
-
-    return res.status(500).json({
-      success: false,
-      error: error.message
-    });
-  }
-});
-
-// =====================================================
-// STRIPE - CHECKOUT GENÉRICO
-// =====================================================
+// ============================================================
+// STRIPE - CRIAR CHECKOUT
+// ============================================================
 
 app.post(
-  "/api/stripe/checkout",
+  "/api/stripe/create-checkout",
   async (req, res) => {
     try {
       if (!stripe) {
         return res.status(503).json({
           success: false,
-          error: "Stripe não configurado."
+          error:
+            "Stripe não configurado. Adicione STRIPE_SECRET_KEY no Render.",
         });
       }
 
-      const plan =
-        String(req.body?.plan || "");
+      const {
+        plan,
+        email,
+      } = req.body || {};
 
-      const email =
-        req.body?.email || undefined;
+      const selectedPlan = getPlan(plan);
 
-      let priceId;
-
-      if (plan === "100") {
-        priceId = STRIPE_PRICE_100;
-      } else if (plan === "200") {
-        priceId = STRIPE_PRICE_200;
-      } else {
+      if (!selectedPlan) {
         return res.status(400).json({
           success: false,
           error:
-            "Plano inválido. Use 100 ou 200."
+            "Plano inválido. Use 100 ou 200.",
         });
       }
 
@@ -595,167 +446,229 @@ app.post(
 
           line_items: [
             {
-              price: priceId,
-              quantity: 1
-            }
+              price:
+                selectedPlan.stripePrice,
+              quantity: 1,
+            },
           ],
 
-          customer_email: email,
-
-          success_url:
-            FRONTEND_URL +
-            `?payment=success&provider=stripe&plan=${plan}`,
-
-          cancel_url:
-            FRONTEND_URL +
-            "?payment=cancelled&provider=stripe",
+          ...(email
+            ? {
+                customer_email: email,
+              }
+            : {}),
 
           metadata: {
-            plan,
-            product: "keep-tradutor"
+            plan: selectedPlan.id,
+            plan_name:
+              selectedPlan.name,
           },
 
           subscription_data: {
             metadata: {
-              plan,
-              product: "keep-tradutor"
-            }
-          }
+              plan: selectedPlan.id,
+              plan_name:
+                selectedPlan.name,
+            },
+          },
+
+          success_url:
+            `${FRONTEND_URL}` +
+            `?pagamento=stripe-sucesso` +
+            `&session_id={CHECKOUT_SESSION_ID}`,
+
+          cancel_url:
+            `${FRONTEND_URL}` +
+            `?pagamento=stripe-cancelado`,
         });
 
       return res.json({
         success: true,
-        url: session.url,
+
+        provider: "stripe",
+
+        plan: selectedPlan.id,
+
         sessionId: session.id,
-        plan
+
+        url: session.url,
       });
     } catch (error) {
       console.error(
-        "Stripe checkout:",
+        "Erro Stripe Checkout:",
         error
       );
 
       return res.status(500).json({
         success: false,
-        error: error.message
+
+        error:
+          error.message ||
+          "Erro ao criar checkout Stripe",
       });
     }
   }
 );
 
-// =====================================================
-// MERCADO PAGO - CRIAR ASSINATURA
-// =====================================================
+// ============================================================
+// STRIPE - CONSULTAR CHECKOUT
+// ============================================================
 
-async function criarAssinaturaMercadoPago({
-  plan,
-  email
-}) {
-  if (!MERCADOPAGO_ACCESS_TOKEN) {
-    throw new Error(
-      "MERCADOPAGO_ACCESS_TOKEN não configurado."
-    );
-  }
-
-  let planId = "";
-
-  let amount = 100;
-
-  if (String(plan) === "100") {
-    planId = MERCADOPAGO_PLAN_100;
-    amount = 100;
-  }
-
-  if (String(plan) === "200") {
-    planId = MERCADOPAGO_PLAN_200;
-    amount = 200;
-  }
-
-  if (!["100", "200"].includes(String(plan))) {
-    throw new Error(
-      "Plano Mercado Pago inválido."
-    );
-  }
-
-  // ---------------------------------------------------
-  // Se você criou um plano recorrente no Mercado Pago
-  // ---------------------------------------------------
-
-  if (planId) {
-    const response = await fetch(
-      "https://api.mercadopago.com/preapproval",
-      {
-        method: "POST",
-
-        headers: {
-          Authorization:
-            `Bearer ${MERCADOPAGO_ACCESS_TOKEN}`,
-
-          "Content-Type":
-            "application/json"
-        },
-
-        body: JSON.stringify({
-          preapproval_plan_id: planId,
-
-          reason:
-            `Keep Tradutor - Plano R$${amount}/mês`,
-
-          external_reference:
-            `KEEP-${plan}-${Date.now()}`,
-
-          payer_email: email,
-
-          back_url:
-            FRONTEND_URL,
-
-          status: "pending"
-        })
+app.get(
+  "/api/stripe/session/:id",
+  async (req, res) => {
+    try {
+      if (!stripe) {
+        return res.status(503).json({
+          error:
+            "Stripe não configurado",
+        });
       }
-    );
 
-    const data =
-      await response.json();
+      const session =
+        await stripe.checkout.sessions.retrieve(
+          req.params.id
+        );
 
-    if (!response.ok) {
-      throw new Error(
-        data?.message ||
-        JSON.stringify(data)
+      res.json({
+        success: true,
+
+        id: session.id,
+
+        status:
+          session.status,
+
+        paymentStatus:
+          session.payment_status,
+
+        customer:
+          session.customer,
+
+        subscription:
+          session.subscription,
+
+        metadata:
+          session.metadata,
+      });
+    } catch (error) {
+      console.error(
+        "Erro consultando sessão Stripe:",
+        error
       );
+
+      res.status(500).json({
+        success: false,
+        error: error.message,
+      });
     }
-
-    return data;
   }
+);
 
-  // ---------------------------------------------------
-  // Se ainda não houver PLAN ID
-  // ---------------------------------------------------
-  //
-  // Cria uma assinatura recorrente diretamente.
-  //
-  // Depois recomendamos criar os dois planos
-  // oficiais no Mercado Pago.
-  // ---------------------------------------------------
+// ============================================================
+// STRIPE - PORTAL DO CLIENTE
+// ============================================================
 
-  const response = await fetch(
-    "https://api.mercadopago.com/preapproval",
-    {
-      method: "POST",
+app.post(
+  "/api/stripe/customer-portal",
+  async (req, res) => {
+    try {
+      if (!stripe) {
+        return res.status(503).json({
+          error:
+            "Stripe não configurado",
+        });
+      }
 
-      headers: {
-        Authorization:
-          `Bearer ${MERCADOPAGO_ACCESS_TOKEN}`,
+      const {
+        customerId,
+      } = req.body || {};
 
-        "Content-Type":
-          "application/json"
-      },
+      if (!customerId) {
+        return res.status(400).json({
+          error:
+            "customerId é obrigatório",
+        });
+      }
 
-      body: JSON.stringify({
+      const session =
+        await stripe.billingPortal.sessions.create(
+          {
+            customer: customerId,
+
+            return_url:
+              FRONTEND_URL,
+          }
+        );
+
+      res.json({
+        success: true,
+        url: session.url,
+      });
+    } catch (error) {
+      console.error(
+        "Erro portal Stripe:",
+        error
+      );
+
+      res.status(500).json({
+        success: false,
+        error: error.message,
+      });
+    }
+  }
+);
+
+// ============================================================
+// MERCADO PAGO - CRIAR ASSINATURA
+// ============================================================
+
+app.post(
+  "/api/mercadopago/create-subscription",
+  async (req, res) => {
+    try {
+      if (!MERCADO_PAGO_ACCESS_TOKEN) {
+        return res.status(503).json({
+          success: false,
+
+          error:
+            "Mercado Pago não configurado. Adicione MERCADO_PAGO_ACCESS_TOKEN no Render.",
+        });
+      }
+
+      const {
+        plan,
+        email,
+      } = req.body || {};
+
+      const selectedPlan = getPlan(plan);
+
+      if (!selectedPlan) {
+        return res.status(400).json({
+          success: false,
+
+          error:
+            "Plano inválido. Use 100 ou 200.",
+        });
+      }
+
+      if (!email) {
+        return res.status(400).json({
+          success: false,
+
+          error:
+            "Informe o e-mail do cliente.",
+        });
+      }
+
+      const externalReference =
+        `TRADUTOR-${selectedPlan.id}-${Date.now()}`;
+
+      const body = {
         reason:
-          `Keep Tradutor - Plano R$${amount}/mês`,
+          `Tradutor IA - ${selectedPlan.name}`,
 
         external_reference:
-          `KEEP-${plan}-${Date.now()}`,
+          externalReference,
 
         payer_email: email,
 
@@ -764,234 +677,223 @@ async function criarAssinaturaMercadoPago({
 
           frequency_type: "months",
 
-          transaction_amount: amount,
+          transaction_amount:
+            selectedPlan.amount,
 
-          currency_id: "BRL"
+          currency_id: "BRL",
         },
 
         back_url:
-          FRONTEND_URL,
+          `${FRONTEND_URL}?pagamento=mercadopago-retorno`,
 
-        status: "pending"
-      })
-    }
-  );
+        notification_url:
+          `${BACKEND_URL}/webhook/mercadopago`,
+      };
 
-  const data =
-    await response.json();
+      // Se você criar planos no Mercado Pago
+      // e colocar os IDs no Render,
+      // o backend poderá associá-los.
+      if (selectedPlan.mercadoPagoPlan) {
+        body.preapproval_plan_id =
+          selectedPlan.mercadoPagoPlan;
+      }
 
-  if (!response.ok) {
-    throw new Error(
-      data?.message ||
-      JSON.stringify(data)
-    );
-  }
+      const response = await fetch(
+        "https://api.mercadopago.com/preapproval",
+        {
+          method: "POST",
 
-  return data;
-}
+          headers: {
+            Authorization:
+              `Bearer ${MERCADO_PAGO_ACCESS_TOKEN}`,
 
-// =====================================================
-// MERCADO PAGO - R$100
-// =====================================================
+            "Content-Type":
+              "application/json",
 
-app.post(
-  "/api/mercadopago/checkout/100",
-  async (req, res) => {
-    try {
-      const email =
-        req.body?.email;
+            Accept:
+              "application/json",
+          },
 
-      if (!email) {
-        return res.status(400).json({
+          body: JSON.stringify(body),
+        }
+      );
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+        console.error(
+          "Mercado Pago:",
+          data
+        );
+
+        return res.status(
+          response.status
+        ).json({
           success: false,
+
           error:
-            "Informe o email do cliente."
+            data.message ||
+            data.error ||
+            "Erro Mercado Pago",
+
+          details: data,
         });
       }
 
-      const data =
-        await criarAssinaturaMercadoPago({
-          plan: "100",
-          email
-        });
-
       return res.json({
         success: true,
+
         provider: "mercadopago",
-        plan: 100,
 
-        id: data.id || null,
+        plan: selectedPlan.id,
 
-        url:
-          data.init_point ||
-          data.sandbox_init_point ||
-          null,
+        amount:
+          selectedPlan.amount,
+
+        subscriptionId:
+          data.id,
+
+        status:
+          data.status,
+
+        checkoutUrl:
+          data.init_point,
 
         init_point:
-          data.init_point ||
-          null,
+          data.init_point,
 
-        sandbox_init_point:
-          data.sandbox_init_point ||
-          null,
-
-        status:
-          data.status || "pending"
+        externalReference:
+          externalReference,
       });
     } catch (error) {
       console.error(
-        "Mercado Pago R$100:",
+        "Erro Mercado Pago:",
         error
       );
 
       return res.status(500).json({
         success: false,
-        error: error.message
+
+        error:
+          error.message ||
+          "Erro ao criar assinatura Mercado Pago",
       });
     }
   }
 );
 
-// =====================================================
-// MERCADO PAGO - R$200
-// =====================================================
+// ============================================================
+// MERCADO PAGO - CONSULTAR ASSINATURA
+// ============================================================
 
-app.post(
-  "/api/mercadopago/checkout/200",
+app.get(
+  "/api/mercadopago/subscription/:id",
   async (req, res) => {
     try {
-      const email =
-        req.body?.email;
-
-      if (!email) {
-        return res.status(400).json({
-          success: false,
+      if (!MERCADO_PAGO_ACCESS_TOKEN) {
+        return res.status(503).json({
           error:
-            "Informe o email do cliente."
+            "Mercado Pago não configurado",
         });
       }
 
+      const response = await fetch(
+        `https://api.mercadopago.com/preapproval/${encodeURIComponent(
+          req.params.id
+        )}`,
+        {
+          method: "GET",
+
+          headers: {
+            Authorization:
+              `Bearer ${MERCADO_PAGO_ACCESS_TOKEN}`,
+
+            Accept:
+              "application/json",
+          },
+        }
+      );
+
       const data =
-        await criarAssinaturaMercadoPago({
-          plan: "200",
-          email
+        await response.json();
+
+      if (!response.ok) {
+        return res.status(
+          response.status
+        ).json({
+          success: false,
+          error:
+            data.message ||
+            "Erro ao consultar assinatura",
+          details: data,
         });
+      }
 
-      return res.json({
+      res.json({
         success: true,
-        provider: "mercadopago",
-        plan: 200,
 
-        id: data.id || null,
+        id: data.id,
 
-        url:
-          data.init_point ||
-          data.sandbox_init_point ||
-          null,
+        status: data.status,
 
-        init_point:
-          data.init_point ||
-          null,
+        plan:
+          data.preapproval_plan_id,
 
-        sandbox_init_point:
-          data.sandbox_init_point ||
-          null,
+        nextPaymentDate:
+          data.next_payment_date,
 
-        status:
-          data.status || "pending"
+        amount:
+          data.auto_recurring
+            ?.transaction_amount,
+
+        currency:
+          data.auto_recurring
+            ?.currency_id,
+
+        initPoint:
+          data.init_point,
       });
     } catch (error) {
       console.error(
-        "Mercado Pago R$200:",
+        "Erro consultando Mercado Pago:",
         error
       );
 
-      return res.status(500).json({
+      res.status(500).json({
         success: false,
-        error: error.message
+        error: error.message,
       });
     }
   }
 );
 
-// =====================================================
-// MERCADO PAGO - CHECKOUT GENÉRICO
-// =====================================================
-
-app.post(
-  "/api/mercadopago/checkout",
-  async (req, res) => {
-    try {
-      const plan =
-        String(req.body?.plan || "");
-
-      const email =
-        req.body?.email;
-
-      if (!email) {
-        return res.status(400).json({
-          success: false,
-          error:
-            "Informe o email."
-        });
-      }
-
-      if (!["100", "200"].includes(plan)) {
-        return res.status(400).json({
-          success: false,
-          error:
-            "Plano inválido. Use 100 ou 200."
-        });
-      }
-
-      const data =
-        await criarAssinaturaMercadoPago({
-          plan,
-          email
-        });
-
-      return res.json({
-        success: true,
-        provider: "mercadopago",
-        plan,
-
-        id: data.id || null,
-
-        url:
-          data.init_point ||
-          data.sandbox_init_point ||
-          null,
-
-        status:
-          data.status || "pending"
-      });
-    } catch (error) {
-      console.error(
-        "Mercado Pago checkout:",
-        error
-      );
-
-      return res.status(500).json({
-        success: false,
-        error: error.message
-      });
-    }
-  }
-);
-
-// =====================================================
+// ============================================================
 // MERCADO PAGO WEBHOOK
-// =====================================================
+// ============================================================
 
 app.post(
   "/webhook/mercadopago",
   async (req, res) => {
     try {
       console.log(
-        "Mercado Pago webhook:",
-        JSON.stringify(req.body)
+        "Mercado Pago webhook recebido:"
       );
 
+      console.log(
+        JSON.stringify(
+          req.body,
+          null,
+          2
+        )
+      );
+
+      // Responde rapidamente ao Mercado Pago
+      res.status(200).json({
+        received: true,
+      });
+
+      // Processamento posterior
       const type =
         req.body?.type ||
         req.body?.topic;
@@ -1000,55 +902,72 @@ app.post(
         req.body?.data?.id ||
         req.body?.id;
 
-      // -----------------------------------------------
-      // Quando receber uma notificação de assinatura,
-      // podemos consultar a API do Mercado Pago.
-      // -----------------------------------------------
+      console.log(
+        "Tipo:",
+        type
+      );
 
+      console.log(
+        "ID:",
+        dataId
+      );
+
+      // Se for pagamento, consulta os detalhes
       if (
-        type === "subscription_preapproval" &&
+        type === "payment" &&
         dataId &&
-        MERCADOPAGO_ACCESS_TOKEN
+        MERCADO_PAGO_ACCESS_TOKEN
       ) {
-        const response =
-          await fetch(
-            `https://api.mercadopago.com/preapproval/${dataId}`,
-            {
-              headers: {
-                Authorization:
-                  `Bearer ${MERCADOPAGO_ACCESS_TOKEN}`
+        try {
+          const response =
+            await fetch(
+              `https://api.mercadopago.com/v1/payments/${encodeURIComponent(
+                dataId
+              )}`,
+              {
+                headers: {
+                  Authorization:
+                    `Bearer ${MERCADO_PAGO_ACCESS_TOKEN}`,
+
+                  Accept:
+                    "application/json",
+                },
               }
-            }
+            );
+
+          const payment =
+            await response.json();
+
+          console.log(
+            "Status pagamento MP:",
+            payment.status
           );
 
-        const subscription =
-          await response.json();
-
-        console.log(
-          "Status da assinatura Mercado Pago:",
-          subscription.status
-        );
+          console.log(
+            "Valor:",
+            payment.transaction_amount
+          );
+        } catch (error) {
+          console.error(
+            "Erro consultando pagamento MP:",
+            error.message
+          );
+        }
       }
-
-      return res.status(200).json({
-        received: true
-      });
     } catch (error) {
       console.error(
-        "Mercado Pago webhook:",
+        "Erro webhook Mercado Pago:",
         error
       );
 
-      return res.status(200).json({
-        received: true
-      });
+      // Se já respondeu, não tenta responder novamente
     }
   }
 );
 
-// =====================================================
+// ============================================================
 // OPENAI - TRADUZIR TEXTO
-// =====================================================
+// ============================================================
 
 app.post(
   "/api/translate",
@@ -1057,92 +976,103 @@ app.post(
       if (!openai) {
         return res.status(503).json({
           success: false,
+
           error:
-            "OPENAI_API_KEY não configurada."
+            "OpenAI não configurada. Adicione OPENAI_API_KEY no Render.",
         });
       }
 
-      const text =
-        String(req.body?.text || "").trim();
-
-      const targetLanguage =
-        String(
-          req.body?.targetLanguage ||
-          "Português"
-        ).trim();
-
-      const sourceLanguage =
-        String(
-          req.body?.sourceLanguage ||
-          "automático"
-        ).trim();
+      const {
+        text,
+        targetLanguage,
+        sourceLanguage,
+      } = req.body || {};
 
       if (!text) {
         return res.status(400).json({
           success: false,
+
           error:
-            "Nenhum texto enviado."
+            "Texto obrigatório.",
         });
       }
+
+      const target =
+        normalizeLanguage(
+          targetLanguage
+        );
+
+      const source =
+        normalizeLanguage(
+          sourceLanguage
+        );
 
       const response =
         await openai.responses.create({
           model:
-            process.env.OPENAI_TEXT_MODEL ||
-            "gpt-5-mini",
+            OPENAI_TEXT_MODEL,
 
-          input: `
-Você é um tradutor profissional.
+          input: [
+            {
+              role: "system",
 
-Traduza o texto abaixo para ${targetLanguage}.
+              content:
+                `Você é um tradutor profissional para tradução em tempo real.
+Traduza somente o conteúdo recebido.
+Não explique a tradução.
+Não adicione comentários.
+Mantenha nomes próprios e o sentido original.
+Idioma de origem: ${source}.
+Idioma de destino: ${target}.`,
+            },
 
-Idioma de origem:
-${sourceLanguage}
+            {
+              role: "user",
 
-Regras:
-- Preserve o significado.
-- Não explique a tradução.
-- Não coloque aspas.
-- Mantenha nomes próprios.
-- Mantenha números.
-- Mantenha o tom natural da fala.
-
-Texto:
-${text}
-          `
+              content: String(text),
+            },
+          ],
         });
 
-      const translated =
-        response.output_text?.trim() || "";
+      const translatedText =
+        response.output_text ||
+        "";
 
       return res.json({
         success: true,
 
-        sourceLanguage,
+        original:
+          text,
 
-        targetLanguage,
+        translated:
+          translatedText,
 
-        original: text,
+        sourceLanguage:
+          source,
 
-        translation: translated
+        targetLanguage:
+          target,
       });
     } catch (error) {
       console.error(
-        "Erro OpenAI tradução:",
+        "Erro tradução OpenAI:",
         error
       );
 
-      return res.status(500).json({
+      res.status(500).json({
         success: false,
-        error: error.message
+
+        error:
+          error.message ||
+          "Erro na tradução",
       });
     }
   }
 );
 
-// =====================================================
-// OPENAI - TRANSCRIÇÃO
-// =====================================================
+// ============================================================
+// OPENAI - ÁUDIO -> TEXTO
+// ============================================================
 
 app.post(
   "/api/transcribe",
@@ -1152,294 +1082,80 @@ app.post(
       if (!openai) {
         return res.status(503).json({
           success: false,
+
           error:
-            "OPENAI_API_KEY não configurada."
+            "OpenAI não configurada.",
         });
       }
 
       if (!req.file) {
         return res.status(400).json({
           success: false,
+
           error:
-            "Arquivo de áudio não enviado."
+            "Envie um arquivo no campo 'audio'.",
         });
       }
 
-      const filename =
-        req.file.originalname ||
-        "audio.webm";
+      const { toFile } =
+        require("openai");
 
-      const tempDir =
-        path.join(
-          __dirname,
-          "tmp"
+      const file =
+        await toFile(
+          req.file.buffer,
+          req.file.originalname ||
+            "audio.webm",
+          {
+            type:
+              req.file.mimetype ||
+              "audio/webm",
+          }
         );
 
-      if (!fs.existsSync(tempDir)) {
-        fs.mkdirSync(tempDir, {
-          recursive: true
-        });
-      }
+      const transcription =
+        await openai.audio.transcriptions.create(
+          {
+            file,
 
-      const filePath =
-        path.join(
-          tempDir,
-          `${Date.now()}-${filename}`
+            model:
+              OPENAI_TRANSCRIBE_MODEL,
+
+            response_format:
+              "json",
+          }
         );
 
-      fs.writeFileSync(
-        filePath,
-        req.file.buffer
-      );
+      return res.json({
+        success: true,
 
-      try {
-        const transcription =
-          await openai.audio.transcriptions.create(
-            {
-              file:
-                fs.createReadStream(filePath),
+        text:
+          transcription.text ||
+          "",
 
-              model:
-                process.env.OPENAI_TRANSCRIBE_MODEL ||
-                "gpt-4o-mini-transcribe"
-            }
-          );
-
-        return res.json({
-          success: true,
-          text:
-            transcription.text || ""
-        });
-      } finally {
-        try {
-          fs.unlinkSync(filePath);
-        } catch {}
-      }
+        language:
+          req.body?.sourceLanguage ||
+          null,
+      });
     } catch (error) {
       console.error(
         "Erro transcrição:",
         error
       );
 
-      return res.status(500).json({
+      res.status(500).json({
         success: false,
-        error: error.message
+
+        error:
+          error.message ||
+          "Erro ao transcrever áudio",
       });
     }
   }
 );
 
-// =====================================================
-// OPENAI - TRADUZIR ÁUDIO
-// =====================================================
-//
-// Recebe:
-// audio = arquivo
-// targetLanguage = idioma desejado
-//
-// Retorna:
-// texto original
-// texto traduzido
-//
-// =====================================================
-
-app.post(
-  "/api/translate-audio",
-  upload.single("audio"),
-  async (req, res) => {
-    try {
-      if (!openai) {
-        return res.status(503).json({
-          success: false,
-          error:
-            "OPENAI_API_KEY não configurada."
-        });
-      }
-
-      if (!req.file) {
-        return res.status(400).json({
-          success: false,
-          error:
-            "Áudio não enviado."
-        });
-      }
-
-      const targetLanguage =
-        String(
-          req.body?.targetLanguage ||
-          "Português"
-        );
-
-      const sourceLanguage =
-        String(
-          req.body?.sourceLanguage ||
-          "automático"
-        );
-
-      const filename =
-        req.file.originalname ||
-        "audio.webm";
-
-      const tempDir =
-        path.join(
-          __dirname,
-          "tmp"
-        );
-
-      if (!fs.existsSync(tempDir)) {
-        fs.mkdirSync(tempDir, {
-          recursive: true
-        });
-      }
-
-      const filePath =
-        path.join(
-          tempDir,
-          `${Date.now()}-${filename}`
-        );
-
-      fs.writeFileSync(
-        filePath,
-        req.file.buffer
-      );
-
-      try {
-        // ---------------------------------------------
-        // 1. TRANSCRIÇÃO
-        // ---------------------------------------------
-
-        const transcription =
-          await openai.audio.transcriptions.create(
-            {
-              file:
-                fs.createReadStream(filePath),
-
-              model:
-                process.env.OPENAI_TRANSCRIBE_MODEL ||
-                "gpt-4o-mini-transcribe"
-            }
-          );
-
-        const originalText =
-          transcription.text?.trim() || "";
-
-        if (!originalText) {
-          return res.json({
-            success: true,
-            original: "",
-            translation: "",
-            audio: null
-          });
-        }
-
-        // ---------------------------------------------
-        // 2. TRADUÇÃO
-        // ---------------------------------------------
-
-        const translationResponse =
-          await openai.responses.create({
-            model:
-              process.env.OPENAI_TEXT_MODEL ||
-              "gpt-5-mini",
-
-            input: `
-Traduza para ${targetLanguage}.
-
-Idioma de origem:
-${sourceLanguage}
-
-Não explique.
-Não coloque aspas.
-Retorne somente a tradução.
-
-Texto:
-${originalText}
-            `
-          });
-
-        const translatedText =
-          translationResponse.output_text?.trim() ||
-          "";
-
-        // ---------------------------------------------
-        // 3. VOZ IA
-        // ---------------------------------------------
-
-        const speech =
-          await openai.audio.speech.create({
-            model:
-              process.env.OPENAI_TTS_MODEL ||
-              "gpt-4o-mini-tts",
-
-            voice:
-              process.env.OPENAI_TTS_VOICE ||
-              "alloy",
-
-            input:
-              translatedText,
-
-            response_format:
-              "mp3"
-          });
-
-        const audioBuffer =
-          Buffer.from(
-            await speech.arrayBuffer()
-          );
-
-        const audioBase64 =
-          audioBuffer.toString("base64");
-
-        // ---------------------------------------------
-        // 4. RETORNO
-        // ---------------------------------------------
-
-        return res.json({
-          success: true,
-
-          sourceLanguage,
-
-          targetLanguage,
-
-          original:
-            originalText,
-
-          translation:
-            translatedText,
-
-          audio: {
-            mimeType:
-              "audio/mpeg",
-
-            base64:
-              audioBase64,
-
-            dataUrl:
-              `data:audio/mpeg;base64,${audioBase64}`
-          }
-        });
-      } finally {
-        try {
-          fs.unlinkSync(filePath);
-        } catch {}
-      }
-    } catch (error) {
-      console.error(
-        "Erro tradução de áudio:",
-        error
-      );
-
-      return res.status(500).json({
-        success: false,
-        error: error.message
-      });
-    }
-  }
-);
-
-// =====================================================
-// OPENAI - GERAR VOZ A PARTIR DE TEXTO
-// =====================================================
+// ============================================================
+// OPENAI - TEXTO -> ÁUDIO
+// ============================================================
 
 app.post(
   "/api/speech",
@@ -1448,46 +1164,50 @@ app.post(
       if (!openai) {
         return res.status(503).json({
           success: false,
+
           error:
-            "OPENAI_API_KEY não configurada."
+            "OpenAI não configurada.",
         });
       }
 
-      const text =
-        String(
-          req.body?.text || ""
-        ).trim();
-
-      const voice =
-        String(
-          req.body?.voice ||
-          process.env.OPENAI_TTS_VOICE ||
-          "alloy"
-        );
+      const {
+        text,
+        voice,
+        speed,
+      } = req.body || {};
 
       if (!text) {
         return res.status(400).json({
           success: false,
+
           error:
-            "Texto não enviado."
+            "Texto obrigatório.",
         });
       }
 
       const speech =
         await openai.audio.speech.create({
           model:
-            process.env.OPENAI_TTS_MODEL ||
-            "gpt-4o-mini-tts",
+            OPENAI_TTS_MODEL,
 
-          voice,
+          voice:
+            voice ||
+            OPENAI_TTS_VOICE,
 
-          input: text,
+          input:
+            String(text).slice(
+              0,
+              4096
+            ),
 
           response_format:
-            "mp3"
+            "mp3",
+
+          speed:
+            Number(speed) || 1,
         });
 
-      const buffer =
+      const audioBuffer =
         Buffer.from(
           await speech.arrayBuffer()
         );
@@ -1499,84 +1219,318 @@ app.post(
 
       res.setHeader(
         "Content-Length",
-        buffer.length
+        audioBuffer.length
       );
 
-      return res.send(buffer);
+      return res.send(
+        audioBuffer
+      );
     } catch (error) {
       console.error(
         "Erro TTS:",
         error
       );
 
-      return res.status(500).json({
+      res.status(500).json({
         success: false,
-        error: error.message
+
+        error:
+          error.message ||
+          "Erro ao gerar voz IA",
       });
     }
   }
 );
 
-// =====================================================
-// TESTE DE TRADUÇÃO
-// =====================================================
+// ============================================================
+// TRADUÇÃO COMPLETA DE ÁUDIO
+//
+// áudio -> transcrição -> tradução -> voz IA
+//
+// Essa é a rota principal para o tradutor ao vivo.
+// ============================================================
 
-app.get(
-  "/api/test-translate",
+app.post(
+  "/api/translate-audio",
+  upload.single("audio"),
   async (req, res) => {
     try {
       if (!openai) {
         return res.status(503).json({
           success: false,
+
           error:
-            "OPENAI_API_KEY não configurada."
+            "OpenAI não configurada.",
+        });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+
+          error:
+            "Envie o áudio no campo 'audio'.",
+        });
+      }
+
+      const sourceLanguage =
+        normalizeLanguage(
+          req.body?.sourceLanguage
+        );
+
+      const targetLanguage =
+        normalizeLanguage(
+          req.body?.targetLanguage
+        );
+
+      const voice =
+        req.body?.voice ||
+        OPENAI_TTS_VOICE;
+
+      // --------------------------------------------------------
+      // 1. Preparar arquivo
+      // --------------------------------------------------------
+
+      const { toFile } =
+        require("openai");
+
+      const file =
+        await toFile(
+          req.file.buffer,
+          req.file.originalname ||
+            "live.webm",
+          {
+            type:
+              req.file.mimetype ||
+              "audio/webm",
+          }
+        );
+
+      // --------------------------------------------------------
+      // 2. TRANSCRIÇÃO
+      // --------------------------------------------------------
+
+      const transcription =
+        await openai.audio.transcriptions.create(
+          {
+            file,
+
+            model:
+              OPENAI_TRANSCRIBE_MODEL,
+
+            response_format:
+              "json",
+
+            ...(sourceLanguage &&
+            sourceLanguage !==
+              "Português"
+              ? {}
+              : {}),
+          }
+        );
+
+      const originalText =
+        transcription.text ||
+        "";
+
+      if (!originalText.trim()) {
+        return res.json({
+          success: true,
+
+          originalText: "",
+
+          translatedText: "",
+
+          audioBase64: null,
+
+          audioMimeType:
+            "audio/mpeg",
+
+          message:
+            "Nenhuma fala detectada.",
+        });
+      }
+
+      // --------------------------------------------------------
+      // 3. TRADUÇÃO
+      // --------------------------------------------------------
+
+      const translation =
+        await openai.responses.create(
+          {
+            model:
+              OPENAI_TEXT_MODEL,
+
+            input: [
+              {
+                role: "system",
+
+                content:
+                  `Traduza o texto abaixo de ${sourceLanguage} para ${targetLanguage}.
+Retorne somente a tradução.
+Não explique.
+Não adicione aspas.
+Preserve nomes próprios, números e o sentido original.`,
+              },
+
+              {
+                role: "user",
+
+                content:
+                  originalText,
+              },
+            ],
+          }
+        );
+
+      const translatedText =
+        translation.output_text ||
+        "";
+
+      // --------------------------------------------------------
+      // 4. GERAR VOZ
+      // --------------------------------------------------------
+
+      const speech =
+        await openai.audio.speech.create(
+          {
+            model:
+              OPENAI_TTS_MODEL,
+
+            voice,
+
+            input:
+              translatedText.slice(
+                0,
+                4096
+              ),
+
+            response_format:
+              "mp3",
+
+            speed: 1,
+          }
+        );
+
+      const audioBuffer =
+        Buffer.from(
+          await speech.arrayBuffer()
+        );
+
+      // --------------------------------------------------------
+      // 5. RETORNAR
+      // --------------------------------------------------------
+
+      return res.json({
+        success: true,
+
+        originalText,
+
+        translatedText,
+
+        sourceLanguage,
+
+        targetLanguage,
+
+        audioMimeType:
+          "audio/mpeg",
+
+        audioBase64:
+          audioBuffer.toString(
+            "base64"
+          ),
+      });
+    } catch (error) {
+      console.error(
+        "ERRO TRADUÇÃO DE ÁUDIO:"
+      );
+
+      console.error(
+        error
+      );
+
+      return res.status(500).json({
+        success: false,
+
+        error:
+          error.message ||
+          "Erro ao traduzir áudio",
+      });
+    }
+  }
+);
+
+// ============================================================
+// TESTE DE TRADUÇÃO
+// ============================================================
+
+app.get(
+  "/api/test-translation",
+  async (req, res) => {
+    try {
+      if (!openai) {
+        return res.status(503).json({
+          success: false,
+
+          error:
+            "OPENAI_API_KEY não configurada.",
         });
       }
 
       const response =
         await openai.responses.create({
           model:
-            process.env.OPENAI_TEXT_MODEL ||
-            "gpt-5-mini",
+            OPENAI_TEXT_MODEL,
 
           input:
-            "Traduza para português: Hello, how are you?"
+            "Translate this sentence to Portuguese: Hello, how are you?",
         });
 
-      return res.json({
+      res.json({
         success: true,
-        translation:
-          response.output_text
+
+        result:
+          response.output_text,
       });
     } catch (error) {
       console.error(
-        "Teste OpenAI:",
         error
       );
 
-      return res.status(500).json({
+      res.status(500).json({
         success: false,
-        error: error.message
+
+        error:
+          error.message,
       });
     }
   }
 );
 
-// =====================================================
+// ============================================================
 // 404
-// =====================================================
+// ============================================================
 
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    error: "Endpoint não encontrado.",
-    path: req.originalUrl
-  });
-});
+app.use(
+  (req, res) => {
+    res.status(404).json({
+      success: false,
 
-// =====================================================
+      error:
+        "Endpoint not found",
+
+      path:
+        req.originalUrl,
+
+      method:
+        req.method,
+    });
+  }
+);
+
+// ============================================================
 // ERRO GLOBAL
-// =====================================================
+// ============================================================
 
 app.use(
   (error, req, res, next) => {
@@ -1585,45 +1539,54 @@ app.use(
       error
     );
 
+    if (res.headersSent) {
+      return next(error);
+    }
+
     res.status(500).json({
       success: false,
+
       error:
         error.message ||
-        "Erro interno do servidor."
+        "Erro interno do servidor",
     });
   }
 );
 
-// =====================================================
-// INICIAR SERVIDOR
-// =====================================================
+// ============================================================
+// START SERVER
+// ============================================================
 
 app.listen(
   PORT,
   "0.0.0.0",
   () => {
     console.log(
-      "=========================================="
+      "=============================================="
     );
 
     console.log(
-      "🚀 TRADUTOR IA BACKEND ONLINE"
+      "TRADUTOR IA BACKEND"
     );
 
     console.log(
-      `🌐 Porta: ${PORT}`
+      "=============================================="
     );
 
     console.log(
-      `🔗 Backend: ${BACKEND_URL}`
+      `Servidor rodando na porta ${PORT}`
     );
 
     console.log(
-      `🌎 Frontend: ${FRONTEND_URL}`
+      `Backend: ${BACKEND_URL}`
     );
 
     console.log(
-      `🤖 OpenAI: ${
+      `Frontend: ${FRONTEND_URL}`
+    );
+
+    console.log(
+      `OpenAI: ${
         OPENAI_API_KEY
           ? "CONFIGURADA"
           : "NÃO CONFIGURADA"
@@ -1631,7 +1594,7 @@ app.listen(
     );
 
     console.log(
-      `💳 Stripe: ${
+      `Stripe: ${
         STRIPE_SECRET_KEY
           ? "CONFIGURADO"
           : "NÃO CONFIGURADO"
@@ -1639,23 +1602,25 @@ app.listen(
     );
 
     console.log(
-      `💰 Mercado Pago: ${
-        MERCADOPAGO_ACCESS_TOKEN
+      `Mercado Pago: ${
+        MERCADO_PAGO_ACCESS_TOKEN
           ? "CONFIGURADO"
           : "NÃO CONFIGURADO"
       }`
     );
 
     console.log(
-      `💵 Stripe R$100: ${STRIPE_PRICE_100}`
+      "Plano R$100:",
+      STRIPE_PRICE_100
     );
 
     console.log(
-      `💵 Stripe R$200: ${STRIPE_PRICE_200}`
+      "Plano R$200:",
+      STRIPE_PRICE_200
     );
 
     console.log(
-      "=========================================="
+      "=============================================="
     );
   }
 );
