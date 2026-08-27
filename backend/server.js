@@ -1,122 +1,33 @@
-require("dotenv").config();
+const session = await stripe.checkout.sessions.create({
+  mode: "subscription",
 
-const express = require("express");
-const cors = require("cors");
-const Stripe = require("stripe");
-
-const app = express();
-
-const PORT = process.env.PORT || 3000;
-
-const FRONTEND_URL =
-  process.env.FRONTEND_URL ||
-  "https://josericardoricado-art.github.io/Repository-name-tradutor-ia/";
-
-const stripe = process.env.STRIPE_SECRET_KEY
-  ? new Stripe(process.env.STRIPE_SECRET_KEY)
-  : null;
-
-const PLANS = {
-  "100": "price_1U8mAoP9zHRcVasofgpq69Nl",
-  "200": "price_1SyfsQP9zHRcVasov83JjPRe"
-};
-
-app.use(cors());
-
-/*
-  WEBHOOK STRIPE
-  Deve ficar antes do express.json()
-*/
-app.post(
-  "/stripe/webhook",
-  express.raw({ type: "application/json" }),
-  (req, res) => {
-    if (!stripe) {
-      return res.status(500).send("Stripe não configurado");
+  line_items: [
+    {
+      price: PLANS[plan],
+      quantity: 1
     }
+  ],
 
-    const signature = req.headers["stripe-signature"];
+  customer_email: email || undefined,
 
-    let event;
+  success_url:
+    FRONTEND_URL +
+    "?pagamento=sucesso&session_id={CHECKOUT_SESSION_ID}",
 
-    try {
-      event = stripe.webhooks.constructEvent(
-        req.body,
-        signature,
-        process.env.STRIPE_WEBHOOK_SECRET
-      );
-    } catch (error) {
-      console.error("Webhook inválido:", error.message);
-      return res.status(400).send(`Webhook Error: ${error.message}`);
+  cancel_url:
+    FRONTEND_URL +
+    "?pagamento=cancelado",
+
+  metadata: {
+    plan: plan
+  },
+
+  subscription_data: {
+    metadata: {
+      plan: plan
     }
-
-    console.log("Evento Stripe:", event.type);
-
-    if (event.type === "checkout.session.completed") {
-      const session = event.data.object;
-
-      console.log("Pagamento/assinatura concluído:");
-      console.log("Session:", session.id);
-      console.log("Email:", session.customer_details?.email);
-      console.log("Subscription:", session.subscription);
-    }
-
-    return res.json({ received: true });
   }
-);
-
-app.use(express.json());
-
-/*
-  STATUS
-*/
-app.get("/", (req, res) => {
-  res.json({
-    online: true,
-    message: "Keep - Tradutor Universal",
-    stripe: !!stripe,
-    webhook: !!process.env.STRIPE_WEBHOOK_SECRET
-  });
 });
-
-/*
-  CRIAR CHECKOUT
-*/
-app.post("/create-checkout-session", async (req, res) => {
-  try {
-    if (!stripe) {
-      return res.status(500).json({
-        error: "Stripe não configurado no Render"
-      });
-    }
-
-    const plan = String(req.body.plan || "");
-
-    if (!PLANS[plan]) {
-      return res.status(400).json({
-        error: "Plano inválido. Use 100 ou 200."
-      });
-    }
-
-    const session = await stripe.checkout.sessions.create({
-      mode: "subscription",
-
-      line_items: [
-        {
-          price: PLANS[plan],
-          quantity: 1
-        }
-      ],
-
-      success_url:
-        FRONTEND_URL +
-        "?pagamento=sucesso&session_id={CHECKOUT_SESSION_ID}",
-
-      cancel_url:
-        FRONTEND_URL +
-        "?pagamento=cancelado",
-
-      customer_creation: "always",
 
       metadata: {
         plan: plan
