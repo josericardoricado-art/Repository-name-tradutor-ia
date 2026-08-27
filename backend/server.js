@@ -17,8 +17,8 @@ const stripe = process.env.STRIPE_SECRET_KEY
   : null;
 
 const PLANS = {
-  "100": "price_1U8mAoP9zHRcVasofgpq69Nl",
-  "200": "price_1SyfsQP9zHRcVasov83JjPRe"
+  "100": "price_1SyfsQP9zHRcVasov83JjPRe",
+  "200": "price_1U8mAoP9zHRcVasofgpq69Nl"
 };
 
 app.use(cors());
