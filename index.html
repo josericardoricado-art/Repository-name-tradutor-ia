@@ -8,10 +8,10 @@
 
   <meta
     name="description"
-    content="Keep - Tradutor Universal com tradução de texto, voz e vídeos usando inteligência artificial."
+    content="Keep - Tradutor Universal com tradução de texto, voz e vídeos."
   >
 
-  <!-- Stripe Buy Button -->
+  <!-- STRIPE BUY BUTTON -->
   <script async src="https://js.stripe.com/v3/buy-button.js"></script>
 
   <style>
@@ -23,42 +23,27 @@
 
     :root {
       --bg: #06101d;
-      --bg2: #081827;
-      --card: rgba(12, 25, 41, .82);
-      --card2: rgba(8, 20, 34, .92);
-      --line: rgba(120, 160, 200, .18);
-      --text: #f4f8fc;
+      --bg2: #091a2b;
+      --card: #0c1d30;
+      --card2: #10263d;
+      --line: rgba(255,255,255,.10);
+      --text: #ffffff;
       --muted: #91a4b8;
       --blue: #1687ff;
-      --blue2: #4da3ff;
-      --success: #35d39a;
-      --danger: #ff5f5f;
-      --radius: 22px;
-      --shadow: 0 20px 60px rgba(0,0,0,.28);
-    }
-
-    html {
-      scroll-behavior: smooth;
+      --blue2: #4ba3ff;
+      --green: #35d39a;
+      --red: #ff6060;
     }
 
     body {
-      font-family:
-        Inter,
-        Arial,
-        Helvetica,
-        sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       background:
         radial-gradient(
-          circle at 10% 0%,
+          circle at top left,
           rgba(22,135,255,.15),
-          transparent 30%
+          transparent 35%
         ),
-        radial-gradient(
-          circle at 90% 20%,
-          rgba(50,120,255,.10),
-          transparent 30%
-        ),
-        var(--bg);
+        #06101d;
       color: var(--text);
       min-height: 100vh;
     }
@@ -67,48 +52,27 @@
     input,
     textarea,
     select {
-      font: inherit;
+      font-family: inherit;
     }
 
     button {
       cursor: pointer;
     }
 
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
     .app {
       width: min(1180px, 100%);
       margin: auto;
-      padding: 16px 16px 100px;
+      padding: 15px;
     }
 
-    /* =========================
-       HEADER
-    ========================= */
+    /* HEADER */
 
     header {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      padding: 8px 0 20px;
-
-      position: sticky;
-      top: 0;
-      z-index: 20;
-
-      background:
-        linear-gradient(
-          180deg,
-          rgba(6,16,29,.98),
-          rgba(6,16,29,.88),
-          transparent
-        );
-
-      backdrop-filter: blur(12px);
+      align-items: center;
+      gap: 15px;
+      padding: 10px 0 25px;
     }
 
     .brand {
@@ -125,21 +89,17 @@
       display: grid;
       place-items: center;
 
-      background:
-        linear-gradient(
-          145deg,
-          #1592ff,
-          #1359ff
-        );
-
-      box-shadow:
-        0 10px 30px rgba(21,130,255,.28);
+      background: linear-gradient(
+        145deg,
+        #1592ff,
+        #1555ff
+      );
 
       font-size: 23px;
+      font-weight: bold;
     }
 
     .brand strong {
-      display: block;
       font-size: 18px;
     }
 
@@ -147,82 +107,71 @@
       display: block;
       color: var(--muted);
       font-size: 12px;
-      margin-top: 2px;
+      margin-top: 3px;
     }
 
-    .header-actions {
+    .profile {
       display: flex;
+      align-items: center;
       gap: 8px;
-    }
 
-    .icon-btn,
-    .profile-btn {
+      padding: 7px 12px 7px 7px;
+
       border: 1px solid var(--line);
-      background: rgba(13,27,44,.85);
-      color: var(--text);
       border-radius: 14px;
-      min-width: 44px;
-      height: 44px;
 
-      display: grid;
-      place-items: center;
-    }
-
-    .profile-btn {
-      padding: 0 13px;
-      display: flex;
-      gap: 8px;
+      background: rgba(10,25,42,.8);
+      color: white;
     }
 
     .avatar {
-      width: 27px;
-      height: 27px;
+      width: 30px;
+      height: 30px;
+
       border-radius: 50%;
 
       display: grid;
       place-items: center;
 
-      background: #d7ef70;
-      color: #24340a;
-      font-weight: 800;
+      background: #d8ef70;
+      color: #24320d;
+
+      font-weight: bold;
     }
 
-    /* =========================
-       HERO
-    ========================= */
+    /* HERO */
 
     .hero {
-      padding: 38px 0 30px;
-
       display: grid;
       grid-template-columns: 1.1fr .9fr;
-      gap: 24px;
+      gap: 25px;
       align-items: center;
+
+      padding: 30px 0;
     }
 
     .eyebrow {
-      color: #63b9ff;
+      color: #5cb5ff;
       text-transform: uppercase;
       letter-spacing: 1.5px;
-      font-weight: 800;
       font-size: 12px;
+      font-weight: bold;
       margin-bottom: 12px;
     }
 
     h1 {
-      font-size: clamp(36px, 6vw, 64px);
-      line-height: .98;
-      letter-spacing: -2.5px;
-      max-width: 700px;
+      font-size: clamp(38px, 7vw, 65px);
+      line-height: 1;
+      letter-spacing: -3px;
     }
 
     .gradient {
       background:
         linear-gradient(
           90deg,
-          #fff,
-          #8dcfff,
-          #4d94ff
+          #ffffff,
+          #8dccff,
+          #4c91ff
         );
 
       -webkit-background-clip: text;
@@ -232,236 +181,187 @@
 
     .hero p {
       color: var(--muted);
-      line-height: 1.65;
       max-width: 650px;
+      line-height: 1.6;
       margin-top: 18px;
-      font-size: 16px;
     }
 
     .hero-card {
       border: 1px solid var(--line);
+      border-radius: 25px;
+      padding: 25px;
 
       background:
         linear-gradient(
           145deg,
-          rgba(22,135,255,.16),
-          rgba(15,29,47,.8)
+          rgba(22,135,255,.15),
+          rgba(12,29,48,.85)
         );
-
-      border-radius: 28px;
-      padding: 22px;
-      box-shadow: var(--shadow);
     }
 
-    .signal {
+    .online {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 18px;
+      gap: 9px;
+      color: #b8c9d9;
+      font-size: 13px;
     }
 
-    .dot {
+    .online-dot {
       width: 10px;
       height: 10px;
       border-radius: 50%;
 
-      background: var(--success);
+      background: var(--green);
 
       box-shadow:
-        0 0 15px var(--success);
-    }
-
-    .signal span {
-      color: #b8c8d9;
-      font-size: 13px;
+        0 0 15px var(--green);
     }
 
     .wave {
-      height: 110px;
+      height: 120px;
 
       display: flex;
       align-items: center;
       justify-content: center;
+
       gap: 5px;
     }
 
-    .wave i {
+    .wave span {
       width: 5px;
       border-radius: 10px;
-      background: #3f9cff;
-      animation: pulse 1s infinite ease-in-out alternate;
+      background: #3c9aff;
+      animation: wave 1s infinite alternate;
     }
 
-    .wave i:nth-child(1) {
-      height: 32px;
-    }
+    .wave span:nth-child(1) { height: 30px; }
+    .wave span:nth-child(2) { height: 55px; animation-delay:.1s; }
+    .wave span:nth-child(3) { height: 75px; animation-delay:.2s; }
+    .wave span:nth-child(4) { height: 45px; animation-delay:.3s; }
+    .wave span:nth-child(5) { height: 95px; animation-delay:.4s; }
+    .wave span:nth-child(6) { height: 60px; animation-delay:.5s; }
+    .wave span:nth-child(7) { height: 80px; animation-delay:.6s; }
+    .wave span:nth-child(8) { height: 40px; animation-delay:.7s; }
+    .wave span:nth-child(9) { height: 65px; animation-delay:.8s; }
 
-    .wave i:nth-child(2) {
-      height: 55px;
-      animation-delay: .1s;
-    }
-
-    .wave i:nth-child(3) {
-      height: 80px;
-      animation-delay: .2s;
-    }
-
-    .wave i:nth-child(4) {
-      height: 46px;
-      animation-delay: .3s;
-    }
-
-    .wave i:nth-child(5) {
-      height: 92px;
-      animation-delay: .4s;
-    }
-
-    .wave i:nth-child(6) {
-      height: 62px;
-      animation-delay: .5s;
-    }
-
-    .wave i:nth-child(7) {
-      height: 84px;
-      animation-delay: .6s;
-    }
-
-    .wave i:nth-child(8) {
-      height: 42px;
-      animation-delay: .7s;
-    }
-
-    .wave i:nth-child(9) {
-      height: 62px;
-      animation-delay: .8s;
-    }
-
-    .wave i:nth-child(10) {
-      height: 27px;
-      animation-delay: .9s;
-    }
-
-    @keyframes pulse {
+    @keyframes wave {
       to {
         transform: scaleY(.45);
-        opacity: .65;
+        opacity: .6;
       }
     }
 
-    /* =========================
-       TABS
-    ========================= */
+    /* TABS */
 
     .tabs {
       display: flex;
       gap: 8px;
       overflow-x: auto;
-      padding: 6px 0 18px;
-      scrollbar-width: none;
-    }
-
-    .tabs::-webkit-scrollbar {
-      display: none;
+      padding: 8px 0 18px;
     }
 
     .tab {
+      padding: 12px 17px;
+
       white-space: nowrap;
 
+      border-radius: 13px;
+
       border: 1px solid var(--line);
-      color: #aebdcd;
 
-      background: rgba(10,23,38,.75);
+      background: #0b1d30;
+      color: #aebfd0;
 
-      border-radius: 14px;
-      padding: 12px 16px;
-      font-weight: 700;
+      font-weight: bold;
     }
 
     .tab.active {
-      background: rgba(22,135,255,.17);
-      border-color: rgba(69,166,255,.42);
-      color: #fff;
+      background: rgba(22,135,255,.18);
+      color: white;
+      border-color: rgba(69,166,255,.45);
     }
 
-    /* =========================
-       PANELS
-    ========================= */
+    /* PANEL */
 
     .panel {
+      background: rgba(12,29,48,.82);
+
       border: 1px solid var(--line);
 
-      background: var(--card);
+      border-radius: 22px;
 
-      border-radius: var(--radius);
       padding: 18px;
 
-      box-shadow: var(--shadow);
       margin-bottom: 18px;
     }
 
-    .panel-title {
+    .panel h2 {
       font-size: 20px;
-      margin-bottom: 6px;
+      margin-bottom: 7px;
     }
 
-    .panel-description {
+    .description {
       color: var(--muted);
       font-size: 13px;
       line-height: 1.5;
       margin-bottom: 18px;
     }
 
-    /* =========================
-       TRANSLATOR
-    ========================= */
+    /* TRANSLATOR */
 
-    .translator-grid {
+    .translator {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 14px;
+      gap: 15px;
     }
 
-    .lang-row {
+    .lang {
       display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 14px;
+      gap: 8px;
+      margin-bottom: 12px;
     }
 
-    .lang-select {
-      flex: 1;
+    select,
+    .input {
+      width: 100%;
 
       border: 1px solid var(--line);
-      background: #0b1b2d;
-      color: #fff;
 
-      border-radius: 13px;
-      padding: 12px 13px;
+      background: #071726;
+
+      color: white;
+
+      border-radius: 12px;
+
+      padding: 13px;
+
       outline: none;
     }
 
     .swap {
-      width: 43px;
-      height: 43px;
-
-      border-radius: 13px;
+      width: 45px;
 
       border: 1px solid var(--line);
-      background: #0b1b2d;
-      color: #b8d9ff;
+
+      background: #0b2035;
+
+      color: white;
+
+      border-radius: 12px;
     }
 
     .editor,
     .result {
-      min-height: 220px;
+      min-height: 230px;
 
       border: 1px solid var(--line);
 
-      background:
-        rgba(5,15,27,.78);
+      background: rgba(5,16,29,.8);
 
-      border-radius: 18px;
-      padding: 16px;
+      border-radius: 17px;
+
+      padding: 15px;
 
       display: flex;
       flex-direction: column;
@@ -471,100 +371,86 @@
       width: 100%;
       flex: 1;
 
+      min-height: 150px;
+
       resize: vertical;
-      min-height: 145px;
 
       border: 0;
       outline: 0;
 
       background: transparent;
-      color: #fff;
 
-      font-size: 17px;
-      line-height: 1.55;
+      color: white;
+
+      font-size: 16px;
+      line-height: 1.5;
     }
 
     textarea::placeholder {
-      color: #5e7187;
+      color: #5e7185;
     }
 
-    .editor-bottom,
-    .result-bottom {
+    .bottom {
       display: flex;
       justify-content: space-between;
-      gap: 8px;
-      align-items: center;
 
-      color: #72869a;
+      color: #708398;
+
       font-size: 12px;
-    }
-
-    .mini-actions {
-      display: flex;
-      gap: 7px;
-    }
-
-    .mini {
-      width: 38px;
-      height: 38px;
-
-      border-radius: 11px;
-
-      border: 1px solid var(--line);
-      background: #0d2033;
-      color: #bcd0e4;
     }
 
     .result-text {
       flex: 1;
 
-      color: #f3f8fc;
-
-      font-size: 18px;
-      line-height: 1.55;
+      font-size: 17px;
+      line-height: 1.5;
 
       white-space: pre-wrap;
-      word-break: break-word;
     }
 
-    .result-placeholder {
-      color: #5e7187;
+    .placeholder {
+      color: #5e7185;
     }
 
-    /* =========================
-       BUTTONS
-    ========================= */
-
-    .primary,
-    .secondary {
-      border-radius: 13px;
-      padding: 12px 17px;
-      border: 1px solid transparent;
-      font-weight: 800;
-    }
+    /* BUTTONS */
 
     .primary {
+      border: 0;
+
       background: #1687ff;
+
       color: white;
+
+      border-radius: 13px;
+
+      padding: 13px 18px;
+
+      font-weight: bold;
     }
 
     .primary:hover {
-      background: #0878ed;
+      background: #0879eb;
     }
 
     .secondary {
-      background: #0d2033;
-      border-color: var(--line);
+      border: 1px solid var(--line);
+
+      background: #0d2136;
+
       color: white;
+
+      border-radius: 13px;
+
+      padding: 13px 18px;
+
+      font-weight: bold;
     }
 
     .full {
       width: 100%;
     }
 
-    /* =========================
-       VIDEO
-    ========================= */
+    /* VIDEO */
 
     .video-area {
       display: none;
@@ -575,191 +461,139 @@
     }
 
     .drop {
-      border: 1.5px dashed rgba(91,166,255,.38);
-
-      background: rgba(11,30,50,.6);
-
-      border-radius: 20px;
-
-      padding: 34px 18px;
-
       text-align: center;
+
+      border: 1px dashed rgba(70,164,255,.45);
+
+      background: rgba(9,27,45,.6);
+
+      border-radius: 18px;
+
+      padding: 35px 15px;
     }
 
-    .drop .big {
-      font-size: 42px;
+    .drop-icon {
+      font-size: 45px;
       margin-bottom: 10px;
-    }
-
-    .drop h3 {
-      margin-bottom: 7px;
     }
 
     .drop p {
       color: var(--muted);
       font-size: 13px;
-      line-height: 1.5;
+      margin-top: 6px;
     }
 
-    .file-btn {
-      display: inline-flex;
+    .file-label {
+      display: inline-block;
 
-      margin-top: 16px;
+      margin-top: 17px;
 
-      padding: 12px 17px;
+      padding: 13px 18px;
+
+      background: #1687ff;
 
       border-radius: 13px;
 
-      background: #1687ff;
-      color: #fff;
-
-      font-weight: 800;
+      font-weight: bold;
     }
 
     #videoPreview {
       display: none;
 
       width: 100%;
-      max-height: 420px;
 
-      border-radius: 17px;
+      max-height: 450px;
 
-      margin-top: 16px;
+      margin-top: 18px;
 
       background: #000;
+
+      border-radius: 17px;
     }
 
-    /* =========================
-       DUBLAGEM
-    ========================= */
+    /* DUBLAGEM */
 
-    .social-url-row {
+    .url-row {
       display: grid;
+
       grid-template-columns: 1fr auto;
+
       gap: 10px;
     }
 
-    .input {
-      width: 100%;
-
-      border: 1px solid var(--line);
-      background: #071522;
-      color: white;
-
-      border-radius: 13px;
-
-      padding: 13px;
-
-      outline: none;
-    }
-
-    .social-hints {
+    .chips {
       display: flex;
+
       flex-wrap: wrap;
+
       gap: 8px;
+
       margin-top: 12px;
     }
 
-    .social-chip {
+    .chip {
       border: 1px solid var(--line);
 
       background: rgba(255,255,255,.04);
 
-      color: #b8c7d6;
-
-      border-radius: 999px;
+      color: #9fb1c3;
 
       padding: 7px 11px;
+
+      border-radius: 999px;
 
       font-size: 12px;
     }
 
     .dub-settings {
       display: grid;
+
       grid-template-columns: 1fr 1fr;
+
       gap: 10px;
-      margin-top: 14px;
+
+      margin-top: 15px;
     }
 
-    .dub-settings label {
-      color: #91a4b8;
-      font-size: 12px;
-
+    .setting label {
       display: block;
+
+      color: var(--muted);
+
+      font-size: 12px;
 
       margin-bottom: 6px;
     }
 
-    .dub-select {
-      width: 100%;
-      box-sizing: border-box;
+    .status {
+      display: none;
+
+      margin-top: 15px;
 
       padding: 13px;
 
       border-radius: 12px;
 
-      border: 1px solid var(--line);
-
-      background: #071522;
-      color: #f3f8fc;
-    }
-
-    .dub-status {
-      margin-top: 14px;
-
-      padding: 13px 14px;
-
-      border-radius: 13px;
-
-      background: #071522;
+      background: #071726;
 
       border: 1px solid var(--line);
 
-      color: #91a4b8;
+      color: var(--muted);
 
-      display: none;
+      line-height: 1.5;
 
-      line-height: 1.45;
+      font-size: 13px;
     }
 
-    .dub-status.show {
+    .status.show {
       display: block;
     }
 
-    .dub-result {
-      margin-top: 16px;
-      display: none;
-    }
-
-    .dub-result.show {
-      display: block;
-    }
-
-    .dub-result video {
-      width: 100%;
-      max-height: 520px;
-
-      border-radius: 18px;
-
-      background: #000;
-
-      display: block;
-    }
-
-    .dub-download {
-      display: inline-flex;
-      margin-top: 12px;
-      text-decoration: none;
-    }
-
-    /* =========================
-       PLANOS
-    ========================= */
+    /* PLANOS */
 
     .plans {
-      margin-top: 18px;
-
       display: grid;
+
       grid-template-columns:
         repeat(3, 1fr);
 
@@ -767,111 +601,102 @@
     }
 
     .plan {
+      display: flex;
+
+      flex-direction: column;
+
       padding: 20px;
 
       border: 1px solid var(--line);
 
-      background:
-        rgba(12,25,41,.7);
-
       border-radius: 20px;
 
-      display: flex;
-      flex-direction: column;
+      background: rgba(10,25,42,.75);
     }
 
     .plan.featured {
-      border-color:
-        rgba(42,151,255,.5);
+      border-color: rgba(22,135,255,.5);
 
       background:
         linear-gradient(
-          150deg,
+          145deg,
           rgba(22,135,255,.15),
-          rgba(12,25,41,.78)
+          rgba(10,25,42,.8)
         );
     }
 
     .plan-name {
-      color: #a8b8c9;
+      color: #a7b8ca;
 
       font-size: 13px;
 
-      font-weight: 800;
+      font-weight: bold;
     }
 
     .price {
-      font-size: 30px;
+      font-size: 31px;
+
       font-weight: 900;
 
-      margin: 8px 0;
+      margin: 8px 0 12px;
     }
 
-    .price span {
-      font-size: 12px;
-
+    .price small {
       color: var(--muted);
 
-      font-weight: 500;
+      font-size: 12px;
+
+      font-weight: normal;
     }
 
     .plan ul {
       list-style: none;
 
-      color: #b5c5d6;
+      color: #b5c6d7;
 
       font-size: 13px;
 
       line-height: 2;
 
-      margin-bottom: 10px;
+      margin-bottom: 15px;
     }
 
     .plan li::before {
       content: "✓";
 
-      color: var(--success);
+      color: var(--green);
 
       margin-right: 8px;
     }
 
-    .plan-button-area {
+    .plan-bottom {
       margin-top: auto;
-      padding-top: 12px;
     }
 
-    .stripe-container {
+    .stripe-box {
       width: 100%;
-      min-height: 48px;
+      min-height: 50px;
     }
 
-    .stripe-container stripe-buy-button {
-      width: 100%;
-    }
-
-    .test-warning {
+    .test-info {
       margin-top: 10px;
 
       padding: 10px;
 
       border-radius: 10px;
 
-      background:
-        rgba(255,193,7,.08);
+      background: rgba(255,193,7,.07);
 
-      border: 1px solid
-        rgba(255,193,7,.20);
+      border: 1px solid rgba(255,193,7,.18);
 
-      color: #d7c681;
+      color: #c9bc83;
 
       font-size: 11px;
 
       line-height: 1.45;
     }
 
-    /* =========================
-       BENEFÍCIOS
-    ========================= */
+    /* FEATURES */
 
     .features {
       display: grid;
@@ -880,101 +705,207 @@
         repeat(3, 1fr);
 
       gap: 14px;
-
-      margin-top: 18px;
     }
 
     .feature {
+      padding: 19px;
+
       border: 1px solid var(--line);
 
-      background:
-        rgba(12,25,41,.7);
+      background: rgba(12,29,48,.7);
 
       border-radius: 18px;
-
-      padding: 19px;
     }
 
     .feature-icon {
       font-size: 25px;
-      margin-bottom: 12px;
+
+      margin-bottom: 10px;
     }
 
     .feature h3 {
       font-size: 15px;
+
       margin-bottom: 7px;
     }
 
     .feature p {
-      font-size: 12px;
-
       color: var(--muted);
+
+      font-size: 12px;
 
       line-height: 1.5;
     }
 
-    /* =========================
-       TOAST
-    ========================= */
+    /* MODAL */
+
+    .modal {
+      position: fixed;
+
+      inset: 0;
+
+      z-index: 100;
+
+      display: none;
+
+      align-items: center;
+
+      justify-content: center;
+
+      padding: 20px;
+
+      background: rgba(0,0,0,.72);
+
+      backdrop-filter: blur(8px);
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-box {
+      width: min(440px,100%);
+
+      background: #0b1d30;
+
+      border: 1px solid var(--line);
+
+      border-radius: 22px;
+
+      padding: 22px;
+
+      box-shadow:
+        0 25px 80px rgba(0,0,0,.5);
+    }
+
+    .modal-header {
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: center;
+
+      margin-bottom: 18px;
+    }
+
+    .modal-header h2 {
+      font-size: 21px;
+    }
+
+    .close {
+      width: 38px;
+      height: 38px;
+
+      border: 1px solid var(--line);
+
+      background: #10263d;
+
+      color: white;
+
+      border-radius: 10px;
+    }
+
+    .form-group {
+      margin-bottom: 13px;
+    }
+
+    .form-group label {
+      display: block;
+
+      color: #9eafc0;
+
+      font-size: 12px;
+
+      margin-bottom: 6px;
+    }
+
+    .form-group input {
+      width: 100%;
+
+      padding: 13px;
+
+      border-radius: 12px;
+
+      border: 1px solid var(--line);
+
+      background: #071726;
+
+      color: white;
+
+      outline: none;
+    }
+
+    .form-message {
+      display: none;
+
+      margin-bottom: 12px;
+
+      padding: 11px;
+
+      border-radius: 10px;
+
+      background: rgba(255,95,95,.08);
+
+      border: 1px solid rgba(255,95,95,.2);
+
+      color: #ff9292;
+
+      font-size: 12px;
+    }
+
+    .form-message.show {
+      display: block;
+    }
+
+    /* TOAST */
 
     .toast {
       position: fixed;
 
       left: 50%;
-      bottom: 24px;
+      bottom: 25px;
 
-      transform:
-        translate(-50%, 120px);
+      transform: translate(-50%,120px);
 
-      background: #10243a;
+      z-index: 200;
+
+      background: #10263d;
 
       border: 1px solid var(--line);
 
-      color: #fff;
+      padding: 13px 17px;
 
-      border-radius: 14px;
+      border-radius: 13px;
 
-      padding: 13px 16px;
-
-      z-index: 100;
+      box-shadow:
+        0 15px 50px rgba(0,0,0,.4);
 
       transition: .3s;
-
-      box-shadow: var(--shadow);
 
       max-width: 90%;
     }
 
     .toast.show {
-      transform:
-        translate(-50%, 0);
+      transform: translate(-50%,0);
     }
-
-    /* =========================
-       FOOTER
-    ========================= */
 
     footer {
       text-align: center;
 
-      color: #64778c;
+      color: #63778c;
 
       font-size: 12px;
 
-      margin-top: 35px;
+      padding: 35px 0 15px;
     }
 
-    /* =========================
-       RESPONSIVO
-    ========================= */
-
-    @media(max-width: 850px) {
+    @media(max-width:850px) {
 
       .hero {
         grid-template-columns: 1fr;
       }
 
-      .translator-grid {
+      .translator {
         grid-template-columns: 1fr;
       }
 
@@ -987,13 +918,13 @@
       }
     }
 
-    @media(max-width: 650px) {
+    @media(max-width:600px) {
 
-      .header-actions .profile-btn span {
+      .brand small {
         display: none;
       }
 
-      .social-url-row {
+      .url-row {
         grid-template-columns: 1fr;
       }
 
@@ -1002,7 +933,7 @@
       }
 
       h1 {
-        font-size: 42px;
+        font-size: 43px;
       }
     }
   </style>
@@ -1012,47 +943,50 @@
 
 <div class="app">
 
-  <!-- =========================
-       HEADER
-  ========================= -->
+  <!-- HEADER -->
 
   <header>
 
-    <a class="brand" href="#">
-      <div class="logo">◈</div>
+    <div class="brand">
+
+      <div class="logo">
+        ◈
+      </div>
 
       <div>
-        <strong>Keep - Tradutor Universal</strong>
-        <small>Tradução inteligente com IA</small>
+        <strong>
+          Keep - Tradutor Universal
+        </strong>
+
+        <small>
+          Tradução inteligente com IA
+        </small>
       </div>
-    </a>
-
-    <div class="header-actions">
-
-      <button
-        class="icon-btn"
-        title="Tema"
-        onclick="showToast('Tema escuro ativado')"
-      >
-        ☾
-      </button>
-
-      <button
-        class="profile-btn"
-        onclick="showToast('Área do usuário em preparação')"
-      >
-        <div class="avatar">K</div>
-        <span>Minha conta</span>
-      </button>
 
     </div>
+
+    <button
+      class="profile"
+      onclick="openAccount()"
+    >
+
+      <div
+        class="avatar"
+        id="avatar"
+      >
+        K
+      </div>
+
+      <span id="accountText">
+        Minha conta
+      </span>
+
+    </button>
 
   </header>
 
 
-  <!-- =========================
-       HERO
-  ========================= -->
+  <!-- HERO -->
 
   <section class="hero">
 
@@ -1065,15 +999,15 @@
       <h1>
         Entenda qualquer idioma.
         <br>
+
         <span class="gradient">
           Fale sem limites.
         </span>
       </h1>
 
       <p>
-        Traduza textos, voz e vídeos em uma experiência
-        simples e rápida. Use inteligência artificial
-        para entender conteúdos em outros idiomas.
+        Traduza textos, voz e vídeos com uma
+        experiência simples e inteligente.
       </p>
 
     </div>
@@ -1081,28 +1015,25 @@
 
     <div class="hero-card">
 
-      <div class="signal">
+      <div class="online">
 
-        <div class="dot"></div>
+        <div class="online-dot"></div>
 
-        <span>
-          Sistema de tradução inteligente
-        </span>
+        Sistema de tradução online
 
       </div>
 
       <div class="wave">
 
-        <i></i>
-        <i></i>
-        <i></i>
-        <i></i>
-        <i></i>
-        <i></i>
-        <i></i>
-        <i></i>
-        <i></i>
-        <i></i>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
 
       </div>
 
@@ -1111,32 +1042,30 @@
   </section>
 
 
-  <!-- =========================
-       TABS
-  ========================= -->
+  <!-- TABS -->
 
   <div class="tabs">
 
     <button
+      id="tabText"
       class="tab active"
       onclick="setMode('text')"
-      id="tabText"
     >
       📝 Texto
     </button>
 
     <button
+      id="tabVoice"
       class="tab"
       onclick="setMode('voice')"
-      id="tabVoice"
     >
       🎙️ Voz
     </button>
 
     <button
+      id="tabVideo"
       class="tab"
       onclick="setMode('video')"
-      id="tabVideo"
     >
       🎬 Vídeo
     </button>
@@ -1144,33 +1073,26 @@
   </div>
 
 
-  <!-- =========================
-       TRADUTOR
-  ========================= -->
+  <!-- TRADUTOR -->
 
   <section class="panel">
 
-    <h2 class="panel-title">
+    <h2>
       Tradutor
     </h2>
 
-    <p class="panel-description">
-      Digite um texto e escolha os idiomas de origem e destino.
+    <p class="description">
+      Digite seu texto e escolha os idiomas.
     </p>
 
 
-    <div class="translator-grid">
-
-      <!-- ORIGEM -->
+    <div class="translator">
 
       <div>
 
-        <div class="lang-row">
+        <div class="lang">
 
-          <select
-            id="sourceLang"
-            class="lang-select"
-          >
+          <select id="sourceLang">
 
             <option value="pt">
               🇧🇷 Português
@@ -1194,6 +1116,7 @@
 
           </select>
 
+
           <button
             class="swap"
             onclick="swapLanguages()"
@@ -1212,22 +1135,18 @@
             placeholder="Digite ou cole o texto aqui..."
           ></textarea>
 
-          <div class="editor-bottom">
+          <div class="bottom">
 
             <span id="counter">
               0 / 5000
             </span>
 
-            <div class="mini-actions">
-
-              <button
-                class="mini"
-                onclick="clearText()"
-              >
-                🗑️
-              </button>
-
-            </div>
+            <button
+              class="secondary"
+              onclick="clearText()"
+            >
+              Limpar
+            </button>
 
           </div>
 
@@ -1236,16 +1155,11 @@
       </div>
 
 
-      <!-- DESTINO -->
-
       <div>
 
-        <div class="lang-row">
+        <div class="lang">
 
-          <select
-            id="targetLang"
-            class="lang-select"
-          >
+          <select id="targetLang">
 
             <option value="en">
               🇺🇸 Inglês
@@ -1276,31 +1190,31 @@
 
           <div
             id="resultText"
-            class="result-text result-placeholder"
+            class="result-text placeholder"
           >
             A tradução aparecerá aqui...
           </div>
 
-          <div class="result-bottom">
+          <div class="bottom">
 
             <span>
               Resultado
             </span>
 
-            <div class="mini-actions">
+            <div>
 
               <button
-                class="mini"
+                class="secondary"
                 onclick="copyResult()"
               >
-                📋
+                📋 Copiar
               </button>
 
               <button
-                class="mini"
+                class="secondary"
                 onclick="speakResult()"
               >
-                🔊
+                🔊 Ouvir
               </button>
 
             </div>
@@ -1316,7 +1230,7 @@
 
     <button
       class="primary full"
-      style="margin-top:14px"
+      style="margin-top:15px"
       onclick="translateText()"
     >
       ✨ Traduzir agora
@@ -1325,41 +1239,39 @@
   </section>
 
 
-  <!-- =========================
-       VÍDEO
-  ========================= -->
+  <!-- VÍDEO -->
 
   <section
     id="videoArea"
     class="panel video-area"
   >
 
-    <h2 class="panel-title">
+    <h2>
       🎬 Tradução de vídeo
     </h2>
 
-    <p class="panel-description">
-      Envie um vídeo para visualizar e preparar o
-      processamento de tradução e dublagem.
+    <p class="description">
+      Envie um vídeo para visualizar no aplicativo.
     </p>
 
 
     <div class="drop">
 
-      <div class="big">
+      <div class="drop-icon">
         🎥
       </div>
 
-      <h3>
+      <strong>
         Escolha seu vídeo
-      </h3>
+      </strong>
 
       <p>
-        MP4, WebM, MOV e outros formatos compatíveis.
+        MP4, WebM, MOV e outros formatos.
       </p>
 
+
       <label
-        class="file-btn"
+        class="file-label"
         for="videoInput"
       >
         Selecionar vídeo
@@ -1372,6 +1284,7 @@
         hidden
       >
 
+
       <video
         id="videoPreview"
         controls
@@ -1383,35 +1296,32 @@
   </section>
 
 
-  <!-- =========================
-       DUBLAGEM
-  ========================= -->
+  <!-- DUBLAGEM -->
 
   <section class="panel">
 
-    <h2 class="panel-title">
+    <h2>
       🎙️ Dublagem IA
     </h2>
 
-    <p class="panel-description">
-      Cole um link direto de vídeo ou use um arquivo
-      para preparar a tradução e dublagem.
+    <p class="description">
+      Cole um link de vídeo para preparar a dublagem.
     </p>
 
 
-    <div class="social-url-row">
+    <div class="url-row">
 
       <input
-        id="socialVideoUrl"
+        id="videoUrl"
         class="input"
         type="url"
         placeholder="Cole o link do vídeo..."
       >
 
       <button
-        id="dubLinkButton"
+        id="dubButton"
         class="primary"
-        onclick="dubVideoFromLink()"
+        onclick="dubVideo()"
       >
         Dublar vídeo
       </button>
@@ -1419,22 +1329,22 @@
     </div>
 
 
-    <div class="social-hints">
+    <div class="chips">
 
-      <span class="social-chip">
+      <span class="chip">
         ▶️ YouTube
       </span>
 
-      <span class="social-chip">
+      <span class="chip">
         ♪ TikTok
       </span>
 
-      <span class="social-chip">
+      <span class="chip">
         ◎ Instagram
       </span>
 
-      <span class="social-chip">
-        🌐 Link direto MP4
+      <span class="chip">
+        🎬 MP4
       </span>
 
     </div>
@@ -1442,19 +1352,16 @@
 
     <div class="dub-settings">
 
-      <div>
+      <div class="setting">
 
-        <label for="dubTargetLang">
-          Idioma da dublagem
+        <label>
+          Idioma
         </label>
 
-        <select
-          id="dubTargetLang"
-          class="dub-select"
-        >
+        <select id="dubLanguage">
 
           <option value="pt-BR">
-            🇧🇷 Português (Brasil)
+            🇧🇷 Português
           </option>
 
           <option value="en-US">
@@ -1469,31 +1376,24 @@
             🇫🇷 Francês
           </option>
 
-          <option value="de-DE">
-            🇩🇪 Alemão
-          </option>
-
         </select>
 
       </div>
 
 
-      <div>
+      <div class="setting">
 
-        <label for="dubVoice">
+        <label>
           Voz
         </label>
 
-        <select
-          id="dubVoice"
-          class="dub-select"
-        >
+        <select id="voice">
 
-          <option value="default">
+          <option>
             Voz IA padrão
           </option>
 
-          <option value="natural">
+          <option>
             Voz natural
           </option>
 
@@ -1505,65 +1405,40 @@
 
 
     <div
-      id="dubStatus"
-      class="dub-status"
+      id="status"
+      class="status"
     ></div>
-
-
-    <div
-      id="dubResult"
-      class="dub-result"
-    >
-
-      <video
-        id="dubbedVideo"
-        controls
-        playsinline
-      ></video>
-
-      <a
-        id="dubDownload"
-        class="primary dub-download"
-        href="#"
-        target="_blank"
-      >
-        ⬇️ Abrir vídeo
-      </a>
-
-    </div>
 
   </section>
 
 
-  <!-- =========================
-       PLANOS
-  ========================= -->
+  <!-- PLANOS -->
 
   <section class="panel">
 
-    <h2 class="panel-title">
+    <h2>
       Planos
     </h2>
 
-    <p class="panel-description">
-      Escolha o plano ideal para utilizar os recursos
+    <p class="description">
+      Escolha seu plano para utilizar os recursos
       do Keep - Tradutor Universal.
     </p>
 
 
-    <section class="plans">
+    <div class="plans">
 
       <!-- GRÁTIS -->
 
       <article class="plan">
 
         <div class="plan-name">
-          GRÁTIS
+          GRATUITO
         </div>
 
         <div class="price">
           R$ 0
-          <span>/mês</span>
+          <small>/mês</small>
         </div>
 
         <ul>
@@ -1573,20 +1448,21 @@
           </li>
 
           <li>
-            Interface completa
+            Recursos básicos
           </li>
 
           <li>
-            Teste de voz
+            Teste do aplicativo
           </li>
 
         </ul>
 
-        <div class="plan-button-area">
+
+        <div class="plan-bottom">
 
           <button
             class="secondary full"
-            onclick="showToast('Plano gratuito selecionado')"
+            onclick="openRegister()"
           >
             Começar grátis
           </button>
@@ -1596,7 +1472,7 @@
       </article>
 
 
-      <!-- PRO -->
+      <!-- PRO STRIPE -->
 
       <article class="plan featured">
 
@@ -1606,7 +1482,7 @@
 
         <div class="price">
           R$ 100
-          <span>/mês</span>
+          <small>/mês</small>
         </div>
 
         <ul>
@@ -1625,33 +1501,30 @@
 
         </ul>
 
-        <div class="plan-button-area">
 
-          <!--
-            IMPORTANTE:
+        <div class="plan-bottom">
 
-            Este botão usa o Buy Button que você enviou.
+          <!-- SEU CÓDIGO STRIPE -->
 
-            Ele está no modo TESTE porque sua chave
-            começa com pk_test_.
-          -->
-
-          <div class="stripe-container">
+          <div class="stripe-box">
 
             <stripe-buy-button
               buy-button-id="buy_btn_1U9GcW03XEmoz3bw1gNPox1X"
-              publishable-key="pk_test_51RUkT703XEmoz3bwTvuEJ7Ld5gGLPWeRvpNNzsX7WF57GIwjEj15CWzlhQiG42SCd6qkUU4U0knih7eQss3JFOet0082w8k8">
+              publishable-key="pk_test_51RUkT703XEmoz3bwTvuEJ7Ld5gGLPWeRvpNNzsX7WF57GIwjEj15CWzlhQiG42SCd6qkUU4U0knih7eQss3JFOet0082w8kqF3">
             </stripe-buy-button>
 
           </div>
 
 
-          <div class="test-warning">
+          <div class="test-info">
 
-            🧪 Este botão está em modo de teste da Stripe.
-            Para receber pagamentos reais, crie/ative o
-            Buy Button no modo Live e use a chave
-            <strong>pk_live_...</strong>.
+            🧪 <strong>Modo de teste Stripe.</strong>
+
+            Seu código atual usa
+            <strong>pk_test_</strong>.
+            Para receber pagamentos reais,
+            será necessário criar/usar o Buy Button
+            no modo Live.
 
           </div>
 
@@ -1670,46 +1543,45 @@
 
         <div class="price">
           R$ 200
-          <span>/mês</span>
+          <small>/mês</small>
         </div>
 
         <ul>
-
-          <li>
-            Recursos avançados
-          </li>
 
           <li>
             Dublagem IA
           </li>
 
           <li>
-            Maior limite de uso
+            Recursos avançados
+          </li>
+
+          <li>
+            Maior limite
           </li>
 
         </ul>
 
-        <div class="plan-button-area">
+
+        <div class="plan-bottom">
 
           <button
             class="secondary full"
-            onclick="showToast('O plano Premium será conectado ao Buy Button da Stripe.')"
+            onclick="showToast('O Buy Button do plano R$ 200 ainda precisa ser criado na Stripe.')"
           >
-            Conhecer plano
+            Assinar Premium
           </button>
 
         </div>
 
       </article>
 
-    </section>
+    </div>
 
   </section>
 
 
-  <!-- =========================
-       RECURSOS
-  ========================= -->
+  <!-- RECURSOS -->
 
   <section class="features">
 
@@ -1720,12 +1592,11 @@
       </div>
 
       <h3>
-        Tradução multilíngue
+        Vários idiomas
       </h3>
 
       <p>
-        Traduza conteúdos entre diferentes idiomas
-        de maneira simples.
+        Traduza conteúdos entre diferentes idiomas.
       </p>
 
     </article>
@@ -1738,12 +1609,11 @@
       </div>
 
       <h3>
-        Voz com IA
+        Voz IA
       </h3>
 
       <p>
-        Prepare conteúdos para tradução de voz
-        e dublagem inteligente.
+        Recursos preparados para tradução e voz.
       </p>
 
     </article>
@@ -1756,12 +1626,11 @@
       </div>
 
       <h3>
-        Tradução de vídeos
+        Vídeos
       </h3>
 
       <p>
-        Trabalhe com arquivos de vídeo e conteúdos
-        preparados para dublagem.
+        Trabalhe com arquivos de vídeo.
       </p>
 
     </article>
@@ -1769,53 +1638,130 @@
   </section>
 
 
-  <!-- =========================
-       FOOTER
-  ========================= -->
-
   <footer>
-    Keep - Tradutor Universal • © 2026
+    Keep - Tradutor Universal © 2026
   </footer>
 
 </div>
 
 
 <!-- =========================
-     TOAST
+     MODAL CADASTRO
 ========================= -->
 
 <div
-  class="toast"
+  id="registerModal"
+  class="modal"
+>
+
+  <div class="modal-box">
+
+    <div class="modal-header">
+
+      <h2>
+        Criar conta grátis
+      </h2>
+
+      <button
+        class="close"
+        onclick="closeRegister()"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div
+      id="registerMessage"
+      class="form-message"
+    ></div>
+
+
+    <div class="form-group">
+
+      <label>
+        Nome
+      </label>
+
+      <input
+        id="registerName"
+        type="text"
+        placeholder="Seu nome"
+      >
+
+    </div>
+
+
+    <div class="form-group">
+
+      <label>
+        E-mail
+      </label>
+
+      <input
+        id="registerEmail"
+        type="email"
+        placeholder="seu@email.com"
+      >
+
+    </div>
+
+
+    <div class="form-group">
+
+      <label>
+        Senha
+      </label>
+
+      <input
+        id="registerPassword"
+        type="password"
+        placeholder="Crie uma senha"
+      >
+
+    </div>
+
+
+    <button
+      class="primary full"
+      onclick="createAccount()"
+    >
+      Criar minha conta
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- TOAST -->
+
+<div
   id="toast"
+  class="toast"
 ></div>
 
 
 <script>
 
   /* =========================
-     ELEMENTOS
-  ========================= */
-
-  const input =
-    document.getElementById("inputText");
-
-  const counter =
-    document.getElementById("counter");
-
-  const result =
-    document.getElementById("resultText");
-
-
-  /* =========================
      CONTADOR
   ========================= */
 
+  const input =
+    document.getElementById(
+      "inputText"
+    );
+
   input.addEventListener(
     "input",
-    () => {
+    function () {
 
-      counter.textContent =
-        input.value.length +
+      document.getElementById(
+        "counter"
+      ).textContent =
+        this.value.length +
         " / 5000";
 
     }
@@ -1829,16 +1775,24 @@
   function showToast(message) {
 
     const toast =
-      document.getElementById("toast");
+      document.getElementById(
+        "toast"
+      );
 
     toast.textContent =
       message;
 
-    toast.classList.add("show");
+    toast.classList.add(
+      "show"
+    );
 
     setTimeout(
-      () => {
-        toast.classList.remove("show");
+      function () {
+
+        toast.classList.remove(
+          "show"
+        );
+
       },
       3000
     );
@@ -1847,7 +1801,7 @@
 
 
   /* =========================
-     TROCAR MODO
+     TABS
   ========================= */
 
   function setMode(mode) {
@@ -1855,38 +1809,59 @@
     document
       .querySelectorAll(".tab")
       .forEach(
-        tab =>
-          tab.classList.remove("active")
+        function(tab) {
+          tab.classList.remove(
+            "active"
+          );
+        }
       );
 
-    const selected =
-      document.getElementById(
-        mode === "text"
-          ? "tabText"
-          : mode === "voice"
-            ? "tabVoice"
-            : "tabVideo"
-      );
 
-    if (selected) {
-      selected.classList.add("active");
+    if (mode === "text") {
+
+      document
+        .getElementById("tabText")
+        .classList.add("active");
+
+      document
+        .getElementById("videoArea")
+        .classList.remove("show");
+
     }
 
 
-    const videoArea =
-      document.getElementById("videoArea");
+    if (mode === "voice") {
+
+      document
+        .getElementById("tabVoice")
+        .classList.add("active");
+
+      document
+        .getElementById("videoArea")
+        .classList.remove("show");
+
+      showToast(
+        "Modo de voz selecionado."
+      );
+
+    }
+
 
     if (mode === "video") {
 
-      videoArea.classList.add("show");
+      document
+        .getElementById("tabVideo")
+        .classList.add("active");
 
-      videoArea.scrollIntoView({
-        behavior: "smooth"
-      });
+      document
+        .getElementById("videoArea")
+        .classList.add("show");
 
-    } else {
-
-      videoArea.classList.remove("show");
+      document
+        .getElementById("videoArea")
+        .scrollIntoView({
+          behavior: "smooth"
+        });
 
     }
 
@@ -1894,53 +1869,41 @@
 
 
   /* =========================
-     TRADUÇÃO DEMO
+     TRADUÇÃO
   ========================= */
 
-  const demo = {
+  const translations = {
 
     "pt-en": {
       "olá mundo": "Hello world",
       "olá, mundo!": "Hello, world!",
-      "como você está?": "How are you?",
       "bom dia": "Good morning",
       "boa noite": "Good evening",
-      "eu gosto de tecnologia":
-        "I like technology"
+      "como você está?": "How are you?"
     },
 
     "en-pt": {
       "hello world": "Olá mundo",
       "hello, world!": "Olá, mundo!",
-      "how are you?":
-        "Como você está?",
       "good morning": "Bom dia",
-      "good evening":
-        "Boa noite",
-      "i like technology":
-        "Eu gosto de tecnologia"
+      "good evening": "Boa noite",
+      "how are you?": "Como você está?"
     },
 
     "pt-es": {
       "olá mundo": "Hola mundo",
       "bom dia": "Buenos días",
-      "como você está?":
-        "¿Cómo estás?"
+      "como você está?": "¿Cómo estás?"
     },
 
     "es-pt": {
       "hola mundo": "Olá mundo",
       "buenos días": "Bom dia",
-      "¿cómo estás?":
-        "Como você está?"
+      "¿cómo estás?": "Como você está?"
     }
 
   };
 
-
-  /* =========================
-     TRADUZIR
-  ========================= */
 
   function translateText() {
 
@@ -1950,12 +1913,11 @@
     if (!text) {
 
       showToast(
-        "Digite um texto para traduzir."
+        "Digite um texto primeiro."
       );
 
-      input.focus();
-
       return;
+
     }
 
 
@@ -1969,51 +1931,83 @@
         "targetLang"
       ).value;
 
+
     if (source === target) {
 
-      result.textContent = text;
-
-      result.classList.remove(
-        "result-placeholder"
-      );
+      showResult(text);
 
       return;
+
     }
 
 
     const key =
       source + "-" + target;
 
-    const normalized =
+    const lower =
       text.toLowerCase();
 
 
     if (
-      demo[key] &&
-      demo[key][normalized]
+      translations[key] &&
+      translations[key][lower]
     ) {
 
-      result.textContent =
-        demo[key][normalized];
+      showResult(
+        translations[key][lower]
+      );
 
     } else {
 
-      result.textContent =
-        "Tradução preparada. Para tradução IA completa, conecte o endpoint de tradução do backend.";
+      showResult(
+        "Tradução preparada. Para tradução IA completa, conecte o backend do Keep."
+      );
 
     }
 
+  }
+
+
+  function showResult(text) {
+
+    const result =
+      document.getElementById(
+        "resultText"
+      );
+
+    result.textContent =
+      text;
 
     result.classList.remove(
-      "result-placeholder"
+      "placeholder"
     );
 
   }
 
 
-  /* =========================
-     TROCAR IDIOMAS
-  ========================= */
+  function clearText() {
+
+    input.value = "";
+
+    document.getElementById(
+      "counter"
+    ).textContent =
+      "0 / 5000";
+
+    const result =
+      document.getElementById(
+        "resultText"
+      );
+
+    result.textContent =
+      "A tradução aparecerá aqui...";
+
+    result.classList.add(
+      "placeholder"
+    );
+
+  }
+
 
   function swapLanguages() {
 
@@ -2040,39 +2034,19 @@
 
 
   /* =========================
-     LIMPAR
-  ========================= */
-
-  function clearText() {
-
-    input.value = "";
-
-    counter.textContent =
-      "0 / 5000";
-
-    result.textContent =
-      "A tradução aparecerá aqui...";
-
-    result.classList.add(
-      "result-placeholder"
-    );
-
-  }
-
-
-  /* =========================
      COPIAR
   ========================= */
 
   function copyResult() {
 
-    const text =
-      result.textContent.trim();
+    const result =
+      document.getElementById(
+        "resultText"
+      );
 
     if (
-      !text ||
       result.classList.contains(
-        "result-placeholder"
+        "placeholder"
       )
     ) {
 
@@ -2081,82 +2055,88 @@
       );
 
       return;
+
     }
 
 
     navigator.clipboard
-      .writeText(text)
+      .writeText(
+        result.textContent
+      )
       .then(
-        () =>
+        function() {
           showToast(
             "Tradução copiada!"
-          )
-      )
-      .catch(
-        () =>
-          showToast(
-            "Não foi possível copiar."
-          )
+          );
+        }
       );
 
   }
 
 
   /* =========================
-     FALAR RESULTADO
+     VOZ
   ========================= */
 
   function speakResult() {
 
-    const text =
-      result.textContent.trim();
+    const result =
+      document.getElementById(
+        "resultText"
+      );
+
 
     if (
-      !text ||
       result.classList.contains(
-        "result-placeholder"
+        "placeholder"
       )
     ) {
 
       showToast(
-        "Não há texto para reproduzir."
+        "Não há texto para ouvir."
       );
 
       return;
+
     }
 
 
-    if (!window.speechSynthesis) {
+    if (
+      !window.speechSynthesis
+    ) {
 
       showToast(
         "Seu navegador não suporta voz."
       );
 
       return;
+
     }
 
 
-    const utterance =
+    const speech =
       new SpeechSynthesisUtterance(
-        text
+        result.textContent
       );
 
     window.speechSynthesis.speak(
-      utterance
+      speech
     );
 
   }
 
 
   /* =========================
-     UPLOAD DE VÍDEO
+     VÍDEO
   ========================= */
 
   document
-    .getElementById("videoInput")
+    .getElementById(
+      "videoInput"
+    )
     .addEventListener(
       "change",
-      function () {
+      function() {
 
         const file =
           this.files[0];
@@ -2171,40 +2151,13 @@
             "videoPreview"
           );
 
-
         video.src =
-          URL.createObjectURL(file);
+          URL.createObjectURL(
+            file
+          );
 
         video.style.display =
           "block";
-
-
-        const drop =
-          document.querySelector(
-            ".drop"
-          );
-
-        const title =
-          drop.querySelector("h3");
-
-        const description =
-          drop.querySelector("p");
-
-
-        if (title) {
-
-          title.textContent =
-            file.name;
-
-        }
-
-
-        if (description) {
-
-          description.textContent =
-            "Vídeo carregado com sucesso.";
-
-        }
 
 
         showToast(
@@ -2216,179 +2169,273 @@
 
 
   /* =========================
-     URL
-  ========================= */
-
-  function isHttpUrl(value) {
-
-    try {
-
-      const url =
-        new URL(value);
-
-      return (
-        url.protocol === "http:" ||
-        url.protocol === "https:"
-      );
-
-    } catch (error) {
-
-      return false;
-
-    }
-
-  }
-
-
-  /* =========================
-     URL DE VÍDEO DIRETO
-  ========================= */
-
-  function isDirectVideoUrl(value) {
-
-    return /\.(mp4|webm|mov|m4v)(\?.*)?$/i
-      .test(value);
-
-  }
-
-
-  /* =========================
      DUBLAGEM
   ========================= */
 
-  async function dubVideoFromLink() {
+  function dubVideo() {
 
-    const inputUrl =
+    const url =
       document.getElementById(
-        "socialVideoUrl"
-      );
-
-    const button =
-      document.getElementById(
-        "dubLinkButton"
-      );
+        "videoUrl"
+      ).value.trim();
 
     const status =
       document.getElementById(
-        "dubStatus"
+        "status"
       );
-
-
-    const url =
-      inputUrl.value.trim();
 
 
     if (!url) {
 
       status.textContent =
-        "Cole primeiro o link do vídeo.";
+        "Cole o link do vídeo primeiro.";
 
-      status.classList.add("show");
-
-      inputUrl.focus();
-
-      return;
-    }
-
-
-    if (!isHttpUrl(url)) {
-
-      status.textContent =
-        "O link precisa começar com http:// ou https://.";
-
-      status.classList.add("show");
+      status.classList.add(
+        "show"
+      );
 
       return;
+
     }
-
-
-    button.disabled =
-      true;
-
-    button.style.opacity =
-      ".65";
 
 
     status.textContent =
-      "⏳ Processando vídeo...";
+      "Link recebido. O processamento completo da dublagem precisa estar conectado ao backend.";
 
     status.classList.add(
       "show"
     );
 
-
-    /* =========================
-       VÍDEO DIRETO
-    ========================= */
-
-    if (
-      isDirectVideoUrl(url)
-    ) {
-
-      const resultBox =
-        document.getElementById(
-          "dubResult"
-        );
-
-      const video =
-        document.getElementById(
-          "dubbedVideo"
-        );
-
-      const download =
-        document.getElementById(
-          "dubDownload"
-        );
+  }
 
 
-      video.src =
-        url;
+  /* =========================
+     CADASTRO GRATUITO
+  ========================= */
 
-      download.href =
-        url;
+  function openRegister() {
 
-
-      resultBox.classList.add(
+    document
+      .getElementById(
+        "registerModal"
+      )
+      .classList.add(
         "show"
       );
 
-
-      status.textContent =
-        "✅ Vídeo direto encontrado. Para trocar realmente o áudio, conecte o endpoint de dublagem ao backend.";
+  }
 
 
-      button.disabled =
-        false;
+  function closeRegister() {
 
-      button.style.opacity =
-        "1";
+    document
+      .getElementById(
+        "registerModal"
+      )
+      .classList.remove(
+        "show"
+      );
+
+  }
 
 
+  function createAccount() {
+
+    const name =
+      document.getElementById(
+        "registerName"
+      ).value.trim();
+
+    const email =
+      document.getElementById(
+        "registerEmail"
+      ).value.trim();
+
+    const password =
+      document.getElementById(
+        "registerPassword"
+      ).value;
+
+
+    const message =
+      document.getElementById(
+        "registerMessage"
+      );
+
+
+    if (!name || !email || !password) {
+
+      message.textContent =
+        "Preencha nome, e-mail e senha.";
+
+      message.classList.add(
+        "show"
+      );
+
+      return;
+
+    }
+
+
+    if (password.length < 6) {
+
+      message.textContent =
+        "A senha precisa ter pelo menos 6 caracteres.";
+
+      message.classList.add(
+        "show"
+      );
+
+      return;
+
+    }
+
+
+    /*
+      Cadastro local para teste.
+
+      IMPORTANTE:
+      Isso NÃO é um sistema de login seguro
+      para produção. Para produção devemos
+      conectar esse cadastro ao backend/banco.
+    */
+
+    const user = {
+
+      name: name,
+
+      email: email,
+
+      plan: "free",
+
+      createdAt:
+        new Date().toISOString()
+
+    };
+
+
+    localStorage.setItem(
+      "keep_user",
+      JSON.stringify(user)
+    );
+
+    localStorage.setItem(
+      "logado",
+      "true"
+    );
+
+
+    updateAccount();
+
+
+    closeRegister();
+
+
+    showToast(
+      "Conta criada! Plano gratuito ativado."
+    );
+
+  }
+
+
+  /* =========================
+     CONTA
+  ========================= */
+
+  function updateAccount() {
+
+    const saved =
+      localStorage.getItem(
+        "keep_user"
+      );
+
+
+    if (!saved) {
       return;
     }
 
 
-    /* =========================
-       LINKS DE REDES SOCIAIS
-    ========================= */
+    try {
 
-    status.textContent =
-      "ℹ️ O link foi recebido. O processamento completo de YouTube, TikTok e Instagram precisa ser feito pelo backend.";
+      const user =
+        JSON.parse(saved);
 
-    button.disabled =
-      false;
 
-    button.style.opacity =
-      "1";
+      document.getElementById(
+        "accountText"
+      ).textContent =
+        user.name;
+
+
+      document.getElementById(
+        "avatar"
+      ).textContent =
+        user.name
+          .charAt(0)
+          .toUpperCase();
+
+    } catch(error) {
+
+      console.error(error);
+
+    }
 
   }
+
+
+  function openAccount() {
+
+    const logged =
+      localStorage.getItem(
+        "logado"
+      );
+
+
+    if (logged === "true") {
+
+      showToast(
+        "Você está conectado à sua conta."
+      );
+
+    } else {
+
+      openRegister();
+
+    }
+
+  }
+
+
+  /* =========================
+     FECHAR MODAL
+     CLICANDO FORA
+  ========================= */
+
+  document
+    .getElementById(
+      "registerModal"
+    )
+    .addEventListener(
+      "click",
+      function(event) {
+
+        if (
+          event.target === this
+        ) {
+
+          closeRegister();
+
+        }
+
+      }
+    );
 
 
   /* =========================
      INICIALIZAÇÃO
   ========================= */
 
-  setMode("text");
+  updateAccount();
 
 </script>
 
