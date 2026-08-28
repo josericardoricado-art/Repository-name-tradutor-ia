@@ -16,44 +16,58 @@ const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY)
   : null;
 
+// =========================
+// PLANOS
+// =========================
+
 const PLANS = {
   "100": "price_1SyfsQP9zHRcVasov83JjPRe",
   "200": "price_1U8mAoP9zHRcVasofgpq69Nl"
 };
 
+// =========================
+// CORS
+// =========================
+
 app.use(cors());
 
-/* =========================
-   WEBHOOK STRIPE
-========================= */
+// =====================================================
+// WEBHOOK STRIPE
+// IMPORTANTE: TEM QUE VIR ANTES DO express.json()
+// =====================================================
 
 app.post(
   "/stripe/webhook",
   express.raw({ type: "application/json" }),
   (req, res) => {
-
     if (!stripe) {
+      console.error("Stripe não configurado.");
       return res.status(500).send("Stripe não configurado");
     }
 
-    const signature =
-      req.headers["stripe-signature"];
+    const signature = req.headers["stripe-signature"];
+
+    if (!signature) {
+      console.error("Stripe-Signature não encontrada.");
+      return res.status(400).send("Stripe-Signature ausente");
+    }
+
+    if (!process.env.STRIPE_WEBHOOK_SECRET) {
+      console.error("STRIPE_WEBHOOK_SECRET não configurado.");
+      return res.status(500).send("Webhook Secret não configurado");
+    }
 
     let event;
 
     try {
-
-      event =
-        stripe.webhooks.constructEvent(
-          req.body,
-          signature,
-          process.env.STRIPE_WEBHOOK_SECRET
-        );
-
+      event = stripe.webhooks.constructEvent(
+        req.body,
+        signature,
+        process.env.STRIPE_WEBHOOK_SECRET
+      );
     } catch (error) {
-
       console.error(
-        "Erro no webhook:",
+        "Erro na assinatura do webhook:",
         error.message
       );
 
@@ -62,130 +76,186 @@ app.post(
       );
     }
 
-    console.log(
-      "Evento Stripe:",
-      event.type
-    );
+    console.log("================================");
+    console.log("Evento Stripe recebido:");
+    console.log("Tipo:", event.type);
+    console.log("ID:", event.id);
+    console.log("================================");
 
-    if (
-      event.type ===
-      "checkout.session.completed"
-    ) {
+    // ==========================================
+    // PAGAMENTO / ASSINATURA CONCLUÍDA
+    // ==========================================
 
-      const session =
-        event.data.object;
+    if (event.type === "checkout.session.completed") {
+      const session = event.data.object;
 
+      console.log("CHECKOUT CONCLUÍDO");
+      console.log("Session:", session.id);
       console.log(
-        "Checkout concluído:",
-        session.id
+        "Email:",
+        session.customer_details?.email || "não informado"
       );
-
       console.log(
-        "Cliente:",
-        session.customer_details?.email
+        "Plano:",
+        session.metadata?.plan || "não informado"
+      );
+      console.log(
+        "Subscription:",
+        session.subscription || "não informado"
       );
     }
 
-    res.json({
+    // ==========================================
+    // PAGAMENTO BEM-SUCEDIDO
+    // ==========================================
+
+    if (event.type === "payment_intent.succeeded") {
+      const paymentIntent = event.data.object;
+
+      console.log("PAGAMENTO APROVADO");
+      console.log("PaymentIntent:", paymentIntent.id);
+      console.log(
+        "Valor:",
+        paymentIntent.amount
+      );
+    }
+
+    // ==========================================
+    // ASSINATURA CANCELADA
+    // ==========================================
+
+    if (event.type === "customer.subscription.deleted") {
+      const subscription = event.data.object;
+
+      console.log("ASSINATURA CANCELADA");
+      console.log("Subscription:", subscription.id);
+    }
+
+    // ==========================================
+    // FATURA PAGA
+    // ==========================================
+
+    if (event.type === "invoice.paid") {
+      const invoice = event.data.object;
+
+      console.log("FATURA PAGA");
+      console.log("Invoice:", invoice.id);
+    }
+
+    // Resposta obrigatória para o Stripe
+    return res.json({
       received: true
     });
   }
 );
 
-
-/* =========================
-   JSON
-========================= */
+// =========================
+// JSON
+// =========================
 
 app.use(express.json());
 
-
-/* =========================
-   HOME
-========================= */
+// =========================
+// HOME
+// =========================
 
 app.get("/", (req, res) => {
-
   res.json({
-
     online: true,
+    message: "Keep - Tradutor Universal",
 
-    message:
-      "Keep - Tradutor Universal",
+    stripe: !!stripe,
 
-    stripe:
-      !!stripe,
+    webhook: !!process.env.STRIPE_WEBHOOK_SECRET,
 
-    webhook:
-      !!process.env.STRIPE_WEBHOOK_SECRET
-
+    frontend: FRONTEND_URL
   });
-
 });
 
+// =========================
+// HEALTH
+// =========================
 
-/* =========================
-   CHECKOUT STRIPE
-========================= */
+app.get("/health", (req, res) => {
+  res.json({
+    status: "ok",
+
+    stripe: !!stripe,
+
+    webhook: !!process.env.STRIPE_WEBHOOK_SECRET,
+
+    time: new Date().toISOString()
+  });
+});
+
+// =====================================================
+// CRIAR CHECKOUT STRIPE
+// =====================================================
 
 app.post(
   "/create-checkout-session",
   async (req, res) => {
-
     try {
-
       if (!stripe) {
-
         return res.status(500).json({
+          success: false,
           error:
             "Stripe não está configurado no Render."
         });
-
       }
 
-      const plan =
-        String(req.body.plan || "");
+      const plan = String(
+        req.body.plan || ""
+      );
 
       const email =
         req.body.email || undefined;
 
+      // ==========================================
+      // VERIFICAR PLANO
+      // ==========================================
 
       if (!PLANS[plan]) {
-
         return res.status(400).json({
+          success: false,
           error:
             "Plano inválido. Use 100 ou 200."
         });
-
       }
 
+      console.log("================================");
+      console.log("CRIANDO CHECKOUT STRIPE");
+      console.log("Plano:", plan);
+      console.log("Price ID:", PLANS[plan]);
+      console.log("Email:", email || "não informado");
+      console.log("================================");
 
-      console.log(
-        "Criando Checkout para plano:",
-        plan
-      );
-
-
-      /*
-        AQUI ESTÁ A CRIAÇÃO DO CHECKOUT
-      */
+      // ==========================================
+      // CRIAR CHECKOUT
+      //
+      // NÃO usamos:
+      // payment_method_types: ["card"]
+      //
+      // Assim o Stripe utiliza os métodos
+      // habilitados/configurados no Dashboard.
+      // ==========================================
 
       const session =
         await stripe.checkout.sessions.create({
 
           mode: "subscription",
-payment_method_types: ["card"],
+
           line_items: [
             {
               price: PLANS[plan],
-
               quantity: 1
             }
           ],
 
-          customer_email:
-            email,
+          // Email do cliente
+          customer_email: email,
 
+          // URLs
           success_url:
             FRONTEND_URL +
             "?pagamento=sucesso&session_id={CHECKOUT_SESSION_ID}",
@@ -194,103 +264,81 @@ payment_method_types: ["card"],
             FRONTEND_URL +
             "?pagamento=cancelado",
 
+          // Dados do plano
           metadata: {
             plan: plan
           },
 
+          // Dados da assinatura
           subscription_data: {
             metadata: {
               plan: plan
             }
           }
-
         });
 
-
-      console.log(
-        "Checkout criado:",
-        session.id
-      );
-
+      console.log("Checkout criado com sucesso!");
+      console.log("Session ID:", session.id);
+      console.log("URL:", session.url);
 
       return res.json({
-
         success: true,
-
-        url: session.url
-
+        url: session.url,
+        session_id: session.id
       });
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
       console.error(
-        "Erro Stripe:",
-        error
+        "================================"
+      );
+
+      console.error(
+        "ERRO STRIPE"
+      );
+
+      console.error(
+        "Mensagem:",
+        error.message
+      );
+
+      console.error(
+        "Tipo:",
+        error.type || "não informado"
+      );
+
+      console.error(
+        "Código:",
+        error.code || "não informado"
+      );
+
+      console.error(
+        "================================"
       );
 
       return res.status(500).json({
-
-        error:
-          error.message
-
+        success: false,
+        error: error.message
       });
-
     }
-
   }
 );
 
+// =========================
+// 404
+// =========================
 
-/* =========================
-   HEALTH
-========================= */
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    error: "Endpoint not found",
+    path: req.originalUrl
+  });
+});
 
-app.get(
-  "/health",
-  (req, res) => {
-
-    res.json({
-
-      status: "ok",
-
-      stripe:
-        !!stripe,
-
-      webhook:
-        !!process.env.STRIPE_WEBHOOK_SECRET
-
-    });
-
-  }
-);
-
-
-/* =========================
-   404
-========================= */
-
-app.use(
-  (req, res) => {
-
-    res.status(404).json({
-
-      error:
-        "Endpoint not found",
-
-      path:
-        req.originalUrl
-
-    });
-
-  }
-);
-
-
-/* =========================
-   START
-========================= */
+// =========================
+// INICIAR SERVIDOR
+// =========================
 
 app.listen(
   PORT,
@@ -306,7 +354,11 @@ app.listen(
     );
 
     console.log(
-      "Servidor iniciado na porta:",
+      "Servidor iniciado"
+    );
+
+    console.log(
+      "Porta:",
       PORT
     );
 
@@ -325,8 +377,12 @@ app.listen(
     );
 
     console.log(
-      "================================"
+      "Frontend:",
+      FRONTEND_URL
     );
 
+    console.log(
+      "================================"
+    );
   }
 );
